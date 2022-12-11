@@ -90,8 +90,7 @@ const SignUp = () => {
 	return (
 		<Container component="main" maxWidth="xs">
 			<CssBaseline />
-			<div className={classes.paper}>
-				<img alt="logo" src={logo}></img>
+			<div className={classes.paper}>				
 				<Typography component="h1" variant="h5">
 					{i18n.t("signup.title")}
 				</Typography>
@@ -174,23 +173,10 @@ const SignUp = () => {
 							>
 								{i18n.t("signup.buttons.submit")}
 							</Button>
-							<Grid container justify="flex-end">
-								<Grid item>
-									<Link
-										href="#"
-										variant="body2"
-										component={RouterLink}
-										to="/login"
-									>
-										{i18n.t("signup.buttons.login")}
-									</Link>
-								</Grid>
-							</Grid>
 						</Form>
 					)}
 				</Formik>
-			</div>
-			<Box mt={5}><Copyright /></Box>
+			</div>			
 		</Container>
 	);
 };
