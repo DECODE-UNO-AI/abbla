@@ -165,7 +165,7 @@ const MainListItems = (props) => {
               to="/settings"
               primary={i18n.t("mainDrawer.listItems.settings")}
               icon={<SettingsOutlined />}
-            />
+            />   
             <Divider className={classes.divider} />
             <ListSubheader inset className={classes.sub}>
               {i18n.t("mainDrawer.listItems.apititle")}
