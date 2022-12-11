@@ -25,7 +25,7 @@ const messages = {
         },
         buttons: {
           submit: "Fazer login",
-          register: "Não tem um conta? Cadastre-se!",
+          register: "Não tem uma conta? Cadastre-se!",
         },
       },
       auth: {
@@ -357,18 +357,18 @@ const messages = {
           connections: "Conexões",
           tickets: "Tickets",
           contacts: "Contatos",
-          quickAnswers: "Respostas Rápidas",
+          quickAnswers: "Respostas rápidas",
           tags: "Tags",
           queues: "Setores",
           administration: "Administração",
-          users: "Atendentes",
+          users: "Atendentes",          
           settings: "Configurações",
-          sendMsg: "Envio de Mensagens",
-          sendMedia: "Envio de Mídia",
+          sendMsg: "Envio de mensagens",
+          sendMedia: "Envio de nídia",
           api: "Uso da API",
           apidocs: "Documentação",
           apititle: "API",
-          apikey: "API Key",
+          apikey: "API key",
           token: "Token"
         },
         appBar: {
