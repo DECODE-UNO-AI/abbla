@@ -195,7 +195,7 @@ const MainListItems = (props) => {
         )}
       />
       <span className={classes.systemCss}>
-        <Link color="inherit" href={system.url || "https://github.com/rtenorioh/Press-Ticket"}>
+        <Link color="inherit" href={system.url}>
           v{systemVersion}
         </Link>
       </span>
