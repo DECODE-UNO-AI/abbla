@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, { useContext, useEffect, useReducer, useState, useRef } from "react";
 
 import { 
   Badge,
@@ -119,6 +119,8 @@ const TicketsManager = () => {
 
   const userQueueIds = user.queues.map((q) => q.id);
   const [selectedQueueIds, setSelectedQueueIds] = useState(userQueueIds || []);
+
+
 
   useEffect(() => {
     if (user.profile.toUpperCase() === "ADMIN") {

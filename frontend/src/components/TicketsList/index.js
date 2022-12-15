@@ -116,7 +116,6 @@ const reducer = (state, action) => {
 
 	if (action.type === "UPDATE_TICKET_UNREAD_MESSAGES") {
 		const ticket = action.payload;
-
 		const ticketIndex = state.findIndex((t) => t.id === ticket.id);
 		if (ticketIndex !== -1) {
 			state[ticketIndex] = ticket;
@@ -169,7 +168,7 @@ const TicketsList = (props) => {
 	const { profile, queues } = user;
 
 	useEffect(() => {
-		dispatch({ type: "RESET" });
+		dispatch({ type: "RESET" }); //restart the tickets
 		setPageNumber(1);
 	}, [status, searchParam, dispatch, showAll, selectedQueueIds, tags]);
 
@@ -195,13 +194,14 @@ const TicketsList = (props) => {
 
 	useEffect(() => {
 		const socket = openSocket();
-
+		let selectIdQueue = selectedQueueIds
 		const shouldUpdateTicket = (ticket) =>
-			(!ticket.userId || ticket.userId === user?.id || showAll) &&
-			(!ticket.queueId || selectedQueueIds.indexOf(ticket.queueId) > -1);
+			(ticket.status === "pending") ||
+			((!ticket.userId || ticket.userId === user?.id || showAll) &&
+			(!ticket.queueId || selectIdQueue.indexOf(ticket.queueId) > -1));
 
 		const notBelongsToUserQueues = (ticket) =>
-			ticket.queueId && selectedQueueIds.indexOf(ticket.queueId) === -1;
+			ticket.queueId && selectIdQueue.indexOf(ticket.queueId) === -1;
 
 		socket.on("connect", () => {
 			if (status) {
@@ -219,7 +219,8 @@ const TicketsList = (props) => {
 				});
 			}
 
-			if (data.action === "update" && shouldUpdateTicket(data.ticket)) {
+			if (data.action === "update"  && shouldUpdateTicket(data.ticket)) { 
+				console.log(data.ticket)
 				dispatch({
 					type: "UPDATE_TICKET",
 					payload: data.ticket,
