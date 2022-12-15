@@ -201,7 +201,7 @@ const TicketsList = (props) => {
 			(!ticket.queueId || selectIdQueue.indexOf(ticket.queueId) > -1));
 
 		const notBelongsToUserQueues = (ticket) =>
-			(user.queues.filter(e => e.id === ticket.queueId).length > 0)
+			(user.queues.filter(e => e.id === ticket.queueId).length === 0)
 
 		socket.on("connect", () => {
 			if (status) {
