@@ -95,7 +95,6 @@ export const update = async (
 ): Promise<Response> => {
   const { ticketId } = req.params;
   const ticketData: TicketData = req.body;
-
   const { ticket } = await UpdateTicketService({
     ticketData,
     ticketId
