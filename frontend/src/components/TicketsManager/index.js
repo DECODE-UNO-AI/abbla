@@ -17,6 +17,7 @@ import {
   MoveToInbox,
   Search
 } from "@material-ui/icons";
+import { Cascader } from 'antd'
 
 import NewTicketModal from "../NewTicketModal";
 import TicketsList from "../TicketsList";
@@ -120,7 +121,24 @@ const TicketsManager = () => {
   const userQueueIds = user.queues.map((q) => q.id);
   const [selectedQueueIds, setSelectedQueueIds] = useState(userQueueIds || []);
 
+  const queuesChildren = user?.queues.map((queue) => { return {value: `${queue.id}`, label: queue.name}})
 
+  console.log(user)
+  const data = 
+    [
+      {
+        value: 'setor',
+        label: 'Setor',
+        children: queuesChildren
+      },
+      {
+        value: 'atendente',
+        label: 'Atendente',
+        children: queuesChildren
+      },
+      
+    ]
+  
 
   useEffect(() => {
     if (user.profile.toUpperCase() === "ADMIN") {
@@ -239,12 +257,14 @@ const TicketsManager = () => {
             />
           )}
         />
-        <TicketsQueueSelect
+        <Cascader multiple options={data} onChange={(e)=> console.log(e)} placeholder="Filtros"/>
+        {/* <TicketsQueueSelect
           style={{ marginLeft: 6 }}
           selectedQueueIds={selectedQueueIds}
           userQueues={user?.queues}
           onChange={(values) => setSelectedQueueIds(values)}
-        />
+        /> */}
+
       </Paper>
       <TabPanel value={tab} name="open" className={classes.ticketsWrapper}>
       <TagsFilter onFiltered={handleSelectedTags} />

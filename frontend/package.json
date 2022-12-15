@@ -10,6 +10,7 @@
     "@testing-library/jest-dom": "^5.11.4",
     "@testing-library/react": "^11.0.4",
     "@testing-library/user-event": "^12.1.7",
+    "antd": "^5.0.7",
     "axios": "^0.21.1",
     "date-fns": "^2.16.1",
     "emoji-mart": "^3.0.1",
@@ -29,6 +30,7 @@
     "react-scripts": "3.4.3",
     "react-toastify": "^6.0.9",
     "recharts": "^2.0.2",
+    "rsuite": "^5.23.2",
     "socket.io-client": "^3.0.5",
     "use-sound": "^2.0.1",
     "yup": "^0.32.8"
