@@ -25,6 +25,11 @@ import TabPanel from "../TabPanel";
 import { TagsFilter } from "../TagsFilter";
 import { Can } from "../Can";
 import TicketsQueueSelect from "../TicketsQueueSelect";
+import useWhatsApps from "../../hooks/useWhatsApps";
+import useQueues from "../../hooks/useQueues";
+import api from "../../services/api";
+
+
 
 import { i18n } from "../../translate/i18n";
 import { AuthContext } from "../../context/Auth/AuthContext";
@@ -121,31 +126,112 @@ const TicketsManager = () => {
   const userQueueIds = user.queues.map((q) => q.id);
   const [selectedQueueIds, setSelectedQueueIds] = useState(userQueueIds || []);
 
-  const queuesChildren = user?.queues.map((queue) => { return {value: `${queue.id}`, label: queue.name}})
+  const { findAll: findAllQueues } = useQueues();
+  const [allQueues, setAllQueues] = useState([]);
 
-  console.log(user)
+  const [allEmployee, setAllEmployee] = useState([])
+  const aten = allEmployee.map((e) => {return { value: e.id, label: e.name}})
+
+  const [allConections, setAllConections] = useState([])
+  const cons = allConections.map((con) => {return { value: con.id, label: con.name}})
+
+  const queuesChildren = 
+    user.profile === 'admin' ?  allQueues.map((queue) => { return {value: `${queue.id}`, label: queue.name}}) 
+    : 
+    user?.queues.map((queue) => { return {value: `${queue.id}`, label: queue.name}})
+
   const data = 
     [
       {
-        value: 'setor',
+        value: 'queue',
         label: 'Setor',
-        children: queuesChildren
+        isLeaf: false
       },
       {
         value: 'atendente',
         label: 'Atendente',
-        children: queuesChildren
+        isLeaf: false,
+      },
+      {
+        value: 'conection',
+        label: 'Conexão',
+        isLeaf: false,
       },
       
     ]
   
+  const [options, setOptions] = useState(data)
+
+  const loadData = async (selectedOptions) => {
+    const targetOption = selectedOptions[selectedOptions.length - 1];
+    targetOption.loading = true;
+    if(targetOption.value === "atendente") {
+      const { data } = await api.get("/users/", {
+            params: { searchParam },
+          });
+      const aten = data.users.map((e) => {return { value: e.id, label: e.name}})
+      setTimeout(()=> {
+        targetOption.loading = false;
+        targetOption.children = aten
+        
+        setOptions([...options]);
+      }, 1000)
+    }
+
+    if(targetOption.value === 'conection'){
+      const { data } = await api.get("/whatsapp/");
+      const cons = data.map((con) => {return { value: con.id, label: con.name}})
+      setTimeout(()=> {
+        targetOption.loading = false;
+        targetOption.children = cons
+    
+        setOptions([...options]);
+      }, 1000)
+    }
+
+    if(targetOption.value === 'queue'){
+      let queuesChildren
+      if(user?.profile === 'admin'){
+        const list = await findAllQueues();
+        queuesChildren = list.map((queue) => { return {value: `${queue.id}`, label: queue.name}})
+      } else {
+        queuesChildren = user?.queues.map((queue) => { return {value: `${queue.id}`, label: queue.name}})
+      }
+  
+      setTimeout(()=> {
+        targetOption.loading = false;
+        targetOption.children = queuesChildren
+    
+        setOptions([...options]);
+      }, 1000)
+    }
+
+  }
 
   useEffect(() => {
     if (user.profile.toUpperCase() === "ADMIN") {
       setShowAllTickets(true);
+      const loadQueues = async () => {
+        const list = await findAllQueues();
+        setAllQueues(list);
+      }
+      //const loadCon = async () => {
+      //  const { data } = await api.get("/whatsapp/");
+      //  setAllConections(data)
+      //}
+      //const loadAtendentes = async () => {
+      //  const { data } = await api.get("/users/", {
+      //    params: { searchParam },
+      //  });
+      //  setAllEmployee(data.users)
+      //}
+      loadQueues();
+      //loadCon();
+      //loadAtendentes();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
+
 
   const handleSearch = (e) => {
     const searchedTerm = e.target.value.toLowerCase();
@@ -257,13 +343,16 @@ const TicketsManager = () => {
             />
           )}
         />
-        <Cascader multiple options={data} onChange={(e)=> console.log(e)} placeholder="Filtros"/>
-        {/* <TicketsQueueSelect
+        {user?.profile === 'admin' ?
+        <Cascader multiple options={options} onChange={(e)=> console.log(e)} placeholder="Filtros" loadData={loadData}/>
+        :
+        <TicketsQueueSelect
           style={{ marginLeft: 6 }}
           selectedQueueIds={selectedQueueIds}
           userQueues={user?.queues}
           onChange={(values) => setSelectedQueueIds(values)}
-        /> */}
+        />
+        }
 
       </Paper>
       <TabPanel value={tab} name="open" className={classes.ticketsWrapper}>

@@ -53,6 +53,8 @@ const TransferTicketModal = ({ modalOpen, onClose, ticketid, ticketWhatsappId })
 
 	const { user: loggedInUser } = useContext(AuthContext);
 
+	console.log(whatsApps, loadingWhatsapps)
+
 	useEffect(() => {
 		const loadQueues = async () => {
 			const list = await findAllQueues();
