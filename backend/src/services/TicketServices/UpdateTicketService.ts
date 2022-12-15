@@ -11,7 +11,7 @@ interface TicketData {
   userId?: number;
   queueId?: number;
   whatsappId?: number;
-  noReadMessage?: boolean;
+  noReadMessage?: string;
 }
 
 interface Request {
@@ -32,8 +32,9 @@ const UpdateTicketService = async ({
   const { status, userId, queueId, whatsappId, noReadMessage } = ticketData;
 
   const ticket = await ShowTicketService(ticketId);
-  if (!noReadMessage) await SetTicketMessagesAsRead(ticket);
-
+  if (noReadMessage !== "noRead") {
+    //await SetTicketMessagesAsRead(ticket);
+  }
   if (whatsappId && ticket.whatsappId !== whatsappId) {
     await CheckContactOpenTickets(ticket.contactId, whatsappId);
   }

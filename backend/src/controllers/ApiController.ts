@@ -72,7 +72,7 @@ const createContact = async (
 
   const ticket = await ShowTicketService(createTicket.id);
 
-  SetTicketMessagesAsRead(ticket);
+  //SetTicketMessagesAsRead(ticket);
 
   return ticket;
 };
