@@ -5,6 +5,7 @@ import { getIO } from "../libs/socket";
 import Message from "../models/Message";
 
 import ListMessagesService from "../services/MessageServices/ListMessagesService";
+import ListSettingsServiceOne from "../services/SettingServices/ListSettingsServiceOne";
 import ShowTicketService from "../services/TicketServices/ShowTicketService";
 import DeleteWhatsAppMessage from "../services/WbotServices/DeleteWhatsAppMessage";
 import SendWhatsAppMedia from "../services/WbotServices/SendWhatsAppMedia";
@@ -30,7 +31,13 @@ export const index = async (req: Request, res: Response): Promise<Response> => {
     ticketId
   });
 
-  SetTicketMessagesAsRead(ticket);
+  // Setting vizualizeMessage
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const listSettingsService: any = await ListSettingsServiceOne({
+    key: "visualizeMessage"
+  });
+  const option = listSettingsService?.dataValues.value;
+  if (option === "disabled") await SetTicketMessagesAsRead(ticket);
 
   return res.json({ count, messages, ticket, hasMore });
 };
@@ -42,7 +49,13 @@ export const store = async (req: Request, res: Response): Promise<Response> => {
 
   const ticket = await ShowTicketService(ticketId);
 
-  SetTicketMessagesAsRead(ticket);
+  // Setting vizualizeMessage
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const listSettingsService: any = await ListSettingsServiceOne({
+    key: "visualizeMessage"
+  });
+  const option = listSettingsService?.dataValues.value;
+  if (option === "disabled") await SetTicketMessagesAsRead(ticket);
 
   if (medias) {
     await Promise.all(
