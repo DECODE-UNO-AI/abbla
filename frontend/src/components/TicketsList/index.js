@@ -195,13 +195,14 @@ const TicketsList = (props) => {
 
 	useEffect(() => {
 		const socket = openSocket();
-
+		let selectIdQueue = selectedQueueIds
 		const shouldUpdateTicket = (ticket) =>
-			(!ticket.userId || ticket.userId === user?.id || showAll) &&
-			(!ticket.queueId || selectedQueueIds.indexOf(ticket.queueId) > -1);
+			(ticket.status === "pending") ||
+			((!ticket.userId || ticket.userId === user?.id || showAll) &&
+			(!ticket.queueId || selectIdQueue.indexOf(ticket.queueId) > -1));
 
 		const notBelongsToUserQueues = (ticket) =>
-			ticket.queueId && selectedQueueIds.indexOf(ticket.queueId) === -1;
+			(user.queues.filter(e => e.id === ticket.queueId).length === 0)
 
 		socket.on("connect", () => {
 			if (status) {
@@ -219,7 +220,8 @@ const TicketsList = (props) => {
 				});
 			}
 
-			if (data.action === "update" && shouldUpdateTicket(data.ticket)) {
+			if (data.action === "update"  && shouldUpdateTicket(data.ticket)) { 
+				console.log(data.ticket)
 				dispatch({
 					type: "UPDATE_TICKET",
 					payload: data.ticket,
