@@ -502,6 +502,14 @@ const messages = {
               disabled: "Disabled",
             },
           },
+          visualizeMessage: {
+            name: "Visualize message just on response",
+            note: "Disable message visualize confirmation until message is previewed",
+            options: {
+              enabled: "Enabled",
+              disabled: "Disabled",
+            },
+          },
           timeCreateNewTicket: {
             name: "Create new ticket after",
             note: "Select the time it will take to openlaugh a new ticket, in case the customer gets in touch again",

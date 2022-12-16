@@ -257,6 +257,20 @@ const Settings = () => {
 				</Paper>
 
 				<Typography variant="body2" gutterBottom></Typography>
+				<Paper className={classes.paper}>
+					<Tooltip title={i18n.t("settings.settings.visualizeMessage.note")}>
+						<FormControlLabel
+							control={
+								<IOSSwitch
+									checked={settings && settings.length > 0 && getSettingValue("visualizeMessage") === "enabled"}
+									onChange={handleChangeBooleanSetting} name="visualizeMessage"
+								/>}
+							label={i18n.t("settings.settings.visualizeMessage.name")}
+						/>
+					</Tooltip>
+				</Paper>
+
+				<Typography variant="body2" gutterBottom></Typography>
 					<Tooltip title={i18n.t("settings.settings.timeCreateNewTicket.note")}>
 					     <Paper className={classes.paper} elevation={3}>
 						<Typography variant="body1">

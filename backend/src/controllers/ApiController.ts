@@ -72,7 +72,13 @@ const createContact = async (
 
   const ticket = await ShowTicketService(createTicket.id);
 
-  //SetTicketMessagesAsRead(ticket);
+  // Setting vizualizeMessage
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const listSettingsService: any = await ListSettingsServiceOne({
+    key: "visualizeMessage"
+  });
+  const option = listSettingsService?.dataValues.value;
+  if (option === "disabled") await SetTicketMessagesAsRead(ticket);
 
   return ticket;
 };

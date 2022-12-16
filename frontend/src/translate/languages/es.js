@@ -502,6 +502,14 @@ const messages = {
               disabled: "Deshabilitado",
             },
           },
+          visualizeMessage: {
+            name: "Ver mensaje solo en respuesta",
+            note: "Habilita la visualización de mensajes solo en las respuestas.",
+            options: {
+              enabled: "Habilitado",
+              disabled: "Deshabilitado",
+            },
+          },
           timeCreateNewTicket: {
             name: "Crear nuevo ticket después",
             note: "Seleccione el tiempo que tardará en abrir un nuevo ticket si el cliente lo contacta nuevamente",
