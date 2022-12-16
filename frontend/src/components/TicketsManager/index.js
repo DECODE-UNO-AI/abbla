@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useReducer, useState, useRef } from "react";
+import React, { useContext, useEffect, useState } from "react";
 
 import { 
   Badge,
@@ -25,7 +25,6 @@ import TabPanel from "../TabPanel";
 import { TagsFilter } from "../TagsFilter";
 import { Can } from "../Can";
 import TicketsQueueSelect from "../TicketsQueueSelect";
-import useWhatsApps from "../../hooks/useWhatsApps";
 import useQueues from "../../hooks/useQueues";
 import api from "../../services/api";
 
@@ -127,18 +126,6 @@ const TicketsManager = () => {
   const [selectedQueueIds, setSelectedQueueIds] = useState(userQueueIds || []);
 
   const { findAll: findAllQueues } = useQueues();
-  const [allQueues, setAllQueues] = useState([]);
-
-  const [allEmployee, setAllEmployee] = useState([])
-  const aten = allEmployee.map((e) => {return { value: e.id, label: e.name}})
-
-  const [allConections, setAllConections] = useState([])
-  const cons = allConections.map((con) => {return { value: con.id, label: con.name}})
-
-  const queuesChildren = 
-    user.profile === 'admin' ?  allQueues.map((queue) => { return {value: `${queue.id}`, label: queue.name}}) 
-    : 
-    user?.queues.map((queue) => { return {value: `${queue.id}`, label: queue.name}})
 
   const data = 
     [
@@ -211,23 +198,6 @@ const TicketsManager = () => {
   useEffect(() => {
     if (user.profile.toUpperCase() === "ADMIN") {
       setShowAllTickets(true);
-      const loadQueues = async () => {
-        const list = await findAllQueues();
-        setAllQueues(list);
-      }
-      //const loadCon = async () => {
-      //  const { data } = await api.get("/whatsapp/");
-      //  setAllConections(data)
-      //}
-      //const loadAtendentes = async () => {
-      //  const { data } = await api.get("/users/", {
-      //    params: { searchParam },
-      //  });
-      //  setAllEmployee(data.users)
-      //}
-      loadQueues();
-      //loadCon();
-      //loadAtendentes();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
