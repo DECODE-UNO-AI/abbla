@@ -196,9 +196,9 @@ const TicketsList = (props) => {
 		const socket = openSocket();
 		let selectIdQueue = selectedQueueIds
 		const shouldUpdateTicket = (ticket) =>
-			(ticket.status === "pending") ||
+			//(ticket.status === "pending") ||
 			((!ticket.userId || ticket.userId === user?.id || showAll) &&
-			(!ticket.queueId || selectIdQueue.indexOf(ticket.queueId) > -1));
+			(!ticket.queueId || user.queues.filter(e => e.id === ticket.queueId).length !== 0));//selectIdQueue.indexOf(ticket.queueId) > -1)
 
 		const notBelongsToUserQueues = (ticket) =>
 			(user.queues.filter(e => e.id === ticket.queueId).length === 0)
