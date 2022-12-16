@@ -157,6 +157,7 @@ const TicketsList = (props) => {
 		searchParam,
 		showAll,
 		selectedQueueIds,
+		adminFilterOptions,
 		updateCount,
 		style,
 		tags,
@@ -179,6 +180,7 @@ const TicketsList = (props) => {
 		showAll,
 		tags: JSON.stringify(tags),
 		queueIds: JSON.stringify(selectedQueueIds),
+		adminFilterOptions: JSON.stringify(adminFilterOptions),
 	});
 
 	useEffect(() => {

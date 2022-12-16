@@ -125,6 +125,8 @@ const TicketsManager = () => {
   const userQueueIds = user.queues.map((q) => q.id);
   const [selectedQueueIds, setSelectedQueueIds] = useState(userQueueIds || []);
 
+  const [adminFilterOptions, setAdminFilterOptions] = useState([])
+
   const { findAll: findAllQueues } = useQueues();
 
   const data = 
@@ -314,7 +316,7 @@ const TicketsManager = () => {
           )}
         />
         {user?.profile === 'admin' ?
-        <Cascader multiple options={options} onChange={(e)=> console.log(e)} placeholder="Filtros" loadData={loadData}/>
+        <Cascader multiple options={options} onChange={(e)=> setAdminFilterOptions(e)} placeholder="Filtros" loadData={loadData}/>
         :
         <TicketsQueueSelect
           style={{ marginLeft: 6 }}
@@ -349,6 +351,7 @@ const TicketsManager = () => {
           status="pending"
           showAll={true}
           selectedQueueIds={selectedQueueIds}
+          adminFilterOptions={adminFilterOptions}
         />
       </TabPanel>
 
