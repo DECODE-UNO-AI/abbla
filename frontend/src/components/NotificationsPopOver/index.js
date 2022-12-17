@@ -109,12 +109,13 @@ const NotificationsPopOver = () => {
 
 		socket.on("appMessage", data => {
 			const UserQueues = user.queues.findIndex((users) => (users.id === data.ticket.queueId));
+
 			if (
 				(data.action === "create" &&
 				!data.message.read &&
-				(data.ticket.userId === user?.id || !data.ticket.userId)
-				&& (UserQueues !== -1 || !data.ticket.queueId))
-			) {
+				(data.ticket.userId === user?.id || !data.ticket.userId) &&
+				(UserQueues !== -1 ) || !data.ticket.queueId))
+			{
 				setNotifications(prevState => {
 					const ticketIndex = prevState.findIndex(t => t.id === data.ticket.id);
 					if (ticketIndex !== -1) {
@@ -131,7 +132,6 @@ const NotificationsPopOver = () => {
 					data.ticket.isGroup;
 
 				if (shouldNotNotificate) return;
-
 				handleNotifications(data);
 			}
 		});

@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, { useContext, useEffect, useReducer, useState, useRef } from "react";
 
 import { 
   Badge,
@@ -17,6 +17,7 @@ import {
   MoveToInbox,
   Search
 } from "@material-ui/icons";
+import { Cascader } from 'antd'
 
 import NewTicketModal from "../NewTicketModal";
 import TicketsList from "../TicketsList";
@@ -119,6 +120,7 @@ const TicketsManager = () => {
 
   const userQueueIds = user.queues.map((q) => q.id);
   const [selectedQueueIds, setSelectedQueueIds] = useState(userQueueIds || []);
+  
 
   useEffect(() => {
     if (user.profile.toUpperCase() === "ADMIN") {
@@ -243,6 +245,7 @@ const TicketsManager = () => {
           userQueues={user?.queues}
           onChange={(values) => setSelectedQueueIds(values)}
         />
+
       </Paper>
       <TabPanel value={tab} name="open" className={classes.ticketsWrapper}>
       <TagsFilter onFiltered={handleSelectedTags} />

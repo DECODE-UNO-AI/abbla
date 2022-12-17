@@ -369,6 +369,7 @@ const handleMessage = async (
       contact,
       wbot.id!,
       unreadMessages,
+      whatsapp.queues.length === 1 ? whatsapp.queues[0].id : null,
       groupContact
     );
 
@@ -383,6 +384,7 @@ const handleMessage = async (
       contact,
       wbot.id!,
       unreadMessages,
+      whatsapp.queues.length === 1 ? whatsapp.queues[0].id : null,
       groupContact
     );
 
@@ -457,7 +459,6 @@ const handleMessage = async (
                         }
                       }
                     }
-
                     // eslint-disable-next-line no-restricted-syntax
                     for await (const ob of obj) {
                       try {
