@@ -38,7 +38,7 @@ const FindOrCreateTicketService = async (
     if (ticket) {
       await ticket.update({
         status: "pending",
-        queueId: null,
+        queueId,
         userId: null,
         unreadMessages
       });

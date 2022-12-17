@@ -131,7 +131,7 @@ const TicketsManager = () => {
 
   const handleSearch = (e) => {
     const searchedTerm = e.target.value.toLowerCase();
-
+  
 
     setSearchParam(searchedTerm);
     if (searchedTerm === "") {
@@ -156,6 +156,10 @@ const TicketsManager = () => {
       return { width: 0, height: 0 };
     }
   };
+
+  const updateCount = (value) => {
+    setPendingCount(value)
+  }
 
   return (
     <Paper elevation={0} variant="outlined" className={classes.ticketsWrapper}>
@@ -257,11 +261,13 @@ const TicketsManager = () => {
             updateCount={(val) => setOpenCount(val)}
             style={applyPanelStyle("open")}
           />
-          <TicketsList
-            status="pending"
-            updateCount={(val) => setPendingCount(val)}
-            style={applyPanelStyle("pending")}
-          />
+           <TicketsList
+             status="pending"
+             showAll={showAllTickets}
+             selectedQueueIds={selectedQueueIds}
+             updateCount={(val) => setPendingCount(val)}
+             style={applyPanelStyle("pending")}
+           />
         </Paper>
       </TabPanel>
 

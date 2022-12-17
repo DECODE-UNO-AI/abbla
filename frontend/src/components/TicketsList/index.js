@@ -146,7 +146,7 @@ const reducer = (state, action) => {
 		return [...state];
 	}
 
-	if (action.type === "RESET") {
+	if (action.type === "RESET") {	
 		return [];
 	}
 };
@@ -170,7 +170,7 @@ const TicketsList = (props) => {
 	useEffect(() => {
 		dispatch({ type: "RESET" }); //restart the tickets
 		setPageNumber(1);
-	}, [status, searchParam, dispatch, showAll, selectedQueueIds, tags]);
+	}, [ status, searchParam, dispatch, showAll, selectedQueueIds, tags]);
 
 	const { tickets, hasMore, loading } = useTickets({
 		pageNumber,
@@ -194,9 +194,8 @@ const TicketsList = (props) => {
 
 	useEffect(() => {
 		const socket = openSocket();
-		let selectIdQueue = selectedQueueIds
 		const shouldUpdateTicket = (ticket) =>
-			//(ticket.status === "pending") ||
+			(ticket.queueId === null) ||
 			((!ticket.userId || ticket.userId === user?.id || showAll) &&
 			(!ticket.queueId || user.queues.filter(e => e.id === ticket.queueId).length !== 0));//selectIdQueue.indexOf(ticket.queueId) > -1)
 
@@ -220,7 +219,6 @@ const TicketsList = (props) => {
 			}
 
 			if (data.action === "update"  && shouldUpdateTicket(data.ticket)) { 
-				console.log(data.ticket)
 				dispatch({
 					type: "UPDATE_TICKET",
 					payload: data.ticket,
@@ -261,7 +259,9 @@ const TicketsList = (props) => {
 
 	useEffect(() => {
 		if (typeof updateCount === "function") {
-			updateCount(ticketsList.length);
+			if(status === 'pending') {
+				updateCount(ticketsList.length);
+			}
 		}
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [ticketsList]);
