@@ -157,9 +157,6 @@ const TicketsManager = () => {
     }
   };
 
-  const updateCount = (value) => {
-    setPendingCount(value)
-  }
 
   return (
     <Paper elevation={0} variant="outlined" className={classes.ticketsWrapper}>
