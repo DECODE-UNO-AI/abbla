@@ -65,7 +65,7 @@ const ListTicketsServiceAdmin = async ({
 
   if (showAll === "true") {
     if (filterQueues !== "all") {
-      whereCondition = { queueId: { [Op.or]: [filterQueues, null] } };
+      whereCondition = { queueId: { [Op.or]: [filterQueues] } };
     } else {
       whereCondition = {[Op.or]: [{ userId }, { status: "pending" }],
         status: "pending"
@@ -205,7 +205,7 @@ const ListTicketsServiceAdmin = async ({
 
   const limit = 40;
   const offset = limit * (+pageNumber - 1);
-
+  console.log(whereCondition)
   const { count, rows: tickets } = await Ticket.findAndCountAll({
     where: whereCondition,
     include: includeCondition,

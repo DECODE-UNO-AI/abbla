@@ -201,7 +201,7 @@ const TicketsList = (props) => {
 			//(ticket.status === "pending") ||
 			(ticket.queueId === null) ||
 			((!ticket.userId || ticket.userId === user?.id || showAll) &&
-			(!ticket.queueId || selectIdQueue.indexOf(ticket.queueId) > -1));
+			(!ticket.queueId || user.queues.filter(e => e.id === ticket.queueId).length !== 0));//selectIdQueue.indexOf(ticket.queueId) > -1)
 
 		const notBelongsToUserQueues = (ticket) =>
 			(user.queues.filter(e => e.id === ticket.queueId).length === 0)

@@ -22,7 +22,7 @@ echo " "
 
 sleep 2
 
-git reset --hard
+#git reset --hard
 git pull
 
 echo " "

@@ -5,6 +5,7 @@ import Ticket from "../../models/Ticket";
 import SendWhatsAppMessage from "../WbotServices/SendWhatsAppMessage";
 import ShowWhatsAppService from "../WhatsappService/ShowWhatsAppService";
 import ShowTicketService from "./ShowTicketService";
+import ListSettingsServiceOne from "../SettingServices/ListSettingsServiceOne";
 
 interface TicketData {
   status?: string;
@@ -31,9 +32,16 @@ const UpdateTicketService = async ({
   const { status, userId, queueId, whatsappId } = ticketData;
 
   const ticket = await ShowTicketService(ticketId);
-  await SetTicketMessagesAsRead(ticket);
 
-  if(whatsappId && ticket.whatsappId !== whatsappId) {
+  // Setting vizualizeMessage
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const listSettingsService: any = await ListSettingsServiceOne({
+    key: "visualizeMessage"
+  });
+  const option = listSettingsService?.dataValues.value;
+  if (option === "disabled") await SetTicketMessagesAsRead(ticket);
+
+  if (whatsappId && ticket.whatsappId !== whatsappId) {
     await CheckContactOpenTickets(ticket.contactId, whatsappId);
   }
 
@@ -50,7 +58,7 @@ const UpdateTicketService = async ({
     userId
   });
 
-  if(whatsappId) {
+  if (whatsappId) {
     await ticket.update({
       whatsappId
     });
