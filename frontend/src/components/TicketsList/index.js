@@ -167,7 +167,7 @@ const TicketsList = (props) => {
 	const [ticketsList, dispatch] = useReducer(reducer, []);
 	const { user } = useContext(AuthContext);
 	const { profile, queues } = user;
-	console.log(ticketsList)
+
 	useEffect(() => {
 		dispatch({ type: "RESET" }); //restart the tickets
 		setPageNumber(1);
@@ -196,7 +196,6 @@ const TicketsList = (props) => {
 
 	useEffect(() => {
 		const socket = openSocket();
-		let selectIdQueue = selectedQueueIds
 		const shouldUpdateTicket = (ticket) =>
 			//(ticket.status === "pending") ||
 			(ticket.queueId === null) ||
@@ -204,7 +203,7 @@ const TicketsList = (props) => {
 			(!ticket.queueId || user.queues.filter(e => e.id === ticket.queueId).length !== 0));//selectIdQueue.indexOf(ticket.queueId) > -1)
 
 		const notBelongsToUserQueues = (ticket) =>
-			(user.queues.filter(e => e.id === ticket.queueId).length === 0)
+			(ticket.queueId && user.queues.filter(e => e.id === ticket.queueId).length === 0)
 
 		socket.on("connect", () => {
 			if (status) {
@@ -223,7 +222,6 @@ const TicketsList = (props) => {
 			}
 
 			if (data.action === "update"  && shouldUpdateTicket(data.ticket)) { 
-				console.log(data.ticket)
 				dispatch({
 					type: "UPDATE_TICKET",
 					payload: data.ticket,
