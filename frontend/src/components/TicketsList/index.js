@@ -198,7 +198,8 @@ const TicketsList = (props) => {
 		const socket = openSocket();
 		let selectIdQueue = selectedQueueIds
 		const shouldUpdateTicket = (ticket) =>
-			(ticket.status === "pending") ||
+			//(ticket.status === "pending") ||
+			(ticket.queueId === null) ||
 			((!ticket.userId || ticket.userId === user?.id || showAll) &&
 			(!ticket.queueId || selectIdQueue.indexOf(ticket.queueId) > -1));
 
@@ -263,7 +264,9 @@ const TicketsList = (props) => {
 
 	useEffect(() => {
 		if (typeof updateCount === "function") {
-			updateCount(ticketsList.length);
+			if(status === 'pending') {
+				updateCount(ticketsList.length);
+			}
 		}
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [ticketsList]);

@@ -35,7 +35,6 @@ const ListTicketsServiceAdmin = async ({
   adminFilter,
   withUnreadMessages
 }: Request): Promise<Response> => {
-  console.log(adminFilter)
   let whereCondition: Filterable["where"] = {
     [Op.or]: [{ userId }, { status: "pending" }],
     status: "pending"
@@ -62,6 +61,16 @@ const ListTicketsServiceAdmin = async ({
     }
   }
 
+  // Show All filter
+
+  if (showAll === "true") {
+    if (filterQueues !== "all") {
+      whereCondition = { queueId: { [Op.or]: [filterQueues, null] } };
+    } else {
+      whereCondition = {};
+    }
+  }
+
   // Atendentes filter
   const aten = adminFilter.filter(e => e.includes("atendente"));
   let filterAten;
@@ -71,7 +80,7 @@ const ListTicketsServiceAdmin = async ({
   ) {
     filterAten = "all";
   } else {
-    filterAten = queues.map(e => e[1]);
+    filterAten = aten.map(e => e[1]);
   }
 
   if (filterAten) {
@@ -92,14 +101,14 @@ const ListTicketsServiceAdmin = async ({
   ) {
     filterCons = "all";
   } else {
-    filterCons = queues.map(e => e[1]);
+    filterCons = cons.map(e => e[1]);
   }
 
   if (filterCons) {
     if (filterCons !== "all") {
       whereCondition = {
         ...whereCondition,
-        whatsappId: { [Op.or]: filterAten }
+        whatsappId: { [Op.or]: filterCons }
       };
     }
   }
@@ -122,14 +131,6 @@ const ListTicketsServiceAdmin = async ({
       attributes: ["name"]
     }
   ];
-
-  if (showAll === "true") {
-    if (filterQueues !== "all") {
-      whereCondition = { queueId: { [Op.or]: [filterQueues, null] } };
-    } else {
-      whereCondition = {};
-    }
-  }
 
   if (status) {
     whereCondition = {
