@@ -66,6 +66,7 @@ export const index = async (req: Request, res: Response): Promise<Response> => {
       queueIds,
       withUnreadMessages
     });
+    console.log(tickets)
     return res.status(200).json({ tickets, count, hasMore });
   }
   const { tickets, count, hasMore } = await ListTicketsServiceAdmin({
@@ -79,7 +80,7 @@ export const index = async (req: Request, res: Response): Promise<Response> => {
     withUnreadMessages
   });
 
-  console.log(tickets)
+  //console.log(tickets)
   return res.status(200).json({ tickets, count, hasMore });
 };
 

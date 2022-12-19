@@ -67,7 +67,9 @@ const ListTicketsServiceAdmin = async ({
     if (filterQueues !== "all") {
       whereCondition = { queueId: { [Op.or]: [filterQueues, null] } };
     } else {
-      whereCondition = {};
+      whereCondition = {[Op.or]: [{ userId }, { status: "pending" }],
+        status: "pending"
+      };
     }
   }
 
