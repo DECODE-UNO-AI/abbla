@@ -208,6 +208,8 @@ const ListTicketsServiceAdmin = async ({
     where: whereCondition,
     include: includeCondition,
     distinct: true,
+    limit,
+    offset,
     order: [["updatedAt", "DESC"]]
   });
 
