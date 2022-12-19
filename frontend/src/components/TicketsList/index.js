@@ -167,11 +167,11 @@ const TicketsList = (props) => {
 	const [ticketsList, dispatch] = useReducer(reducer, []);
 	const { user } = useContext(AuthContext);
 	const { profile, queues } = user;
-
+	console.log('render')
 	useEffect(() => {
 		dispatch({ type: "RESET" }); //restart the tickets
 		setPageNumber(1);
-	}, [status, searchParam, dispatch, showAll, selectedQueueIds, tags]);
+	}, [status, searchParam, dispatch, showAll, selectedQueueIds, tags, adminFilterOptions]);
 
 	const { tickets, hasMore, loading } = useTickets({
 		pageNumber,

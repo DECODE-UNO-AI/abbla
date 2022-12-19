@@ -16,7 +16,7 @@ interface Request {
   showAll?: string;
   userId: string;
   withUnreadMessages?: string;
-  queueIds: number[];
+  adminFilter: Array<string[]>;
 }
 
 interface Response {
@@ -25,22 +25,86 @@ interface Response {
   hasMore: boolean;
 }
 
-const ListTicketsService = async ({
+const ListTicketsServiceAdmin = async ({
   searchParam = "",
   pageNumber = "1",
-  queueIds,
   status,
   date,
   showAll,
   userId,
+  adminFilter,
   withUnreadMessages
 }: Request): Promise<Response> => {
+  console.log(adminFilter)
   let whereCondition: Filterable["where"] = {
     [Op.or]: [{ userId }, { status: "pending" }],
-    queueId: { [Op.or]: [queueIds, null] }
+    status: "pending"
   };
-  let includeCondition: Includeable[];
 
+  // Queue filter
+  const queues = adminFilter.filter(e => e.includes("queue"));
+  let filterQueues;
+  if (
+    queues.length === 0 ||
+    (queues.length === 1 && queues[0][0] === "queue" && !queues[0][1])
+  ) {
+    filterQueues = "all";
+  } else {
+    filterQueues = queues.map(e => e[1]);
+  }
+
+  if (filterQueues) {
+    if (filterQueues !== "all") {
+      whereCondition = {
+        ...whereCondition,
+        queueId: { [Op.or]: filterQueues }
+      };
+    }
+  }
+
+  // Atendentes filter
+  const aten = adminFilter.filter(e => e.includes("atendente"));
+  let filterAten;
+  if (
+    aten.length === 0 ||
+    (aten.length === 1 && aten[0][0] === "atendente" && !aten[0][1])
+  ) {
+    filterAten = "all";
+  } else {
+    filterAten = queues.map(e => e[1]);
+  }
+
+  if (filterAten) {
+    if (filterAten !== "all") {
+      whereCondition = {
+        ...whereCondition,
+        userId: { [Op.or]: filterAten }
+      };
+    }
+  }
+
+  // Conexão filter
+  const cons = adminFilter.filter(e => e.includes("conection"));
+  let filterCons;
+  if (
+    cons.length === 0 ||
+    (cons.length === 1 && cons[0][0] === "conection" && !cons[0][1])
+  ) {
+    filterCons = "all";
+  } else {
+    filterCons = queues.map(e => e[1]);
+  }
+
+  if (filterCons) {
+    if (filterCons !== "all") {
+      whereCondition = {
+        ...whereCondition,
+        whatsappId: { [Op.or]: filterAten }
+      };
+    }
+  }
+
+  let includeCondition: Includeable[];
   includeCondition = [
     {
       model: Contact,
@@ -60,7 +124,11 @@ const ListTicketsService = async ({
   ];
 
   if (showAll === "true") {
-    whereCondition = { queueId: { [Op.or]: [queueIds, null] } };
+    if (filterQueues !== "all") {
+      whereCondition = { queueId: { [Op.or]: [filterQueues, null] } };
+    } else {
+      whereCondition = {};
+    }
   }
 
   if (status) {
@@ -139,8 +207,6 @@ const ListTicketsService = async ({
     where: whereCondition,
     include: includeCondition,
     distinct: true,
-    limit,
-    offset,
     order: [["updatedAt", "DESC"]]
   });
 
@@ -153,4 +219,4 @@ const ListTicketsService = async ({
   };
 };
 
-export default ListTicketsService;
+export default ListTicketsServiceAdmin;

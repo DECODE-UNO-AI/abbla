@@ -10,6 +10,7 @@ import SendWhatsAppMessage from "../services/WbotServices/SendWhatsAppMessage";
 import ShowWhatsAppService from "../services/WhatsappService/ShowWhatsAppService";
 import ShowQueueService from "../services/QueueService/ShowQueueService";
 import formatBody from "../helpers/Mustache";
+import ListTicketsServiceAdmin from "../services/TicketServices/ListTicketsServiceAdmin";
 
 type IndexQuery = {
   adminFilterOptions: string;
@@ -67,6 +68,19 @@ export const index = async (req: Request, res: Response): Promise<Response> => {
     });
     return res.status(200).json({ tickets, count, hasMore });
   }
+  const { tickets, count, hasMore } = await ListTicketsServiceAdmin({
+    searchParam,
+    pageNumber,
+    status,
+    date,
+    showAll,
+    userId,
+    adminFilter,
+    withUnreadMessages
+  });
+
+  console.log(tickets)
+  return res.status(200).json({ tickets, count, hasMore });
 };
 
 export const store = async (req: Request, res: Response): Promise<Response> => {
