@@ -196,7 +196,6 @@ const TicketListItem = ({ ticket }) => {
 		try {
 			await api.put(`/tickets/${id}`, {
 				status: "pending",
-				noReadMessage: true
 			});
 		} catch (err) {
 			setLoading(false);

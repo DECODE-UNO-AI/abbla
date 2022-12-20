@@ -10,8 +10,10 @@ import SendWhatsAppMessage from "../services/WbotServices/SendWhatsAppMessage";
 import ShowWhatsAppService from "../services/WhatsappService/ShowWhatsAppService";
 import ShowQueueService from "../services/QueueService/ShowQueueService";
 import formatBody from "../helpers/Mustache";
+import ListTicketsServiceAdmin from "../services/TicketServices/ListTicketsServiceAdmin";
 
 type IndexQuery = {
+  adminFilterOptions: string;
   searchParam: string;
   pageNumber: string;
   status: string;
@@ -31,6 +33,7 @@ interface TicketData {
 
 export const index = async (req: Request, res: Response): Promise<Response> => {
   const {
+    adminFilterOptions,
     pageNumber,
     status,
     date,
@@ -42,23 +45,39 @@ export const index = async (req: Request, res: Response): Promise<Response> => {
 
   const userId = req.user.id;
 
-  let queueIds: number[] = [];
+  const userProfile = req.user.profile;
 
-  if (queueIdsStringified) {
-    queueIds = JSON.parse(queueIdsStringified);
+  const adminFilter = adminFilterOptions ? JSON.parse(adminFilterOptions) : [];
+
+  if (userProfile !== "admin" || adminFilter.length === 0) {
+    let queueIds: number[] = [];
+
+    if (queueIdsStringified) {
+      queueIds = JSON.parse(queueIdsStringified);
+    }
+
+    const { tickets, count, hasMore } = await ListTicketsService({
+      searchParam,
+      pageNumber,
+      status,
+      date,
+      showAll,
+      userId,
+      queueIds,
+      withUnreadMessages
+    });
+    return res.status(200).json({ tickets, count, hasMore });
   }
-
-  const { tickets, count, hasMore } = await ListTicketsService({
+  const { tickets, count, hasMore } = await ListTicketsServiceAdmin({
     searchParam,
     pageNumber,
     status,
     date,
     showAll,
     userId,
-    queueIds,
+    adminFilter,
     withUnreadMessages
   });
-
   return res.status(200).json({ tickets, count, hasMore });
 };
 

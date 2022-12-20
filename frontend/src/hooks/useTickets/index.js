@@ -1,4 +1,5 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useContext } from "react";
+import { AuthContext } from "../../context/Auth/AuthContext";
 import { getHoursCloseTicketsAuto } from "../../config";
 import toastError from "../../errors/toastError";
 
@@ -12,11 +13,13 @@ const useTickets = ({
     showAll,
     queueIds,
     withUnreadMessages,
+    adminFilterOptions
 }) => {
     const [loading, setLoading] = useState(true);
     const [hasMore, setHasMore] = useState(false);
     const [tickets, setTickets] = useState([]);
     const [count, setCount] = useState(0);
+
 
     useEffect(() => {
         setLoading(true);
@@ -25,6 +28,7 @@ const useTickets = ({
                 try {
                     const { data } = await api.get("/tickets", {
                         params: {
+                            adminFilterOptions,
                             searchParam,
                             pageNumber,
                             status,
@@ -80,6 +84,7 @@ const useTickets = ({
         showAll,
         queueIds,
         withUnreadMessages,
+        adminFilterOptions
     ])
 
     return { tickets, loading, hasMore, count };
