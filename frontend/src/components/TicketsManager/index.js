@@ -25,7 +25,7 @@ import TabPanel from "../TabPanel";
 import { TagsFilter } from "../TagsFilter";
 import { Can } from "../Can";
 import TicketsQueueSelect from "../TicketsQueueSelect";
-import useQueues from "../../hooks/useQueues";
+// import useQueues from "../../hooks/useQueues";
 import api from "../../services/api";
 
 
@@ -127,7 +127,7 @@ const TicketsManager = () => {
 
   const [adminFilterOptions, setAdminFilterOptions] = useState([])
 
-  const { findAll: findAllQueues } = useQueues();
+  // const { findAll: findAllQueues } = useQueues();
 
   const queuesChildren =  user?.queues.map((queue) => { return {value: `${queue.id}`, label: queue.name}})
 
@@ -180,6 +180,8 @@ const TicketsManager = () => {
       }, 1000)
     }
 
+
+    // Getting queues from api
     /* if(targetOption.value === 'queue'){
       let queuesChildren
       if(user?.profile === 'admin'){
