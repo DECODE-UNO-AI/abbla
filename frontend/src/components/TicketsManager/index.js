@@ -129,12 +129,14 @@ const TicketsManager = () => {
 
   const { findAll: findAllQueues } = useQueues();
 
+  const queuesChildren =  user?.queues.map((queue) => { return {value: `${queue.id}`, label: queue.name}})
+
   const data = 
     [
       {
         value: 'queue',
         label: 'Setor',
-        isLeaf: false
+        children: queuesChildren,
       },
       {
         value: 'atendente',
@@ -178,7 +180,7 @@ const TicketsManager = () => {
       }, 1000)
     }
 
-    if(targetOption.value === 'queue'){
+    /* if(targetOption.value === 'queue'){
       let queuesChildren
       if(user?.profile === 'admin'){
         const list = await findAllQueues();
@@ -193,7 +195,7 @@ const TicketsManager = () => {
     
         setOptions([...options]);
       }, 1000)
-    }
+    } */
 
   }
 
