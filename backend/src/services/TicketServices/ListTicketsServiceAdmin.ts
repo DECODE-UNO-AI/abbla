@@ -40,6 +40,9 @@ const ListTicketsServiceAdmin = async ({
     status: "pending"
   };
 
+  const user = await ShowUserService(userId);
+  const currentUserQueues = user.queues.map(q => q.id);
+  // console.log(currentUserQueues);
   // Queue filter
   const queues = adminFilter.filter(e => e.includes("queue"));
   let filterQueues;
@@ -58,6 +61,11 @@ const ListTicketsServiceAdmin = async ({
         ...whereCondition,
         queueId: { [Op.or]: filterQueues }
       };
+    } else {
+      whereCondition = {
+        ...whereCondition,
+        queueId: { [Op.or]: currentUserQueues }
+      };
     }
   }
 
@@ -68,7 +76,8 @@ const ListTicketsServiceAdmin = async ({
       whereCondition = { queueId: { [Op.or]: [filterQueues] } };
     } else {
       whereCondition = {[Op.or]: [{ userId }, { status: "pending" }],
-        status: "pending"
+        status: "pending",
+        queueId: currentUserQueues
       };
     }
   }
@@ -193,7 +202,6 @@ const ListTicketsServiceAdmin = async ({
   }
 
   if (withUnreadMessages === "true") {
-    const user = await ShowUserService(userId);
     const userQueueIds = user.queues.map(queue => queue.id);
 
     whereCondition = {
@@ -205,7 +213,7 @@ const ListTicketsServiceAdmin = async ({
 
   const limit = 40;
   const offset = limit * (+pageNumber - 1);
-  console.log(whereCondition)
+
   const { count, rows: tickets } = await Ticket.findAndCountAll({
     where: whereCondition,
     include: includeCondition,
