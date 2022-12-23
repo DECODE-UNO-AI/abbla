@@ -22,6 +22,7 @@ import { Cascader } from 'antd'
 import NewTicketModal from "../NewTicketModal";
 import TicketsList from "../TicketsList";
 import TabPanel from "../TabPanel";
+import FilterComponent from "../FilterComponent";
 import { TagsFilter } from "../TagsFilter";
 import { Can } from "../Can";
 import TicketsQueueSelect from "../TicketsQueueSelect";
@@ -252,6 +253,7 @@ const TicketsManager = () => {
           value={searchParam}
           onChange={handleSearch}
         />
+        <FilterComponent user={user} />
       </Paper>
       <Paper elevation={0} square className={classes.tabsHeader}>
         <Tabs
