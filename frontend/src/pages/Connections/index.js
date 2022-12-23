@@ -163,14 +163,14 @@ const Connections = () => {
 			});
 		}
 
-		if (action === "delete") {
+		/* if (action === "delete") {
 			setConfirmModalInfo({
 				action: action,
 				title: i18n.t("connections.confirmationModal.deleteTitle"),
 				message: i18n.t("connections.confirmationModal.deleteMessage"),
 				whatsAppId: whatsAppId,
 			});
-		}
+		} */
 		setConfirmModalOpen(true);
 	};
 
@@ -183,14 +183,14 @@ const Connections = () => {
 			}
 		}
 
-		if (confirmModalInfo.action === "delete") {
+		/* if (confirmModalInfo.action === "delete") {
 			try {
 				await api.delete(`/whatsapp/${confirmModalInfo.whatsAppId}`);
 				toast.success(i18n.t("connections.toasts.deleted"));
 			} catch (err) {
 				toastError(err);
 			}
-		}
+		} */
 
 		setConfirmModalInfo(confirmationModalInitialState);
 	};
@@ -393,14 +393,14 @@ const Connections = () => {
 													<Edit color="secondary" />
 												</IconButton>
 
-												<IconButton
+												{/* <IconButton
 													size="small"
 													onClick={e => {
 														handleOpenConfirmationModal("delete", whatsApp.id);
 													}}
 												>
 													<DeleteOutline color="secondary" />
-												</IconButton>
+												</IconButton> */}
 											</TableCell>
 										</TableRow>
 									))}
