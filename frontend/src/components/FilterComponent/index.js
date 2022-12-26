@@ -189,6 +189,7 @@ const FilterComponent = ({ user, onSubmit }) => {
                 <div className={classes.filterOption}>
                     <InputLabel style={{ marginBottom: 4 }}>Setor</InputLabel>
                     <Select
+                        optionFilterProp="label"
                         onChange={handleOnSetorChange}
                         value={filters.queue}
                         mode="multiple"
@@ -203,6 +204,7 @@ const FilterComponent = ({ user, onSubmit }) => {
                 <div className={classes.filterOption}>
                     <InputLabel style={{ marginBottom: 4 }}>Atendente</InputLabel>
                     <Select
+                        optionFilterProp="label"
                         onChange={handleOnAtendenteChange}
                         value={filters.atendente}
                         mode="multiple"
@@ -217,6 +219,7 @@ const FilterComponent = ({ user, onSubmit }) => {
                 <div className={classes.filterOption}>
                     <InputLabel style={{ marginBottom: 4 }}>Conexão</InputLabel>
                     <Select
+                        optionFilterProp="label"
                         onChange={handleOnConnectionChange}
                         value={filters.connection}
                         mode="multiple"
