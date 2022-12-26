@@ -68,6 +68,17 @@ export const index = async (req: Request, res: Response): Promise<Response> => {
     });
     return res.status(200).json({ tickets, count, hasMore });
   }
+  const { tickets, count, hasMore } = await ListTicketsServiceAdmin({
+    searchParam,
+    pageNumber,
+    status,
+    date,
+    showAll,
+    userId,
+    adminFilter,
+    withUnreadMessages
+  });
+  return res.status(200).json({ tickets, count, hasMore });
 
   /* const userId = req.user.id;
 

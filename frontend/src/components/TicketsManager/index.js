@@ -225,28 +225,29 @@ const TicketsManager = () => {
             {i18n.t("ticketsManager.buttons.newTicket")}
           </Button>
         </div>
-        <Can
-          style={{ flex: 1}}
-          role={user.profile}
-          perform="tickets-manager:showall"
-          yes={() => (
-            <FormControlLabel
-              label={i18n.t("tickets.buttons.showAll")}
-              labelPlacement="start"
-              control={
-                <Switch
-                  size="small"
-                  checked={showAllTickets}
-                  onChange={() =>
-                    setShowAllTickets((prevState) => !prevState)
-                  }
-                  name="showAllTickets"
-                  color="primary"
-                />
-              }
-            />
-          )}
-        />
+        <div style={{ flex: 1, display: "flex", justifyContent: "center", alignItems: "center"}}>
+          <Can
+            role={user.profile}
+            perform="tickets-manager:showall"
+            yes={() => (
+              <FormControlLabel
+                label={i18n.t("tickets.buttons.showAll")}
+                labelPlacement="start"
+                control={
+                  <Switch
+                    size="small"
+                    checked={showAllTickets}
+                    onChange={() =>
+                      setShowAllTickets((prevState) => !prevState)
+                    }
+                    name="showAllTickets"
+                    color="primary"
+                  />
+                }
+              />
+            )}
+          />
+        </div>
         {user?.profile === 'admin' ?
         <div style={{ flex: 1 }}/>
         :
