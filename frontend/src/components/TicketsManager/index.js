@@ -17,17 +17,15 @@ import {
   MoveToInbox,
   Search
 } from "@material-ui/icons";
-import { Cascader } from 'antd'
 
 import NewTicketModal from "../NewTicketModal";
 import TicketsList from "../TicketsList";
 import TabPanel from "../TabPanel";
 import FilterComponent from "../FilterComponent";
-import { TagsFilter } from "../TagsFilter";
+// import { TagsFilter } from "../TagsFilter";
 import { Can } from "../Can";
 import TicketsQueueSelect from "../TicketsQueueSelect";
 // import useQueues from "../../hooks/useQueues";
-import api from "../../services/api";
 
 
 
@@ -121,86 +119,12 @@ const TicketsManager = () => {
 
   const [, setOpenCount] = useState(0);
   const [pendingCount, setPendingCount] = useState(0);
-  const [selectedTags, setSelectedTags] = useState([]);
+  // const [selectedTags, setSelectedTags] = useState([]);
 
   const userQueueIds = user.queues.map((q) => q.id);
   const [selectedQueueIds, setSelectedQueueIds] = useState(userQueueIds || []);
 
   const [adminFilterOptions, setAdminFilterOptions] = useState([])
-
-  // const { findAll: findAllQueues } = useQueues();
-
-  const queuesChildren =  user?.queues.map((queue) => { return {value: `${queue.id}`, label: queue.name}})
-
-  const data = 
-    [
-      {
-        value: 'queue',
-        label: 'Setor',
-        children: queuesChildren,
-      },
-      {
-        value: 'atendente',
-        label: 'Atendente',
-        isLeaf: false,
-      },
-      {
-        value: 'conection',
-        label: 'Conexão',
-        isLeaf: false,
-      },
-      
-    ]
-  
-  const [options, setOptions] = useState(data)
-
-  const loadData = async (selectedOptions) => {
-    const targetOption = selectedOptions[selectedOptions.length - 1];
-    targetOption.loading = true;
-    if(targetOption.value === "atendente") {
-      const { data } = await api.get("/users/", {
-            params: { searchParam },
-          });
-      const aten = data.users.map((e) => {return { value: e.id, label: e.name}})
-      setTimeout(()=> {
-        targetOption.loading = false;
-        targetOption.children = aten
-        
-        setOptions([...options]);
-      }, 1000)
-    }
-
-    if(targetOption.value === 'conection'){
-      const { data } = await api.get("/whatsapp/");
-      const cons = data.map((con) => {return { value: con.id, label: con.name}})
-      setTimeout(()=> {
-        targetOption.loading = false;
-        targetOption.children = cons
-    
-        setOptions([...options]);
-      }, 1000)
-    }
-
-
-    // Getting queues from api
-    /* if(targetOption.value === 'queue'){
-      let queuesChildren
-      if(user?.profile === 'admin'){
-        const list = await findAllQueues();
-        queuesChildren = list.map((queue) => { return {value: `${queue.id}`, label: queue.name}})
-      } else {
-        queuesChildren = user?.queues.map((queue) => { return {value: `${queue.id}`, label: queue.name}})
-      }
-  
-      setTimeout(()=> {
-        targetOption.loading = false;
-        targetOption.children = queuesChildren
-    
-        setOptions([...options]);
-      }, 1000)
-    } */
-
-  }
 
   useEffect(() => {
     if (user.profile.toUpperCase() === "ADMIN") {
@@ -222,11 +146,6 @@ const TicketsManager = () => {
     }
 
   };
-
-  const handleSelectedTags = (selecteds) => {
-    const tags = selecteds.map(t => t.id);
-    setSelectedTags(tags);
-  }
 
   const handleChangeTab = (e, newValue) => {
     setTab(newValue);
@@ -293,14 +212,17 @@ const TicketsManager = () => {
         </Tabs>
       </Paper>
       <Paper square elevation={0} className={classes.ticketOptionsBox}>
-        <Button
-          variant="outlined"
-          color="primary"
-          onClick={() => setNewTicketModalOpen(true)}
-        >
-          {i18n.t("ticketsManager.buttons.newTicket")}
-        </Button>
+        <div style={{ flex: 1}}>
+          <Button
+            variant="outlined"
+            color="primary"
+            onClick={() => setNewTicketModalOpen(true)}
+          >
+            {i18n.t("ticketsManager.buttons.newTicket")}
+          </Button>
+        </div>
         <Can
+          style={{ flex: 1}}
           role={user.profile}
           perform="tickets-manager:showall"
           yes={() => (
@@ -322,7 +244,7 @@ const TicketsManager = () => {
           )}
         />
         {user?.profile === 'admin' ?
-        <Cascader multiple options={options} onChange={(e)=> setAdminFilterOptions(e)} placeholder="Filtros" loadData={loadData}/>
+        <div style={{ flex: 1 }}/>
         :
         <TicketsQueueSelect
           style={{ marginLeft: 6 }}
@@ -334,7 +256,7 @@ const TicketsManager = () => {
 
       </Paper>
       <TabPanel value={tab} name="open" className={classes.ticketsWrapper}>
-      <TagsFilter onFiltered={handleSelectedTags} />
+      {/* <TagsFilter onFiltered={handleSelectedTags} /> */}
         <Paper className={classes.ticketsWrapper}>
           <TicketsList
             status="open"
@@ -356,7 +278,7 @@ const TicketsManager = () => {
       </TabPanel>
 
       <TabPanel value={tab} name="pending" className={classes.ticketsWrapper}>
-      <TagsFilter onFiltered={handleSelectedTags} />
+      {/* <TagsFilter onFiltered={handleSelectedTags} /> */}
         <TicketsList
           status="pending"
           showAll={true}
@@ -368,7 +290,7 @@ const TicketsManager = () => {
 
 
       <TabPanel value={tab} name="closed" className={classes.ticketsWrapper}>
-      <TagsFilter onFiltered={handleSelectedTags} />
+      {/* <TagsFilter onFiltered={handleSelectedTags} /> */}
         <TicketsList
           status="closed"
           showAll={true}
@@ -377,10 +299,10 @@ const TicketsManager = () => {
         />
       </TabPanel>
       <TabPanel value={tab} name="search" className={classes.ticketsWrapper}>
-      <TagsFilter onFiltered={handleSelectedTags} />
+      {/* <TagsFilter onFiltered={handleSelectedTags} /> */}
         <TicketsList
           searchParam={searchParam}
-          tags={selectedTags}
+          // tags={selectedTags}
           showAll={true}
           selectedQueueIds={selectedQueueIds}
           adminFilterOptions={adminFilterOptions}
