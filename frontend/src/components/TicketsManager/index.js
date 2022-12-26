@@ -124,7 +124,7 @@ const TicketsManager = () => {
   const userQueueIds = user.queues.map((q) => q.id);
   const [selectedQueueIds, setSelectedQueueIds] = useState(userQueueIds || []);
 
-  const [adminFilterOptions, setAdminFilterOptions] = useState([])
+  const [adminFilterOptions, setAdminFilterOptions] = useState({})
 
   useEffect(() => {
     if (user.profile.toUpperCase() === "ADMIN") {
@@ -157,6 +157,10 @@ const TicketsManager = () => {
     }
   };
 
+  const handleOnFilterSubmit = (value) => {
+    setAdminFilterOptions(value)
+  }
+
   return (
     <Paper elevation={0} variant="outlined" className={classes.ticketsWrapper}>
       <NewTicketModal
@@ -172,7 +176,7 @@ const TicketsManager = () => {
           value={searchParam}
           onChange={handleSearch}
         />
-        <FilterComponent user={user} />
+        <FilterComponent user={user} onSubmit={handleOnFilterSubmit}/>
       </Paper>
       <Paper elevation={0} square className={classes.tabsHeader}>
         <Tabs

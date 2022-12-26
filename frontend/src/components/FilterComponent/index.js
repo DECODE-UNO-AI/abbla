@@ -78,8 +78,8 @@ const reducer = (state, action) => {
     }
     if(action.type === "CHANGE_TAGS") {
         const tags = action.payload
-        //const tagsId = tags.map(tag => tag.id)
-        state.tag = tags
+        const tagsId = tags.map(tag => tag.id)
+        state.tag = tagsId
         return {...state}
     }
     if(action.type === "RESET_FILTERS") {
@@ -91,14 +91,14 @@ const reducer = (state, action) => {
 
 const { RangePicker } = DatePicker;
 
-const FilterComponent = ({user}) => {
+const FilterComponent = ({ user, onSubmit }) => {
     const classes = useStyles()
 
-    const [isModalOpen, setIsModalOpen] = useState(true)
+    const [isModalOpen, setIsModalOpen] = useState(false)
     const [setores, setSetores] = useState([])
     const [atendentes, setAtendentes] = useState([])
     const [connections, setConnections] = useState([])
-    const [selecteds, setSelecteds] = useState([]);
+    const [selectedsTags, setSelectedsTags] = useState([]);
 
     const [filters, dispatch] = useReducer(reducer, {});
 
@@ -149,8 +149,14 @@ const FilterComponent = ({user}) => {
     }
 
     const handleOnResetFilters = () =>{
-        setSelecteds([])
+        setSelectedsTags([])
         dispatch({ type: "RESET_FILTERS" })
+        onSubmit([])
+    }
+
+    const handleOnSubmit = () => {
+        onSubmit(filters)
+        setIsModalOpen(false)
     }
 
     return (
@@ -224,7 +230,7 @@ const FilterComponent = ({user}) => {
                     <Divider style={{ padding: 0, marginBottom: 0 }} />
                 <div className={classes.filterOption}>
                     <InputLabel style={{ marginBottom: 4 }}>Tags</InputLabel>
-                    <TagsFilter style={{ padding: 0}} onFiltered={handleOnTagsChange} selecteds={selecteds} setSelecteds={setSelecteds}/>
+                    <TagsFilter style={{ padding: 0}} onFiltered={handleOnTagsChange} selecteds={selectedsTags} setSelecteds={setSelectedsTags}/>
                 </div>
                     <Divider style={{ padding: 0, marginBottom: 0 }} />
                 <div className={classes.filterOption}>
@@ -241,6 +247,7 @@ const FilterComponent = ({user}) => {
 					        className={classes.buttonColorError}
                             color= "primary"
 					        variant="contained"
+                            onClick={handleOnSubmit}
 				        >
 					    filtrar
 				        </Button>
