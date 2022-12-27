@@ -5,14 +5,11 @@ import {
   makeStyles,
   Paper,
   InputLabel,
-  Badge,
-  Tab
 } from "@material-ui/core";
 
 import {
     Tune,
     CloseSharp,
-    HourglassEmptyRounded
 } from "@material-ui/icons";
 import { DatePicker, Space, Divider, Select } from 'antd';
 import { TagsFilter } from "../TagsFilter";
@@ -86,7 +83,6 @@ const reducer = (state, action) => {
         return {...state}
     }
     if(action.type === "RESET_FILTERS") {
-        console.log('aqui')
         const state = {}
         return state
     }
@@ -96,7 +92,6 @@ const { RangePicker } = DatePicker;
 
 const FilterComponent = ({ user, onSubmit }) => {
     const classes = useStyles()
-
     const [isModalOpen, setIsModalOpen] = useState(false)
     const [setores, setSetores] = useState([])
     const [atendentes, setAtendentes] = useState([])

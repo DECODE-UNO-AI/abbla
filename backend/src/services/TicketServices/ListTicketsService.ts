@@ -182,8 +182,6 @@ const ListTicketsService = async ({
 
   const hasMore = count > offset + tickets.length;
 
-  console.log(tickets)
-
   return {
     tickets,
     count,
