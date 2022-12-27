@@ -1,4 +1,4 @@
-import { Op, fn, where, col, Filterable, Includeable, Model } from "sequelize";
+import { Op, fn, where, col, Filterable, Includeable } from "sequelize";
 import { startOfDay, endOfDay, parseISO } from "date-fns";
 
 import Ticket from "../../models/Ticket";
@@ -66,7 +66,6 @@ const ListTicketsServiceAdmin = async ({
   }
 
   // Show All filter
-
   if (showAll === "true") {
     if (filterQueues !== "all") {
       whereCondition = { queueId: { [Op.or]: filterQueues } };
@@ -125,6 +124,7 @@ const ListTicketsServiceAdmin = async ({
     }
   ];
 
+  // Status Filter
   if (status) {
     whereCondition = {
       ...whereCondition,
@@ -170,8 +170,7 @@ const ListTicketsServiceAdmin = async ({
     ];
   }
 
-  console.log(includeCondition);
-
+  // Search Filter
   if (searchParam) {
     const sanitizedSearchParam = searchParam.toLocaleLowerCase().trim();
 
@@ -215,10 +214,16 @@ const ListTicketsServiceAdmin = async ({
     };
   }
 
-  if (date) {
+  // Filter Date
+  const betweenDate = adminFilter.date;
+  if (betweenDate) {
     whereCondition = {
+      ...whereCondition,
       createdAt: {
-        [Op.between]: [+startOfDay(parseISO(date)), +endOfDay(parseISO(date))]
+        [Op.between]: [
+          +startOfDay(parseISO(betweenDate[0])),
+          +endOfDay(parseISO(betweenDate[1]))
+        ]
       }
     };
   }
@@ -246,8 +251,6 @@ const ListTicketsServiceAdmin = async ({
   });
 
   const hasMore = count > offset + tickets.length;
-
-  //console.log(tickets[0].contact.contactTags);
 
   return {
     tickets,

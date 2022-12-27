@@ -4,12 +4,15 @@ import {
   Button,
   makeStyles,
   Paper,
-  InputLabel
+  InputLabel,
+  Badge,
+  Tab
 } from "@material-ui/core";
 
 import {
     Tune,
-    CloseSharp
+    CloseSharp,
+    HourglassEmptyRounded
 } from "@material-ui/icons";
 import { DatePicker, Space, Divider, Select } from 'antd';
 import { TagsFilter } from "../TagsFilter";
@@ -99,6 +102,7 @@ const FilterComponent = ({ user, onSubmit }) => {
     const [atendentes, setAtendentes] = useState([])
     const [connections, setConnections] = useState([])
     const [selectedsTags, setSelectedsTags] = useState([]);
+    const [numberOfFilters, setNumberOfFilters] = useState(0)
 
     const [filters, dispatch] = useReducer(reducer, {});
 
@@ -125,10 +129,18 @@ const FilterComponent = ({ user, onSubmit }) => {
     }, [])
 
     useEffect(() => {
-        console.log(filters)
+        let count = 0
+        // eslint-disable-next-line array-callback-return
+        Object.values(filters).map((value) => {
+            if(value && value.length > 0){
+                count+=1
+            }
+        })
+        setNumberOfFilters(count)
     }, [filters])
 
     const handleOnDateChange = (e) => {
+        setNumberOfFilters(e => e++);
         dispatch({ type: "CHANGE_DATE", payload: e });
     }
 
@@ -161,8 +173,22 @@ const FilterComponent = ({ user, onSubmit }) => {
 
     return (
       <>
-      <Paper className={classes.container}>
-          <Tune onClick={() => setIsModalOpen(true)} className={classes.icon}/>
+      <Paper className={classes.container}> 
+            <Tune onClick={() => setIsModalOpen(true)} className={classes.icon}/>
+            {   numberOfFilters > 0 ?
+                <div 
+                    style={{ position: "absolute", top: 4, right: 4, borderRadius: 9999, 
+                    padding: 2, backgroundColor: "#F50057", color: "#FFF", width: 17, height: 17,
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    fontSize: 12,
+                    fontWeight: "bold"
+                    }}>
+                    {numberOfFilters}
+                </div> :
+                ""
+            }
           {isModalOpen ? 
             <Paper style={{position: "absolute", zIndex: 2, top: 0, right: 0, width: "100%", minHeight: 300}}>
                 <CloseSharp className={classes.closeIcon} onClick={() => setIsModalOpen(false)}/>

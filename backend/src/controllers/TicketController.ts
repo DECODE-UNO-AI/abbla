@@ -21,6 +21,7 @@ type IndexQuery = {
   showAll: string;
   withUnreadMessages: string;
   queueIds: string;
+  selectedTags: string;
 };
 
 interface TicketData {
@@ -40,7 +41,8 @@ export const index = async (req: Request, res: Response): Promise<Response> => {
     searchParam,
     showAll,
     queueIds: queueIdsStringified,
-    withUnreadMessages
+    withUnreadMessages,
+    selectedTags
   } = req.query as IndexQuery;
 
   const userId = req.user.id;
@@ -51,6 +53,8 @@ export const index = async (req: Request, res: Response): Promise<Response> => {
 
   if (userProfile !== "admin" || Object.keys(adminFilter).length === 0) {
     let queueIds: number[] = [];
+
+    const tagSelect = selectedTags ? JSON.parse(selectedTags) : [];
 
     if (queueIdsStringified) {
       queueIds = JSON.parse(queueIdsStringified);
@@ -64,7 +68,8 @@ export const index = async (req: Request, res: Response): Promise<Response> => {
       showAll,
       userId,
       queueIds,
-      withUnreadMessages
+      withUnreadMessages,
+      tagSelect
     });
     return res.status(200).json({ tickets, count, hasMore });
   }
@@ -79,43 +84,6 @@ export const index = async (req: Request, res: Response): Promise<Response> => {
     withUnreadMessages
   });
   return res.status(200).json({ tickets, count, hasMore });
-
-  /* const userId = req.user.id;
-
-  const userProfile = req.user.profile;
-
-  const adminFilter = adminFilterOptions ? JSON.parse(adminFilterOptions) : [];
-
-  if (userProfile !== "admin" || adminFilter.length === 0) {
-    let queueIds: number[] = [];
-
-    if (queueIdsStringified) {
-      queueIds = JSON.parse(queueIdsStringified);
-    }
-
-    const { tickets, count, hasMore } = await ListTicketsService({
-      searchParam,
-      pageNumber,
-      status,
-      date,
-      showAll,
-      userId,
-      queueIds,
-      withUnreadMessages
-    });
-    return res.status(200).json({ tickets, count, hasMore });
-  }
-  const { tickets, count, hasMore } = await ListTicketsServiceAdmin({
-    searchParam,
-    pageNumber,
-    status,
-    date,
-    showAll,
-    userId,
-    adminFilter,
-    withUnreadMessages
-  });
-  return res.status(200).json({ tickets, count, hasMore }); */
 };
 
 export const store = async (req: Request, res: Response): Promise<Response> => {

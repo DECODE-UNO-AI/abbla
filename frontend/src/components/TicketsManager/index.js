@@ -22,7 +22,7 @@ import NewTicketModal from "../NewTicketModal";
 import TicketsList from "../TicketsList";
 import TabPanel from "../TabPanel";
 import FilterComponent from "../FilterComponent";
-// import { TagsFilter } from "../TagsFilter";
+import { TagsFilter } from "../TagsFilter";
 import { Can } from "../Can";
 import TicketsQueueSelect from "../TicketsQueueSelect";
 // import useQueues from "../../hooks/useQueues";
@@ -119,7 +119,8 @@ const TicketsManager = () => {
 
   const [, setOpenCount] = useState(0);
   const [pendingCount, setPendingCount] = useState(0);
-  // const [selectedTags, setSelectedTags] = useState([]);
+  const [selectedTags, setSelectedTags] = useState([]);
+  const [tagsId, setTagsId] = useState([])
 
   const userQueueIds = user.queues.map((q) => q.id);
   const [selectedQueueIds, setSelectedQueueIds] = useState(userQueueIds || []);
@@ -161,6 +162,12 @@ const TicketsManager = () => {
     setAdminFilterOptions(value)
   }
 
+  const handleOnUserSelectTags = (e) => {
+    const tags = e.map(tag => tag.id)
+    setTagsId(tags)
+    setSelectedTags(e)
+  }
+
   return (
     <Paper elevation={0} variant="outlined" className={classes.ticketsWrapper}>
       <NewTicketModal
@@ -176,7 +183,11 @@ const TicketsManager = () => {
           value={searchParam}
           onChange={handleSearch}
         />
-        <FilterComponent user={user} onSubmit={handleOnFilterSubmit}/>
+        {user?.profile === "admin" ? 
+          <FilterComponent user={user} onSubmit={handleOnFilterSubmit}/>
+          :
+          ""
+        }
       </Paper>
       <Paper elevation={0} square className={classes.tabsHeader}>
         <Tabs
@@ -261,7 +272,11 @@ const TicketsManager = () => {
 
       </Paper>
       <TabPanel value={tab} name="open" className={classes.ticketsWrapper}>
-      {/* <TagsFilter onFiltered={handleSelectedTags} /> */}
+      {user?.profile !== "admin" ?
+        <TagsFilter onFiltered={handleOnUserSelectTags} selecteds={selectedTags} setSelecteds={setSelectedTags}/>
+        :
+        ""
+      }
         <Paper className={classes.ticketsWrapper}>
           <TicketsList
             status="open"
@@ -270,6 +285,7 @@ const TicketsManager = () => {
             updateCount={(val) => setOpenCount(val)}
             style={applyPanelStyle("open")}
             adminFilterOptions={adminFilterOptions}
+            selectedTags={tagsId}
           />
           <TicketsList
             status="pending"
@@ -278,29 +294,40 @@ const TicketsManager = () => {
             showAll={showAllTickets}
             style={applyPanelStyle("pending")}
             adminFilterOptions={adminFilterOptions}
+            selectedTags={tagsId}
           />
         </Paper>
       </TabPanel>
 
       <TabPanel value={tab} name="pending" className={classes.ticketsWrapper}>
-      {/* <TagsFilter onFiltered={handleSelectedTags} /> */}
+      {user?.profile !== "admin" ?
+        <TagsFilter onFiltered={handleOnUserSelectTags} selecteds={selectedTags} setSelecteds={setSelectedTags}/>
+        :
+        ""
+      }
         <TicketsList
           status="pending"
           showAll={true}
           selectedQueueIds={selectedQueueIds}
           adminFilterOptions={adminFilterOptions}
+          selectedTags={tagsId}
         />
       </TabPanel>
 
 
 
       <TabPanel value={tab} name="closed" className={classes.ticketsWrapper}>
-      {/* <TagsFilter onFiltered={handleSelectedTags} /> */}
+      {user?.profile !== "admin" ?
+        <TagsFilter onFiltered={handleOnUserSelectTags} selecteds={selectedTags} setSelecteds={setSelectedTags}/>
+        :
+        ""
+      }
         <TicketsList
           status="closed"
           showAll={true}
           selectedQueueIds={selectedQueueIds}
           adminFilterOptions={adminFilterOptions}
+          selectedTags={tagsId}
         />
       </TabPanel>
       <TabPanel value={tab} name="search" className={classes.ticketsWrapper}>
@@ -310,7 +337,7 @@ const TicketsManager = () => {
           // tags={selectedTags}
           showAll={true}
           selectedQueueIds={selectedQueueIds}
-          adminFilterOptions={adminFilterOptions}
+          //adminFilterOptions={adminFilterOptions}
         />
       </TabPanel>
     </Paper>

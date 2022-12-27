@@ -160,7 +160,7 @@ const TicketsList = (props) => {
 		adminFilterOptions,
 		updateCount,
 		style,
-		tags,
+		selectedTags
 	} = props;
 	const classes = useStyles();
 	const [pageNumber, setPageNumber] = useState(1);
@@ -171,14 +171,14 @@ const TicketsList = (props) => {
 	useEffect(() => {
 		dispatch({ type: "RESET" }); //restart the tickets
 		setPageNumber(1);
-	}, [status, searchParam, dispatch, showAll, selectedQueueIds, tags, adminFilterOptions]);
+	}, [status, searchParam, dispatch, showAll, selectedQueueIds, selectedTags, adminFilterOptions]);
 
 	const { tickets, hasMore, loading } = useTickets({
 		pageNumber,
 		searchParam,
 		status,
 		showAll,
-		tags: JSON.stringify(tags),
+		selectedTags: JSON.stringify(selectedTags),
 		queueIds: JSON.stringify(selectedQueueIds),
 		adminFilterOptions: JSON.stringify(adminFilterOptions),
 	});
