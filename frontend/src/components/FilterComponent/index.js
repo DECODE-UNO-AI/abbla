@@ -5,6 +5,8 @@ import {
   makeStyles,
   Paper,
   InputLabel,
+  Switch,
+  FormControlLabel
 } from "@material-ui/core";
 
 import {
@@ -12,6 +14,7 @@ import {
     CloseSharp,
 } from "@material-ui/icons";
 import { DatePicker, Space, Divider, Select } from 'antd';
+import { Can } from "../Can";
 import { TagsFilter } from "../TagsFilter";
 
 import api from "../../services/api";
@@ -98,6 +101,7 @@ const FilterComponent = ({ user, onSubmit }) => {
     const [connections, setConnections] = useState([])
     const [selectedsTags, setSelectedsTags] = useState([]);
     const [numberOfFilters, setNumberOfFilters] = useState(0)
+    const [lastDateMessage, setLastDateMessage] = useState(false)
 
     const [filters, dispatch] = useReducer(reducer, {});
 
@@ -162,7 +166,7 @@ const FilterComponent = ({ user, onSubmit }) => {
     }
 
     const handleOnSubmit = () => {
-        onSubmit(filters)
+        onSubmit({...filters, dateOrder: lastDateMessage ? "lastMessage" : "createTicket"})
         setIsModalOpen(false)
     }
 
@@ -189,11 +193,33 @@ const FilterComponent = ({ user, onSubmit }) => {
                 <CloseSharp className={classes.closeIcon} onClick={() => setIsModalOpen(false)}/>
                 <div className={classes.modalTitle}>
                     <Tune style={{ display: "flex", alignItems: "center", marginRight: 4, fontSize: 25 }}/>
-					<h1> Filtros</h1>
+					<h1> Filtros</h1>         
 				</div>
                 <Divider style={{ marginTop: -20 }} />
                 <div className={classes.filterOption}>
-                    <InputLabel style={{ marginBottom: 4 }}>Data</InputLabel>
+                    <InputLabel style={{ marginBottom: 4, display: "flex", justifyContent: "space-between" }}>Data 
+                        <Can
+                            role={user.profile}
+                            perform="tickets-manager:showall"
+                            yes={() => (
+                              <FormControlLabel
+                                label={"Filtrar pela última atualização"}
+                                labelPlacement="start"
+                                control={
+                                  <Switch
+                                    size="small"
+                                    checked={lastDateMessage}
+                                    onChange={() =>
+                                        setLastDateMessage((prevState) => !prevState)
+                                    }
+                                    name="lastDateMessage"
+                                    color="primary"
+                                  />
+                                }
+                              />
+                            )}
+                        />   
+                    </InputLabel>
                     <Space direction="vertical" style={{ width: "100%"}}>
                         <RangePicker
                             placeholder={["Data inicial", "Data final"]}

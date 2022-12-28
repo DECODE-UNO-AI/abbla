@@ -216,16 +216,30 @@ const ListTicketsServiceAdmin = async ({
 
   // Filter Date
   const betweenDate = adminFilter.date;
+  const order = adminFilter.dateOrder;
+  console.log(order);
   if (betweenDate) {
-    whereCondition = {
-      ...whereCondition,
-      createdAt: {
-        [Op.between]: [
-          +startOfDay(parseISO(betweenDate[0])),
-          +endOfDay(parseISO(betweenDate[1]))
-        ]
-      }
-    };
+    if (order === "createTicket" || order === "" || !order) {
+      whereCondition = {
+        ...whereCondition,
+        createdAt: {
+          [Op.between]: [
+            +startOfDay(parseISO(betweenDate[0])),
+            +endOfDay(parseISO(betweenDate[1]))
+          ]
+        }
+      };
+    } else {
+      whereCondition = {
+        ...whereCondition,
+        updatedAt: {
+          [Op.between]: [
+            +startOfDay(parseISO(betweenDate[0])),
+            +endOfDay(parseISO(betweenDate[1]))
+          ]
+        }
+      };
+    }
   }
 
   if (withUnreadMessages === "true") {
