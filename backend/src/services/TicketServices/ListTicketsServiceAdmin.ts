@@ -24,6 +24,7 @@ interface Response {
   tickets: Ticket[];
   count: number;
   hasMore: boolean;
+  allTicketsCount: number;
 }
 
 const ListTicketsServiceAdmin = async ({
@@ -217,7 +218,6 @@ const ListTicketsServiceAdmin = async ({
   // Filter Date
   const betweenDate = adminFilter.date;
   const order = adminFilter.dateOrder;
-  console.log(order);
   if (betweenDate) {
     if (order === "createTicket" || order === "" || !order) {
       whereCondition = {
@@ -264,12 +264,21 @@ const ListTicketsServiceAdmin = async ({
     order: [["updatedAt", "DESC"]]
   });
 
+  let allTicketsCount = 0;
+
+  if (status !== "closed") {
+    allTicketsCount = await Ticket.count({
+      where: whereCondition
+    });
+  }
+
   const hasMore = count > offset + tickets.length;
 
   return {
     tickets,
     count,
-    hasMore
+    hasMore,
+    allTicketsCount
   };
 };
 
