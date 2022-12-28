@@ -7,6 +7,7 @@ import Message from "../../models/Message";
 import Queue from "../../models/Queue";
 import ShowUserService from "../UserServices/ShowUserService";
 import Whatsapp from "../../models/Whatsapp";
+import ContactTag from "../../models/ContactTag";
 
 interface Request {
   searchParam?: string;
@@ -16,7 +17,7 @@ interface Request {
   showAll?: string;
   userId: string;
   withUnreadMessages?: string;
-  adminFilter: Array<string[]>;
+  adminFilter: any;
 }
 
 interface Response {
@@ -42,95 +43,75 @@ const ListTicketsServiceAdmin = async ({
 
   const user = await ShowUserService(userId);
   const currentUserQueues = user.queues.map(q => q.id);
-  // console.log(currentUserQueues);
+
   // Queue filter
-  const queues = adminFilter.filter(e => e.includes("queue"));
+  const queues = adminFilter.queue;
   let filterQueues;
-  if (
-    queues.length === 0 ||
-    (queues.length === 1 && queues[0][0] === "queue" && !queues[0][1])
-  ) {
+  if (!queues || queues.length === 0) {
     filterQueues = "all";
   } else {
-    filterQueues = queues.map(e => e[1]);
+    filterQueues = queues;
   }
 
-  if (filterQueues) {
-    if (filterQueues !== "all") {
-      whereCondition = {
-        ...whereCondition,
-        queueId: { [Op.or]: filterQueues }
-      };
-    } else {
-      whereCondition = {
-        ...whereCondition,
-        queueId: { [Op.or]: currentUserQueues }
-      };
-    }
+  if (filterQueues !== "all") {
+    whereCondition = {
+      ...whereCondition,
+      queueId: { [Op.or]: filterQueues }
+    };
+  } else {
+    whereCondition = {
+      ...whereCondition,
+      queueId: { [Op.or]: currentUserQueues }
+    };
   }
 
   // Show All filter
-
   if (showAll === "true") {
     if (filterQueues !== "all") {
-      whereCondition = { queueId: { [Op.or]: [filterQueues] } };
-    } else {
-      whereCondition = {[Op.or]: [{ userId }, { status: "pending" }],
-        status: "pending",
-        queueId: currentUserQueues
-      };
+      whereCondition = { queueId: { [Op.or]: filterQueues } };
     }
+  } else {
+    whereCondition = {
+      [Op.or]: [{ userId }, { status: "pending" }],
+      status: "pending",
+      queueId: filterQueues
+    };
   }
 
   // Atendentes filter
-  const aten = adminFilter.filter(e => e.includes("atendente"));
+  const aten = adminFilter.atendente;
   let filterAten;
-  if (
-    aten.length === 0 ||
-    (aten.length === 1 && aten[0][0] === "atendente" && !aten[0][1])
-  ) {
+  if (!aten || aten.length === 0) {
     filterAten = "all";
   } else {
-    filterAten = aten.map(e => e[1]);
+    filterAten = aten;
   }
 
-  if (filterAten) {
-    if (filterAten !== "all") {
-      whereCondition = {
-        ...whereCondition,
-        userId: { [Op.or]: filterAten }
-      };
-    }
+  if (filterAten !== "all") {
+    whereCondition = {
+      ...whereCondition,
+      userId: { [Op.or]: filterAten }
+    };
   }
 
   // Conexão filter
-  const cons = adminFilter.filter(e => e.includes("conection"));
+  const cons = adminFilter.connection;
   let filterCons;
-  if (
-    cons.length === 0 ||
-    (cons.length === 1 && cons[0][0] === "conection" && !cons[0][1])
-  ) {
+  if (!cons || cons.length === 0) {
     filterCons = "all";
   } else {
-    filterCons = cons.map(e => e[1]);
+    filterCons = cons;
   }
 
-  if (filterCons) {
-    if (filterCons !== "all") {
-      whereCondition = {
-        ...whereCondition,
-        whatsappId: { [Op.or]: filterCons }
-      };
-    }
+  if (filterCons !== "all") {
+    whereCondition = {
+      ...whereCondition,
+      whatsappId: { [Op.or]: filterCons }
+    };
   }
 
   let includeCondition: Includeable[];
   includeCondition = [
-    {
-      model: Contact,
-      as: "contact",
-      attributes: ["id", "name", "number", "profilePicUrl"]
-    },
     {
       model: Queue,
       as: "queue",
@@ -143,6 +124,7 @@ const ListTicketsServiceAdmin = async ({
     }
   ];
 
+  // Status Filter
   if (status) {
     whereCondition = {
       ...whereCondition,
@@ -150,6 +132,45 @@ const ListTicketsServiceAdmin = async ({
     };
   }
 
+  // Tags Filter
+  const selectedTags = adminFilter.tag;
+  let filterTags;
+
+  if (!selectedTags || selectedTags.length === 0) {
+    filterTags = "all";
+  } else {
+    filterTags = selectedTags;
+  }
+
+  if (filterTags !== "all") {
+    includeCondition = [
+      ...includeCondition,
+      {
+        model: Contact,
+        as: "contact",
+        attributes: ["id", "name", "number", "profilePicUrl"],
+        include: [
+          {
+            model: ContactTag,
+            as: "contactTags",
+            attributes: ["tagId"],
+            where: { tagId: { [Op.or]: filterTags } }
+          }
+        ]
+      }
+    ];
+  } else {
+    includeCondition = [
+      ...includeCondition,
+      {
+        model: Contact,
+        as: "contact",
+        attributes: ["id", "name", "number", "profilePicUrl"]
+      }
+    ];
+  }
+
+  // Search Filter
   if (searchParam) {
     const sanitizedSearchParam = searchParam.toLocaleLowerCase().trim();
 
@@ -193,12 +214,32 @@ const ListTicketsServiceAdmin = async ({
     };
   }
 
-  if (date) {
-    whereCondition = {
-      createdAt: {
-        [Op.between]: [+startOfDay(parseISO(date)), +endOfDay(parseISO(date))]
-      }
-    };
+  // Filter Date
+  const betweenDate = adminFilter.date;
+  const order = adminFilter.dateOrder;
+  console.log(order);
+  if (betweenDate) {
+    if (order === "createTicket" || order === "" || !order) {
+      whereCondition = {
+        ...whereCondition,
+        createdAt: {
+          [Op.between]: [
+            +startOfDay(parseISO(betweenDate[0])),
+            +endOfDay(parseISO(betweenDate[1]))
+          ]
+        }
+      };
+    } else {
+      whereCondition = {
+        ...whereCondition,
+        updatedAt: {
+          [Op.between]: [
+            +startOfDay(parseISO(betweenDate[0])),
+            +endOfDay(parseISO(betweenDate[1]))
+          ]
+        }
+      };
+    }
   }
 
   if (withUnreadMessages === "true") {

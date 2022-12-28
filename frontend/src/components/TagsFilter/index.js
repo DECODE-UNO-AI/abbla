@@ -1,13 +1,13 @@
-import { Chip, Paper, TextField } from "@material-ui/core";
+import { Chip, TextField } from "@material-ui/core";
 import Autocomplete from "@material-ui/lab/Autocomplete";
 import React, { useEffect, useState } from "react";
 import toastError from "../../errors/toastError";
 import api from "../../services/api";
 
-export function TagsFilter ({ onFiltered }) {
+export function TagsFilter ({ onFiltered, selecteds, setSelecteds }) {
 
     const [tags, setTags] = useState([]);
-    const [selecteds, setSelecteds] = useState([]);
+    
 
     useEffect(() => {
         async function fetchData () {
@@ -31,10 +31,11 @@ export function TagsFilter ({ onFiltered }) {
     }
 
     return (
-        <Paper style={{padding: 10}}>
+        <div style={{ padding: 0, margin: 0}}>
             <Autocomplete
                 multiple
                 size="small"
+                style={{ padding: 0, margin: 0}}
                 options={tags}
                 value={selecteds}
                 onChange={(e, v, r) => onChange(v)}
@@ -51,9 +52,9 @@ export function TagsFilter ({ onFiltered }) {
                     ))
                 }
                 renderInput={(params) => (
-                    <TextField {...params} variant="outlined" placeholder="Filtro por Tags" />
+                    <TextField {...params} variant="outlined" placeholder="Filtro por Tags" style={{ padding: 0 }}/>
                 )}
             />
-        </Paper>
+        </div>
     )
 }
