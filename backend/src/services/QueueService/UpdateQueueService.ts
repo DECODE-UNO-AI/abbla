@@ -45,7 +45,7 @@ const UpdateQueueService = async (
         }
         return true;
       })
-      .test(
+      /* .test(
         "Check-color-exists",
         "ERR_QUEUE_COLOR_ALREADY_EXISTS",
         async value => {
@@ -57,7 +57,7 @@ const UpdateQueueService = async (
           }
           return true;
         }
-      )
+      ) */
   });
 
   try {

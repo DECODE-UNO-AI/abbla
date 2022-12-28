@@ -41,7 +41,7 @@ const CreateQueueService = async (queueData: QueueData): Promise<Queue> => {
         }
         return false;
       })
-      .test(
+      /* .test(
         "Check-color-exists",
         "ERR_QUEUE_COLOR_ALREADY_EXISTS",
         async value => {
@@ -53,7 +53,7 @@ const CreateQueueService = async (queueData: QueueData): Promise<Queue> => {
           }
           return false;
         }
-      )
+      ) */
   });
 
   try {
