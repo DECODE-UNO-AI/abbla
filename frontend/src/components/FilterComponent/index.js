@@ -5,16 +5,13 @@ import {
   makeStyles,
   Paper,
   InputLabel,
-  Switch,
-  FormControlLabel
 } from "@material-ui/core";
 
 import {
     Tune,
     CloseSharp,
 } from "@material-ui/icons";
-import { DatePicker, Space, Divider, Select } from 'antd';
-import { Can } from "../Can";
+import { DatePicker, Space, Divider, Select, Radio } from 'antd';
 import { TagsFilter } from "../TagsFilter";
 
 import api from "../../services/api";
@@ -101,7 +98,7 @@ const FilterComponent = ({ user, onSubmit }) => {
     const [connections, setConnections] = useState([])
     const [selectedsTags, setSelectedsTags] = useState([]);
     const [numberOfFilters, setNumberOfFilters] = useState(0)
-    const [lastDateMessage, setLastDateMessage] = useState(false)
+    const [dateOrder, setDateOrder] = useState("createTicket")
 
     const [filters, dispatch] = useReducer(reducer, {});
 
@@ -166,7 +163,7 @@ const FilterComponent = ({ user, onSubmit }) => {
     }
 
     const handleOnSubmit = () => {
-        onSubmit({...filters, dateOrder: lastDateMessage ? "lastMessage" : "createTicket"})
+        onSubmit({...filters, dateOrder: dateOrder})
         setIsModalOpen(false)
     }
 
@@ -198,27 +195,10 @@ const FilterComponent = ({ user, onSubmit }) => {
                 <Divider style={{ marginTop: -20 }} />
                 <div className={classes.filterOption}>
                     <InputLabel style={{ marginBottom: 4, display: "flex", justifyContent: "space-between" }}>Data 
-                        <Can
-                            role={user.profile}
-                            perform="tickets-manager:showall"
-                            yes={() => (
-                              <FormControlLabel
-                                label={"Filtrar pela última atualização"}
-                                labelPlacement="start"
-                                control={
-                                  <Switch
-                                    size="small"
-                                    checked={lastDateMessage}
-                                    onChange={() =>
-                                        setLastDateMessage((prevState) => !prevState)
-                                    }
-                                    name="lastDateMessage"
-                                    color="primary"
-                                  />
-                                }
-                              />
-                            )}
-                        />   
+                    <Radio.Group name="radiogroup" value={dateOrder}  onChange={(e) => setDateOrder(e.target.value)}>
+                      <Radio value={"createTicket"}>Data de criação</Radio>
+                      <Radio value={"lastMessage"}>Data de atualização</Radio>
+                    </Radio.Group>
                     </InputLabel>
                     <Space direction="vertical" style={{ width: "100%"}}>
                         <RangePicker
