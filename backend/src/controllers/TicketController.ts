@@ -60,30 +60,33 @@ export const index = async (req: Request, res: Response): Promise<Response> => {
       queueIds = JSON.parse(queueIdsStringified);
     }
 
-    const { tickets, count, hasMore } = await ListTicketsService({
+    const { tickets, count, hasMore, allTicketsCount } =
+      await ListTicketsService({
+        searchParam,
+        pageNumber,
+        status,
+        date,
+        showAll,
+        userId,
+        queueIds,
+        withUnreadMessages,
+        tagSelect
+      });
+
+    return res.status(200).json({ tickets, count, hasMore, allTicketsCount });
+  }
+  const { tickets, count, hasMore, allTicketsCount } =
+    await ListTicketsServiceAdmin({
       searchParam,
       pageNumber,
       status,
       date,
       showAll,
       userId,
-      queueIds,
-      withUnreadMessages,
-      tagSelect
+      adminFilter,
+      withUnreadMessages
     });
-    return res.status(200).json({ tickets, count, hasMore });
-  }
-  const { tickets, count, hasMore } = await ListTicketsServiceAdmin({
-    searchParam,
-    pageNumber,
-    status,
-    date,
-    showAll,
-    userId,
-    adminFilter,
-    withUnreadMessages
-  });
-  return res.status(200).json({ tickets, count, hasMore });
+  return res.status(200).json({ tickets, count, hasMore, allTicketsCount });
 };
 
 export const store = async (req: Request, res: Response): Promise<Response> => {
@@ -157,13 +160,10 @@ export const remove = async (
   const ticket = await DeleteTicketService(ticketId);
 
   const io = getIO();
-  io.to(ticket.status)
-    .to(ticketId)
-    .to("notification")
-    .emit("ticket", {
-      action: "delete",
-      ticketId: +ticketId
-    });
+  io.to(ticket.status).to(ticketId).to("notification").emit("ticket", {
+    action: "delete",
+    ticketId: +ticketId
+  });
 
   return res.status(200).json({ message: "ticket deleted" });
 };

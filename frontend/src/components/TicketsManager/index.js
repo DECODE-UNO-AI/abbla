@@ -8,7 +8,8 @@ import {
   Paper,
   Tab,
   Tabs,
-  Switch
+  Switch,
+  InputLabel
 } from "@material-ui/core";
 
 import {
@@ -117,7 +118,7 @@ const TicketsManager = () => {
   const [showAllTickets, setShowAllTickets] = useState(false);
   const { user } = useContext(AuthContext);
 
-  const [, setOpenCount] = useState(0);
+  const [OpenCount, setOpenCount] = useState(0);
   const [pendingCount, setPendingCount] = useState(0);
   const [selectedTags, setSelectedTags] = useState([]);
   const [tagsId, setTagsId] = useState([])
@@ -260,7 +261,14 @@ const TicketsManager = () => {
           />
         </div>
         {user?.profile === 'admin' ?
-        <div style={{ flex: 1 }}/>
+          (
+            tab === "open" ?
+            <div  style={{ flex: 1, display: "flex", justifyContent: "end" }}>
+              <InputLabel>Tickets: {OpenCount}</InputLabel>
+            </div>
+            :
+            <div  style={{ flex: 1 }} />
+          )
         :
         <TicketsQueueSelect
           style={{ marginLeft: 6 }}
@@ -282,14 +290,14 @@ const TicketsManager = () => {
             status="open"
             showAll={showAllTickets}
             selectedQueueIds={selectedQueueIds}
-            updateCount={(val) => setOpenCount(val)}
+            updateCount={setOpenCount}
             style={applyPanelStyle("open")}
             adminFilterOptions={adminFilterOptions}
             selectedTags={tagsId}
           />
           <TicketsList
             status="pending"
-            updateCount={(val) => setPendingCount(val)}
+            updateCount={setPendingCount}
             selectedQueueIds={selectedQueueIds}
             showAll={showAllTickets}
             style={applyPanelStyle("pending")}
@@ -308,6 +316,7 @@ const TicketsManager = () => {
         <TicketsList
           status="pending"
           showAll={true}
+          updateCount={setPendingCount}
           selectedQueueIds={selectedQueueIds}
           adminFilterOptions={adminFilterOptions}
           selectedTags={tagsId}

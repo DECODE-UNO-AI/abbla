@@ -19,6 +19,7 @@ const useTickets = ({
     const [loading, setLoading] = useState(true);
     const [hasMore, setHasMore] = useState(false);
     const [tickets, setTickets] = useState([]);
+    const [allTicketsCount, setAllTicketsCount] = useState(0)
     const [count, setCount] = useState(0);
 
 
@@ -41,6 +42,8 @@ const useTickets = ({
                         },
                     })
                     setTickets(data.tickets)
+                    setAllTicketsCount(data.allTicketsCount)
+                    setCount(data.count)
 
                     let horasFecharAutomaticamente = getHoursCloseTicketsAuto(); 
 
@@ -60,7 +63,6 @@ const useTickets = ({
                     }
 
                     setHasMore(data.hasMore)
-                    setCount(data.count)
                     setLoading(false)
                 } catch (err) {
                     setLoading(false)
@@ -90,7 +92,7 @@ const useTickets = ({
         selectedTags
     ])
 
-    return { tickets, loading, hasMore, count };
+    return { tickets, loading, hasMore, count, allTicketsCount};
 };
 
 export default useTickets;
