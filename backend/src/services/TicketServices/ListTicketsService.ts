@@ -79,7 +79,7 @@ const ListTicketsService = async ({
     filterTags = selectedTags;
   }
 
-  if (filterTags !== "all") {
+  if (filterTags !== "all" && !searchParam) {
     includeCondition = [
       ...includeCondition,
       {
@@ -90,7 +90,7 @@ const ListTicketsService = async ({
           {
             model: ContactTag,
             as: "contactTags",
-            attributes: ["tagId", "name"],
+            attributes: ["tagId"],
             where: { tagId: { [Op.or]: filterTags } }
           }
         ]

@@ -145,18 +145,22 @@ const ListTicketsServiceAdmin = async ({
     filterTags = selectedTags;
   }
 
-  if (filterTags !== "all") {
+  if (filterTags !== "all" && !searchParam) {
     includeCondition = [
       ...includeCondition,
       {
         model: Contact,
         as: "contact",
-        attributes: ["id", "name", "number", "profilePicUrl"],
+        attributes: ["id", "name", "number", "profilePicUrl"]
+      },
+      {
+        model: Contact,
         include: [
           {
             model: ContactTag,
             as: "contactTags",
             attributes: ["tagId"],
+            required: true,
             where: { tagId: { [Op.or]: filterTags } }
           }
         ]
@@ -183,13 +187,13 @@ const ListTicketsServiceAdmin = async ({
         model: Message,
         as: "messages",
         attributes: ["id", "body"],
-        //  where: {
-        //    body: where(
-        //      fn("LOWER", col("body")),
-        //      "LIKE",
-        //      `%${sanitizedSearchParam}%`
-        //    )
-        //  },
+        where: {
+          body: where(
+            fn("LOWER", col("body")),
+            "LIKE",
+            `%${sanitizedSearchParam}%`
+          )
+        },
         required: false,
         duplicating: false
       }
@@ -207,7 +211,7 @@ const ListTicketsServiceAdmin = async ({
         },
         { "$contact.number$": { [Op.like]: `%${sanitizedSearchParam}%` } },
         {
-          "$messages.body$": where(
+          "$messages[0].body$": where(
             fn("LOWER", col("body")),
             "LIKE",
             `%${sanitizedSearchParam}%`
