@@ -17,6 +17,7 @@ interface Request {
   showAll?: string;
   userId: string;
   withUnreadMessages?: string;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   adminFilter: any;
 }
 
@@ -31,6 +32,7 @@ const ListTicketsServiceAdmin = async ({
   searchParam = "",
   pageNumber = "1",
   status,
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   date,
   showAll,
   userId,
@@ -203,14 +205,14 @@ const ListTicketsServiceAdmin = async ({
             `%${sanitizedSearchParam}%`
           )
         },
-        { "$contact.number$": { [Op.like]: `%${sanitizedSearchParam}%` } },
-        {
-          "$message.body$": where(
-            fn("LOWER", col("body")),
-            "LIKE",
-            `%${sanitizedSearchParam}%`
-          )
-        }
+        { "$contact.number$": { [Op.like]: `%${sanitizedSearchParam}%` } }
+        // {
+        //    "$messages.body$": where(
+        //      fn("LOWER", col("body")),
+        //      "LIKE",
+        //      `%${sanitizedSearchParam}%`
+        //    )
+        // }
       ]
     };
   }
@@ -268,6 +270,7 @@ const ListTicketsServiceAdmin = async ({
 
   if (status !== "closed") {
     allTicketsCount = await Ticket.count({
+      include: includeCondition,
       where: whereCondition
     });
   }

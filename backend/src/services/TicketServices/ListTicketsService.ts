@@ -90,7 +90,7 @@ const ListTicketsService = async ({
           {
             model: ContactTag,
             as: "contactTags",
-            attributes: ["tagId"],
+            attributes: ["tagId", "name"],
             where: { tagId: { [Op.or]: filterTags } }
           }
         ]
@@ -185,6 +185,7 @@ const ListTicketsService = async ({
 
   if (status !== "closed") {
     allTicketsCount = await Ticket.count({
+      include: includeCondition,
       where: whereCondition
     });
   }

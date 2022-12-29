@@ -343,10 +343,10 @@ const TicketsManager = () => {
       {/* <TagsFilter onFiltered={handleSelectedTags} /> */}
         <TicketsList
           searchParam={searchParam}
-          // tags={selectedTags}
+          tags={selectedTags}
           showAll={true}
           selectedQueueIds={selectedQueueIds}
-          //adminFilterOptions={adminFilterOptions}
+          adminFilterOptions={adminFilterOptions}
         />
       </TabPanel>
     </Paper>
