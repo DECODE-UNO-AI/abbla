@@ -163,7 +163,11 @@ const FilterComponent = ({ user, onSubmit }) => {
     }
 
     const handleOnSubmit = () => {
-        onSubmit({...filters, dateOrder: dateOrder})
+        if (filters.date && filters.date.length > 0){
+            onSubmit({...filters, dateOrder: dateOrder})
+        } else {
+            onSubmit(filters)
+        }
         setIsModalOpen(false)
     }
 
