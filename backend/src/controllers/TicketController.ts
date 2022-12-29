@@ -51,6 +51,7 @@ export const index = async (req: Request, res: Response): Promise<Response> => {
 
   const adminFilter = adminFilterOptions ? JSON.parse(adminFilterOptions) : {};
 
+
   const notEmptyFilters: any = {};
 
   // eslint-disable-next-line array-callback-return

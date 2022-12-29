@@ -262,9 +262,9 @@ const TicketsManager = () => {
         </div>
         {user?.profile === 'admin' ?
           (
-            tab === "open" ?
+            tab === "open" || tab === "pending"?
             <div  style={{ flex: 1, display: "flex", justifyContent: "end" }}>
-              <InputLabel>Tickets: {OpenCount}</InputLabel>
+              <InputLabel>Tickets: {tab === "open" ? OpenCount : pendingCount}</InputLabel>
             </div>
             :
             <div  style={{ flex: 1 }} />
