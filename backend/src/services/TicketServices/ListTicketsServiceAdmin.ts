@@ -183,13 +183,13 @@ const ListTicketsServiceAdmin = async ({
         model: Message,
         as: "messages",
         attributes: ["id", "body"],
-        where: {
-          body: where(
-            fn("LOWER", col("body")),
-            "LIKE",
-            `%${sanitizedSearchParam}%`
-          )
-        },
+        //  where: {
+        //    body: where(
+        //      fn("LOWER", col("body")),
+        //      "LIKE",
+        //      `%${sanitizedSearchParam}%`
+        //    )
+        //  },
         required: false,
         duplicating: false
       }
@@ -205,14 +205,14 @@ const ListTicketsServiceAdmin = async ({
             `%${sanitizedSearchParam}%`
           )
         },
-        { "$contact.number$": { [Op.like]: `%${sanitizedSearchParam}%` } }
-        // {
-        //    "$messages.body$": where(
-        //      fn("LOWER", col("body")),
-        //      "LIKE",
-        //      `%${sanitizedSearchParam}%`
-        //    )
-        // }
+        { "$contact.number$": { [Op.like]: `%${sanitizedSearchParam}%` } },
+        {
+          "$messages.body$": where(
+            fn("LOWER", col("body")),
+            "LIKE",
+            `%${sanitizedSearchParam}%`
+          )
+        }
       ]
     };
   }
