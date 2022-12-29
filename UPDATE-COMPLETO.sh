@@ -91,8 +91,13 @@ rm -rf build
 npm run build
 
 echo " "
-echo "ABBLA ATUALIZADO COM SUCESSO!!!"
+echo "RESTART PM2"
 echo " "
-echo "---    REALIZE O RESTART      ---"
-echo "--- PARA APLICAR AS MUDANÇAS  ---"
+
+sleep 2
+
+pm2 restart all
+
+echo " "
+echo "ABBLA ATUALIZADO COM SUCESSO!!!"
 echo " "
