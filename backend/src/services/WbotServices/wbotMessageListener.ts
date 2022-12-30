@@ -365,7 +365,7 @@ const handleMessage = async (
 
     const contact = await verifyContact(msgContact);
 
-    let ticket = await FindOrCreateTicketService(
+    const ticket = await FindOrCreateTicketService(
       contact,
       wbot.id!,
       unreadMessages,
@@ -380,13 +380,13 @@ const handleMessage = async (
     )
       return;
 
-    ticket = await FindOrCreateTicketService(
-      contact,
-      wbot.id!,
-      unreadMessages,
-      whatsapp.queues.length === 1 ? whatsapp.queues[0].id : null,
-      groupContact
-    );
+    //ticket = await FindOrCreateTicketService(
+    //  contact,
+    //  wbot.id!,
+    //  unreadMessages,
+    //  whatsapp.queues.length === 1 ? whatsapp.queues[0].id : null,
+    //  groupContact
+    //);
 
     if (msg.hasMedia) {
       await verifyMediaMessage(msg, ticket, contact);
