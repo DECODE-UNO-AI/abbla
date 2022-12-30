@@ -40,7 +40,7 @@ const FindOrCreateTicketService = async (
         status: "pending",
         userId: null,
         queueId,
-        unreadMessages
+        unreadMessages: 1
       });
     }
   }
@@ -77,7 +77,7 @@ const FindOrCreateTicketService = async (
       status: "pending",
       isGroup: !!groupContact,
       queueId,
-      unreadMessages,
+      unreadMessages: 1,
       whatsappId
     });
   }

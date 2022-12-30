@@ -203,8 +203,8 @@ const TicketsList = (props) => {
 		const shouldUpdateTicket = async(ticket) => {
 			const notificate =  await shouldUpdate(ticket, showAll, user, adminFilterOptions)
 			return notificate ? true : false
-		}
-			////(ticket.status === "pending") ||
+			}
+			//(ticket.status === "pending") ||
 			//(ticket.queueId === null) ||
 			//((!ticket.userId || ticket.userId === user?.id || showAll) &&
 			//(!ticket.queueId || user.queues.filter(e => e.id === ticket.queueId).length !== 0));//selectIdQueue.indexOf(ticket.queueId) > -1)
