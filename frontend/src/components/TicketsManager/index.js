@@ -39,7 +39,7 @@ const useStyles = makeStyles((theme) => ({
     display: "flex",
     height: "100%",
     flexDirection: "column",
-    overflow: "hidden",
+    overflow: "auto",
     borderTopRightRadius: 0,
     borderBottomRightRadius: 0,
   },

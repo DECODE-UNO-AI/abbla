@@ -21,7 +21,7 @@ const useStyles = makeStyles((theme) => ({
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
-    padding: 5
+    padding: 5,
   },
   modalTitle: {
     display: "flex",
@@ -37,7 +37,11 @@ const useStyles = makeStyles((theme) => ({
   filterOption: {
     paddingLeft: 20,
     paddingRight: 20,
-    paddingTop: 15
+    paddingTop: 15,
+    "@media (max-width: 400px)": {
+        padding: 5,
+    }
+
   },
   closeIcon: {
     cursor: "pointer",
