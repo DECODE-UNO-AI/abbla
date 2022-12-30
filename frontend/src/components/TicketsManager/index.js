@@ -183,9 +183,9 @@ const TicketsManager = () => {
           className={classes.searchInput}
           value={searchParam}
           onChange={handleSearch}
-        />
+        />  
         {user?.profile === "admin" ? 
-          <FilterComponent user={user} onSubmit={handleOnFilterSubmit}/>
+          <FilterComponent user={user} onSubmit={handleOnFilterSubmit} status={tab}/>
           :
           ""
         }

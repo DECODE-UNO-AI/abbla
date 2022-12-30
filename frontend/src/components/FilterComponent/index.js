@@ -89,7 +89,7 @@ const reducer = (state, action) => {
 
 const { RangePicker } = DatePicker;
 
-const FilterComponent = ({ user, onSubmit }) => {
+const FilterComponent = ({ user, onSubmit, status = '' }) => {
     const classes = useStyles()
     const [isModalOpen, setIsModalOpen] = useState(false)
     const [setores, setSetores] = useState([])
@@ -261,10 +261,14 @@ const FilterComponent = ({ user, onSubmit }) => {
                     />
                 </div>
                     <Divider style={{ padding: 0, marginBottom: 0 }} />
-                <div className={classes.filterOption}>
-                    <InputLabel style={{ marginBottom: 4 }}>Tags</InputLabel>
-                    <TagsFilter style={{ padding: 0}} onFiltered={handleOnTagsChange} selecteds={selectedsTags} setSelecteds={setSelectedsTags}/>
-                </div>
+                {
+                    status !== "search" ? 
+                        <div className={classes.filterOption}>
+                            <InputLabel style={{ marginBottom: 4 }}>Tags</InputLabel>
+                            <TagsFilter style={{ padding: 0}} onFiltered={handleOnTagsChange} selecteds={selectedsTags} setSelecteds={setSelectedsTags}/>
+                        </div> : ""
+                }
+                
                     <Divider style={{ padding: 0, marginBottom: 0 }} />
                 <div className={classes.filterOption}>
                     <div className={classes.buttonsContainer}>
