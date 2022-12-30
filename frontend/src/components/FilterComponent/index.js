@@ -158,7 +158,7 @@ const FilterComponent = ({ user, onSubmit, status = '' }) => {
     const handleOnResetFilters = () =>{
         setSelectedsTags([])
         dispatch({ type: "RESET_FILTERS" })
-        onSubmit(filters)
+        onSubmit({})
     }
 
     const handleOnSubmit = () => {
