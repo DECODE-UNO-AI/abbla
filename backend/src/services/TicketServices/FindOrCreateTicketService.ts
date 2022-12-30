@@ -23,7 +23,6 @@ const FindOrCreateTicketService = async (
   });
 
   if (ticket) {
-    console.log("achei")
     await ticket.update({ unreadMessages });
   }
 
@@ -47,7 +46,6 @@ const FindOrCreateTicketService = async (
   }
 
   if (!ticket && !groupContact) {
-    console.log('afdfff')
     const listSettingsService = await ListSettingsServiceOne({key: "timeCreateNewTicket"});
     var timeCreateNewTicket = listSettingsService?.value;
 
