@@ -121,7 +121,7 @@ const UserModal = ({ open, onClose, userId }) => {
 				const userQueueIds = data.queues?.map(queue => queue.id);
 				setSelectedQueueIds(userQueueIds);
 				setWhatsappId(data.whatsappId ? data.whatsappId : '');
-				setShowNotification(data.notificationSound ? data.notificationSound : '')
+				setShowNotification(data.notificationSound)
 				console.log(data)
 			} catch (err) {
 				toastError(err);
