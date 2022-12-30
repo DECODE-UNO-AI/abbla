@@ -17,6 +17,7 @@ interface Request {
   showAll?: string;
   userId: string;
   withUnreadMessages?: string;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   adminFilter: any;
 }
 
@@ -31,6 +32,7 @@ const ListTicketsServiceAdmin = async ({
   searchParam = "",
   pageNumber = "1",
   status,
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   date,
   showAll,
   userId,
@@ -143,18 +145,22 @@ const ListTicketsServiceAdmin = async ({
     filterTags = selectedTags;
   }
 
-  if (filterTags !== "all") {
+  if (filterTags !== "all" && !searchParam) {
     includeCondition = [
       ...includeCondition,
       {
         model: Contact,
         as: "contact",
-        attributes: ["id", "name", "number", "profilePicUrl"],
+        attributes: ["id", "name", "number", "profilePicUrl"]
+      },
+      {
+        model: Contact,
         include: [
           {
             model: ContactTag,
             as: "contactTags",
             attributes: ["tagId"],
+            required: true,
             where: { tagId: { [Op.or]: filterTags } }
           }
         ]
@@ -268,6 +274,7 @@ const ListTicketsServiceAdmin = async ({
 
   if (status !== "closed") {
     allTicketsCount = await Ticket.count({
+      include: includeCondition,
       where: whereCondition
     });
   }

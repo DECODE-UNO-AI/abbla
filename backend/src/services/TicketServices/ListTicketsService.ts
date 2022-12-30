@@ -79,7 +79,7 @@ const ListTicketsService = async ({
     filterTags = selectedTags;
   }
 
-  if (filterTags !== "all") {
+  if (filterTags !== "all" && !searchParam) {
     includeCondition = [
       ...includeCondition,
       {
@@ -185,6 +185,7 @@ const ListTicketsService = async ({
 
   if (status !== "closed") {
     allTicketsCount = await Ticket.count({
+      include: includeCondition,
       where: whereCondition
     });
   }

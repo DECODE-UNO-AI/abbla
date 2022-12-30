@@ -51,7 +51,17 @@ export const index = async (req: Request, res: Response): Promise<Response> => {
 
   const adminFilter = adminFilterOptions ? JSON.parse(adminFilterOptions) : {};
 
-  if (userProfile !== "admin" || Object.keys(adminFilter).length === 0) {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const notEmptyFilters: any = {};
+
+  // eslint-disable-next-line array-callback-return
+  Object.keys(adminFilter).map(key => {
+    if (adminFilter[key].length > 0) {
+      notEmptyFilters[key] = adminFilter[key];
+    }
+  });
+
+  if (userProfile !== "admin" || Object.keys(notEmptyFilters).length === 0) {
     let queueIds: number[] = [];
 
     const tagSelect = selectedTags ? JSON.parse(selectedTags) : [];
@@ -83,7 +93,7 @@ export const index = async (req: Request, res: Response): Promise<Response> => {
       date,
       showAll,
       userId,
-      adminFilter,
+      adminFilter: notEmptyFilters,
       withUnreadMessages
     });
   return res.status(200).json({ tickets, count, hasMore, allTicketsCount });

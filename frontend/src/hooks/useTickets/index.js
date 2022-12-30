@@ -14,7 +14,7 @@ const useTickets = ({
     selectedTags,
     queueIds,
     withUnreadMessages,
-    adminFilterOptions,
+    adminFilterOptions: adminFilter,
 }) => {
     const [loading, setLoading] = useState(true);
     const [hasMore, setHasMore] = useState(false);
@@ -28,6 +28,7 @@ const useTickets = ({
         const delayDebounceFn = setTimeout(() => {
             const fetchTickets = async() => {
                 try {
+                    const adminFilterOptions = JSON.stringify(adminFilter)
                     const { data } = await api.get("/tickets", {
                         params: {
                             adminFilterOptions,
@@ -88,7 +89,7 @@ const useTickets = ({
         showAll,
         queueIds,
         withUnreadMessages,
-        adminFilterOptions,
+        adminFilter,
         selectedTags
     ])
 

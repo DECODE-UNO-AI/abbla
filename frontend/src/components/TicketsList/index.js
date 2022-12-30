@@ -183,7 +183,7 @@ const TicketsList = (props) => {
 		showAll,
 		selectedTags: JSON.stringify(selectedTags),
 		queueIds: JSON.stringify(selectedQueueIds),
-		adminFilterOptions: JSON.stringify(adminFilterOptions),
+		adminFilterOptions,
 	});
 
 	useEffect(() => {

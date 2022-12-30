@@ -83,8 +83,7 @@ const reducer = (state, action) => {
         return {...state}
     }
     if(action.type === "RESET_FILTERS") {
-        const state = {}
-        return state
+        return {}
     }
 }
 
@@ -159,11 +158,15 @@ const FilterComponent = ({ user, onSubmit }) => {
     const handleOnResetFilters = () =>{
         setSelectedsTags([])
         dispatch({ type: "RESET_FILTERS" })
-        onSubmit([])
+        onSubmit(filters)
     }
 
     const handleOnSubmit = () => {
-        onSubmit({...filters, dateOrder: dateOrder})
+        if (filters.date && filters.date.length > 0){
+            onSubmit({...filters, dateOrder: dateOrder})
+        } else {
+            onSubmit(filters)
+        }
         setIsModalOpen(false)
     }
 
