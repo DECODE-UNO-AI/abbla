@@ -11,13 +11,15 @@ const useTickets = ({
     status,
     date,
     showAll,
+    selectedTags,
     queueIds,
     withUnreadMessages,
-    adminFilterOptions
+    adminFilterOptions: adminFilter,
 }) => {
     const [loading, setLoading] = useState(true);
     const [hasMore, setHasMore] = useState(false);
     const [tickets, setTickets] = useState([]);
+    const [allTicketsCount, setAllTicketsCount] = useState(0)
     const [count, setCount] = useState(0);
 
 
@@ -26,6 +28,7 @@ const useTickets = ({
         const delayDebounceFn = setTimeout(() => {
             const fetchTickets = async() => {
                 try {
+                    const adminFilterOptions = JSON.stringify(adminFilter)
                     const { data } = await api.get("/tickets", {
                         params: {
                             adminFilterOptions,
@@ -36,9 +39,12 @@ const useTickets = ({
                             showAll,
                             queueIds,
                             withUnreadMessages,
+                            selectedTags,
                         },
                     })
                     setTickets(data.tickets)
+                    setAllTicketsCount(data.allTicketsCount)
+                    setCount(data.count)
 
                     let horasFecharAutomaticamente = getHoursCloseTicketsAuto(); 
 
@@ -58,7 +64,6 @@ const useTickets = ({
                     }
 
                     setHasMore(data.hasMore)
-                    setCount(data.count)
                     setLoading(false)
                 } catch (err) {
                     setLoading(false)
@@ -84,10 +89,11 @@ const useTickets = ({
         showAll,
         queueIds,
         withUnreadMessages,
-        adminFilterOptions
+        adminFilter,
+        selectedTags
     ])
 
-    return { tickets, loading, hasMore, count };
+    return { tickets, loading, hasMore, count, allTicketsCount};
 };
 
 export default useTickets;

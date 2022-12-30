@@ -5,6 +5,8 @@ import "react-toastify/dist/ReactToastify.css";
 import { createTheme, ThemeProvider } from "@material-ui/core/styles";
 import { ptBR } from "@material-ui/core/locale";
 
+import { ConfigProvider, theme as th } from "antd";
+
 import { CssBaseline } from "@material-ui/core";
 
 import api from "./services/api";
@@ -40,17 +42,25 @@ const App = () => {
       },
       backgroundImage: `url(${lightBackground})`,
     },
+    
     locale
   );
 
   const darkTheme = createTheme(
     {
       overrides: {
+        MuiOutlinedInput: {
+          root: {
+            "& $notchedOutline": {
+              borderColor: "#424242"
+            }
+          }
+        },
         MuiCssBaseline: {
           '@global': {
             body: {
               backgroundColor: "#080d14",
-            }
+            },
           }
         }
       },
@@ -76,6 +86,7 @@ const App = () => {
           default: system.color.darkTheme.palette.background.default || "#080d14",
           paper: system.color.darkTheme.palette.background.paper || "#181d22",
         },
+        action: { active: "rgba(82, 216, 105, 0.5)", disabledBackground: "#fff"},
         text: {
           primary: system.color.darkTheme.palette.text.primary || "#52d869",
           secondary: system.color.darkTheme.palette.text.secondary || "#ffffff",
@@ -85,6 +96,25 @@ const App = () => {
     },
     locale
   );
+
+  const antDarkTheme = {
+    lightTheme: {
+      token: {
+        colorPrimary: "#6B62FE",
+        borderRadius: 2,
+      },
+    },
+    darkTheme: {
+      algorithm: th.darkAlgorithm,
+      token: {
+        colorPrimary: "#52D869",
+        borderRadius: 2,
+        colorText: "#52D869",
+        colorTextPlaceholder: "rgba(82, 216, 105, 0.5)",
+        colorBgContainer: "rgba(0, 0, 0, 0)"
+      }
+    }
+  }
 
   const [theme, setTheme] = useState("light");
 
@@ -120,8 +150,10 @@ const App = () => {
 
   return (
     <ThemeProvider theme={theme === "light" ? lightTheme : darkTheme}>
-      <Routes />
-      <CssBaseline />
+      <ConfigProvider theme={ theme === "light" ? antDarkTheme.lightTheme : antDarkTheme.darkTheme}>
+        <Routes />
+        <CssBaseline />
+      </ConfigProvider>
     </ThemeProvider>
   );
 };

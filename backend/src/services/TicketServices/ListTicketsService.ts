@@ -7,6 +7,7 @@ import Message from "../../models/Message";
 import Queue from "../../models/Queue";
 import ShowUserService from "../UserServices/ShowUserService";
 import Whatsapp from "../../models/Whatsapp";
+import ContactTag from "../../models/ContactTag";
 
 interface Request {
   searchParam?: string;
@@ -17,12 +18,14 @@ interface Request {
   userId: string;
   withUnreadMessages?: string;
   queueIds: number[];
+  tagSelect: [];
 }
 
 interface Response {
   tickets: Ticket[];
   count: number;
   hasMore: boolean;
+  allTicketsCount: number;
 }
 
 const ListTicketsService = async ({
@@ -33,7 +36,8 @@ const ListTicketsService = async ({
   date,
   showAll,
   userId,
-  withUnreadMessages
+  withUnreadMessages,
+  tagSelect
 }: Request): Promise<Response> => {
   let whereCondition: Filterable["where"] = {
     [Op.or]: [{ userId }, { status: "pending" }],
@@ -42,11 +46,6 @@ const ListTicketsService = async ({
   let includeCondition: Includeable[];
 
   includeCondition = [
-    {
-      model: Contact,
-      as: "contact",
-      attributes: ["id", "name", "number", "profilePicUrl"]
-    },
     {
       model: Queue,
       as: "queue",
@@ -68,6 +67,44 @@ const ListTicketsService = async ({
       ...whereCondition,
       status
     };
+  }
+
+  // Tags Filter
+  const selectedTags = tagSelect;
+  let filterTags;
+
+  if (!selectedTags || selectedTags.length === 0) {
+    filterTags = "all";
+  } else {
+    filterTags = selectedTags;
+  }
+
+  if (filterTags !== "all" && !searchParam) {
+    includeCondition = [
+      ...includeCondition,
+      {
+        model: Contact,
+        as: "contact",
+        attributes: ["id", "name", "number", "profilePicUrl"],
+        include: [
+          {
+            model: ContactTag,
+            as: "contactTags",
+            attributes: ["tagId"],
+            where: { tagId: { [Op.or]: filterTags } }
+          }
+        ]
+      }
+    ];
+  } else {
+    includeCondition = [
+      ...includeCondition,
+      {
+        model: Contact,
+        as: "contact",
+        attributes: ["id", "name", "number", "profilePicUrl"]
+      }
+    ];
   }
 
   if (searchParam) {
@@ -144,12 +181,22 @@ const ListTicketsService = async ({
     order: [["updatedAt", "DESC"]]
   });
 
+  let allTicketsCount = 0;
+
+  if (status !== "closed") {
+    allTicketsCount = await Ticket.count({
+      include: includeCondition,
+      where: whereCondition
+    });
+  }
+
   const hasMore = count > offset + tickets.length;
 
   return {
     tickets,
     count,
-    hasMore
+    hasMore,
+    allTicketsCount
   };
 };
 

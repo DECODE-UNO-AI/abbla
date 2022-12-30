@@ -115,13 +115,16 @@ const reducer = (state, action) => {
 	}
 
 	if (action.type === "UPDATE_TICKET_UNREAD_MESSAGES") {
-		const ticket = action.payload;
+		const [ticket, updateCount] = action.payload;
 		const ticketIndex = state.findIndex((t) => t.id === ticket.id);
 		if (ticketIndex !== -1) {
 			state[ticketIndex] = ticket;
 			state.unshift(state.splice(ticketIndex, 1)[0]);
 		} else {
 			state.unshift(ticket);
+			if (typeof updateCount === "function") {
+				updateCount(e => e+1);
+			}
 		}
 
 		return [...state];
@@ -160,7 +163,7 @@ const TicketsList = (props) => {
 		adminFilterOptions,
 		updateCount,
 		style,
-		tags,
+		selectedTags
 	} = props;
 	const classes = useStyles();
 	const [pageNumber, setPageNumber] = useState(1);
@@ -171,16 +174,16 @@ const TicketsList = (props) => {
 	useEffect(() => {
 		dispatch({ type: "RESET" }); //restart the tickets
 		setPageNumber(1);
-	}, [status, searchParam, dispatch, showAll, selectedQueueIds, tags, adminFilterOptions]);
+	}, [status, searchParam, dispatch, showAll, selectedQueueIds, selectedTags, adminFilterOptions]);
 
-	const { tickets, hasMore, loading } = useTickets({
+	const { tickets, hasMore, loading, allTicketsCount } = useTickets({
 		pageNumber,
 		searchParam,
 		status,
 		showAll,
-		tags: JSON.stringify(tags),
+		selectedTags: JSON.stringify(selectedTags),
 		queueIds: JSON.stringify(selectedQueueIds),
-		adminFilterOptions: JSON.stringify(adminFilterOptions),
+		adminFilterOptions,
 	});
 
 	useEffect(() => {
@@ -221,7 +224,7 @@ const TicketsList = (props) => {
 				});
 			}
 
-			if (data.action === "update"  && shouldUpdateTicket(data.ticket)) { 
+			if (data.action === "update"  && shouldUpdateTicket(data.ticket)) {
 				dispatch({
 					type: "UPDATE_TICKET",
 					payload: data.ticket,
@@ -233,6 +236,9 @@ const TicketsList = (props) => {
 			}
 
 			if (data.action === "delete") {
+				if (typeof updateCount === "function") {
+					updateCount(e => e-1);
+				}
 				dispatch({ type: "DELETE_TICKET", payload: data.ticketId });
 			}
 		});
@@ -241,7 +247,7 @@ const TicketsList = (props) => {
 			if (data.action === "create" && shouldUpdateTicket(data.ticket)) {
 				dispatch({
 					type: "UPDATE_TICKET_UNREAD_MESSAGES",
-					payload: data.ticket,
+					payload: [data.ticket, updateCount],
 				});
 			}
 		});
@@ -258,16 +264,14 @@ const TicketsList = (props) => {
 		return () => {
 			socket.disconnect();
 		};
-	}, [status, showAll, user, selectedQueueIds]);
+	}, [status, showAll, user, selectedQueueIds, updateCount]);
 
 	useEffect(() => {
 		if (typeof updateCount === "function") {
-			if(status === 'pending') {
-				updateCount(ticketsList.length);
-			}
+			updateCount(allTicketsCount);
 		}
 		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, [ticketsList]);
+	}, [allTicketsCount, tickets]);
 
 	const loadMore = () => {
 		setPageNumber((prevState) => prevState + 1);

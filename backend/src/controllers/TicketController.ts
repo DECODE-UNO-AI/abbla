@@ -21,6 +21,7 @@ type IndexQuery = {
   showAll: string;
   withUnreadMessages: string;
   queueIds: string;
+  selectedTags: string;
 };
 
 interface TicketData {
@@ -40,45 +41,62 @@ export const index = async (req: Request, res: Response): Promise<Response> => {
     searchParam,
     showAll,
     queueIds: queueIdsStringified,
-    withUnreadMessages
+    withUnreadMessages,
+    selectedTags
   } = req.query as IndexQuery;
 
   const userId = req.user.id;
 
   const userProfile = req.user.profile;
 
-  const adminFilter = adminFilterOptions ? JSON.parse(adminFilterOptions) : [];
+  const adminFilter = adminFilterOptions ? JSON.parse(adminFilterOptions) : {};
 
-  if (userProfile !== "admin" || adminFilter.length === 0) {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const notEmptyFilters: any = {};
+
+  // eslint-disable-next-line array-callback-return
+  Object.keys(adminFilter).map(key => {
+    if (adminFilter[key].length > 0) {
+      notEmptyFilters[key] = adminFilter[key];
+    }
+  });
+
+  if (userProfile !== "admin" || Object.keys(notEmptyFilters).length === 0) {
     let queueIds: number[] = [];
+
+    const tagSelect = selectedTags ? JSON.parse(selectedTags) : [];
 
     if (queueIdsStringified) {
       queueIds = JSON.parse(queueIdsStringified);
     }
 
-    const { tickets, count, hasMore } = await ListTicketsService({
+    const { tickets, count, hasMore, allTicketsCount } =
+      await ListTicketsService({
+        searchParam,
+        pageNumber,
+        status,
+        date,
+        showAll,
+        userId,
+        queueIds,
+        withUnreadMessages,
+        tagSelect
+      });
+
+    return res.status(200).json({ tickets, count, hasMore, allTicketsCount });
+  }
+  const { tickets, count, hasMore, allTicketsCount } =
+    await ListTicketsServiceAdmin({
       searchParam,
       pageNumber,
       status,
       date,
       showAll,
       userId,
-      queueIds,
+      adminFilter: notEmptyFilters,
       withUnreadMessages
     });
-    return res.status(200).json({ tickets, count, hasMore });
-  }
-  const { tickets, count, hasMore } = await ListTicketsServiceAdmin({
-    searchParam,
-    pageNumber,
-    status,
-    date,
-    showAll,
-    userId,
-    adminFilter,
-    withUnreadMessages
-  });
-  return res.status(200).json({ tickets, count, hasMore });
+  return res.status(200).json({ tickets, count, hasMore, allTicketsCount });
 };
 
 export const store = async (req: Request, res: Response): Promise<Response> => {
@@ -152,13 +170,10 @@ export const remove = async (
   const ticket = await DeleteTicketService(ticketId);
 
   const io = getIO();
-  io.to(ticket.status)
-    .to(ticketId)
-    .to("notification")
-    .emit("ticket", {
-      action: "delete",
-      ticketId: +ticketId
-    });
+  io.to(ticket.status).to(ticketId).to("notification").emit("ticket", {
+    action: "delete",
+    ticketId: +ticketId
+  });
 
   return res.status(200).json({ message: "ticket deleted" });
 };
