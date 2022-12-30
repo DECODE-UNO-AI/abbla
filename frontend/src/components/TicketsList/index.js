@@ -11,6 +11,9 @@ import TicketsListSkeleton from "../TicketsListSkeleton";
 import useTickets from "../../hooks/useTickets";
 import { i18n } from "../../translate/i18n";
 import { AuthContext } from "../../context/Auth/AuthContext";
+import shouldUpdate from "../../helpers/shouldUpdate";
+
+import api from "../../services/api";
 
 const useStyles = makeStyles((theme) => ({
 	ticketsListWrapper: {
@@ -199,11 +202,14 @@ const TicketsList = (props) => {
 
 	useEffect(() => {
 		const socket = openSocket();
-		const shouldUpdateTicket = (ticket) =>
-			//(ticket.status === "pending") ||
-			(ticket.queueId === null) ||
-			((!ticket.userId || ticket.userId === user?.id || showAll) &&
-			(!ticket.queueId || user.queues.filter(e => e.id === ticket.queueId).length !== 0));//selectIdQueue.indexOf(ticket.queueId) > -1)
+		const shouldUpdateTicket = async(ticket) => {
+			const notificate =  await shouldUpdate(ticket, showAll, user, adminFilterOptions)
+			return notificate ? true : false
+		}
+			////(ticket.status === "pending") ||
+			//(ticket.queueId === null) ||
+			//((!ticket.userId || ticket.userId === user?.id || showAll) &&
+			//(!ticket.queueId || user.queues.filter(e => e.id === ticket.queueId).length !== 0));//selectIdQueue.indexOf(ticket.queueId) > -1)
 
 		const notBelongsToUserQueues = (ticket) =>
 			(ticket.queueId && user.queues.filter(e => e.id === ticket.queueId).length === 0)
@@ -216,7 +222,7 @@ const TicketsList = (props) => {
 			}
 		});
 
-		socket.on("ticket", (data) => {
+		socket.on("ticket", async (data) => {
 			if (data.action === "updateUnread") {
 				dispatch({
 					type: "RESET_UNREAD",
@@ -224,7 +230,7 @@ const TicketsList = (props) => {
 				});
 			}
 
-			if (data.action === "update"  && shouldUpdateTicket(data.ticket)) {
+			if (data.action === "update"  && await shouldUpdateTicket(data.ticket)) {
 				dispatch({
 					type: "UPDATE_TICKET",
 					payload: data.ticket,
@@ -243,8 +249,8 @@ const TicketsList = (props) => {
 			}
 		});
 
-		socket.on("appMessage", (data) => {
-			if (data.action === "create" && shouldUpdateTicket(data.ticket)) {
+		socket.on("appMessage", async(data) => {
+			if (data.action === "create" && await shouldUpdateTicket(data.ticket)) {
 				dispatch({
 					type: "UPDATE_TICKET_UNREAD_MESSAGES",
 					payload: [data.ticket, updateCount],
@@ -264,7 +270,7 @@ const TicketsList = (props) => {
 		return () => {
 			socket.disconnect();
 		};
-	}, [status, showAll, user, selectedQueueIds, updateCount]);
+	}, [status, showAll, user, selectedQueueIds, updateCount, adminFilterOptions]);
 
 	useEffect(() => {
 		if (typeof updateCount === "function") {
