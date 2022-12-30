@@ -12,6 +12,8 @@ import AppError from "./errors/AppError";
 import routes from "./routes";
 import { logger } from "./utils/logger";
 
+require('events').EventEmitter.defaultMaxListeners = Infinity;
+
 Sentry.init({ dsn: process.env.SENTRY_DSN });
 
 const app = express();
