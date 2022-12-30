@@ -21,7 +21,7 @@ const useStyles = makeStyles((theme) => ({
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
-    padding: 5
+    padding: 5,
   },
   modalTitle: {
     display: "flex",
@@ -37,7 +37,11 @@ const useStyles = makeStyles((theme) => ({
   filterOption: {
     paddingLeft: 20,
     paddingRight: 20,
-    paddingTop: 15
+    paddingTop: 15,
+    "@media (max-width: 400px)": {
+        padding: 5,
+    }
+
   },
   closeIcon: {
     cursor: "pointer",
@@ -89,7 +93,7 @@ const reducer = (state, action) => {
 
 const { RangePicker } = DatePicker;
 
-const FilterComponent = ({ user, onSubmit }) => {
+const FilterComponent = ({ user, onSubmit, status = '' }) => {
     const classes = useStyles()
     const [isModalOpen, setIsModalOpen] = useState(false)
     const [setores, setSetores] = useState([])
@@ -158,7 +162,7 @@ const FilterComponent = ({ user, onSubmit }) => {
     const handleOnResetFilters = () =>{
         setSelectedsTags([])
         dispatch({ type: "RESET_FILTERS" })
-        onSubmit(filters)
+        onSubmit({})
     }
 
     const handleOnSubmit = () => {
@@ -261,10 +265,14 @@ const FilterComponent = ({ user, onSubmit }) => {
                     />
                 </div>
                     <Divider style={{ padding: 0, marginBottom: 0 }} />
-                <div className={classes.filterOption}>
-                    <InputLabel style={{ marginBottom: 4 }}>Tags</InputLabel>
-                    <TagsFilter style={{ padding: 0}} onFiltered={handleOnTagsChange} selecteds={selectedsTags} setSelecteds={setSelectedsTags}/>
-                </div>
+                {
+                    status !== "search" ? 
+                        <div className={classes.filterOption}>
+                            <InputLabel style={{ marginBottom: 4 }}>Tags</InputLabel>
+                            <TagsFilter style={{ padding: 0}} onFiltered={handleOnTagsChange} selecteds={selectedsTags} setSelecteds={setSelectedsTags}/>
+                        </div> : ""
+                }
+                
                     <Divider style={{ padding: 0, marginBottom: 0 }} />
                 <div className={classes.filterOption}>
                     <div className={classes.buttonsContainer}>

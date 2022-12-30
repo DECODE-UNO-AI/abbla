@@ -39,7 +39,7 @@ const useStyles = makeStyles((theme) => ({
     display: "flex",
     height: "100%",
     flexDirection: "column",
-    overflow: "hidden",
+    overflow: "auto",
     borderTopRightRadius: 0,
     borderBottomRightRadius: 0,
   },
@@ -183,9 +183,9 @@ const TicketsManager = () => {
           className={classes.searchInput}
           value={searchParam}
           onChange={handleSearch}
-        />
+        />  
         {user?.profile === "admin" ? 
-          <FilterComponent user={user} onSubmit={handleOnFilterSubmit}/>
+          <FilterComponent user={user} onSubmit={handleOnFilterSubmit} status={tab}/>
           :
           ""
         }
