@@ -18,7 +18,7 @@ const shouldUpdate = async (ticket, showAll, user, adminFilterOptions) => {
             const tags = data.tags
             // eslint-disable-next-line array-callback-return
             tags.map((tag) => {
-                if (adminFilterOptions.tag.include(tag)) {
+                if (adminFilterOptions.tag.includes(tag)) {
                     notificate = true
                 }
             })

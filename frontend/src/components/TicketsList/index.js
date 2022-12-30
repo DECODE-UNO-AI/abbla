@@ -13,8 +13,6 @@ import { i18n } from "../../translate/i18n";
 import { AuthContext } from "../../context/Auth/AuthContext";
 import shouldUpdate from "../../helpers/shouldUpdate";
 
-import api from "../../services/api";
-
 const useStyles = makeStyles((theme) => ({
 	ticketsListWrapper: {
 		position: "relative",
