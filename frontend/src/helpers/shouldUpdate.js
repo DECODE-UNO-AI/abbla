@@ -24,7 +24,7 @@ const shouldUpdate = async (ticket, showAll, user, adminFilterOptions) => {
             })
         }
     } else {
-        if ( (ticket.queueId || ((!ticket.userId || ticket.userId === user?.id || showAll) && (user.queues.filter(e => e.id === ticket.queueId).length !== 0)) )) {
+        if ( (!ticket.queueId || ((!ticket.userId || ticket.userId === user?.id || showAll) && (user.queues.filter(e => e.id === ticket.queueId).length !== 0)) )) {
             notificate = true
         }
     }
