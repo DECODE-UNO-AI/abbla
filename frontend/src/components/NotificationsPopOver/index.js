@@ -60,8 +60,8 @@ const NotificationsPopOver = () => {
 	const historyRef = useRef(history);
 
 	useEffect(() => {
+		
 		soundAlertRef.current = play;
-
 		if (!("Notification" in window)) {
 			console.log("This browser doesn't support notifications");
 		} else {
@@ -173,7 +173,10 @@ const NotificationsPopOver = () => {
 			return [notification, ...prevState];
 		});
 
-		soundAlertRef.current();
+		if (user.notificationSound) {
+			soundAlertRef.current();
+		}
+		
 	};
 
 	const handleClick = () => {

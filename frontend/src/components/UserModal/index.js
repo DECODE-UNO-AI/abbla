@@ -104,6 +104,7 @@ const UserModal = ({ open, onClose, userId }) => {
 	const [user, setUser] = useState(initialState);
 	const [selectedQueueIds, setSelectedQueueIds] = useState([]);
 	const [showPassword, setShowPassword] = useState(false);
+	const [showNotication, setShowNotification] = useState("")
 	const [whatsappId, setWhatsappId] = useState(false);
 	const { loading, whatsApps } = useWhatsApps();
 	const startWorkRef = useRef();
@@ -120,6 +121,7 @@ const UserModal = ({ open, onClose, userId }) => {
 				const userQueueIds = data.queues?.map(queue => queue.id);
 				setSelectedQueueIds(userQueueIds);
 				setWhatsappId(data.whatsappId ? data.whatsappId : '');
+				setShowNotification(data.notificationSound)
 			} catch (err) {
 				toastError(err);
 			}
@@ -134,7 +136,7 @@ const UserModal = ({ open, onClose, userId }) => {
 	};
 
 	const handleSaveUser = async values => {
-		const userData = { ...values, whatsappId, queueIds: selectedQueueIds };
+		const userData = { ...values, whatsappId, notificationSound: showNotication, queueIds: selectedQueueIds };
 		try {
 			if (userId) {
 				await api.put(`/users/${userId}`, userData);
@@ -279,6 +281,26 @@ const UserModal = ({ open, onClose, userId }) => {
 												{whatsApps.map((whatsapp) => (
 													<MenuItem key={whatsapp.id} value={whatsapp.id}>{whatsapp.name}</MenuItem>
 												))}
+											</Field>
+										</FormControl>
+									)}
+								/>
+								<Can
+									role={loggedInUser.profile}
+									perform="user-modal:editQueues"
+									yes={() => (!loading &&
+										<FormControl variant="outlined" margin="dense" className={classes.maxWidth} fullWidth>
+											<InputLabel>{"Notificações"}</InputLabel>
+											<Field
+												as={Select}
+												value={showNotication}
+												onChange={(e) => setShowNotification(e.target.value)}
+												label={"Notificações"}
+											>
+												<MenuItem value={''}>&nbsp;</MenuItem>
+												<MenuItem key={true} value={true}>Ativadas</MenuItem>
+												<MenuItem key={false} value={false}>Desativadas</MenuItem>
+												
 											</Field>
 										</FormControl>
 									)}
