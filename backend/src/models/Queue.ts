@@ -56,7 +56,7 @@ class Queue extends Model<Queue> {
   whatsapps: Array<Whatsapp & { WhatsappQueue: WhatsappQueue }>;
 
   @BelongsToMany(() => Departament, () => DepartamentQueue)
-  departament: Array<DepartamentQueue & { DepartamentQueue: DepartamentQueue }>;
+  departaments: Array<Departament & { DepartamentQueue: DepartamentQueue }>;
 
   @BelongsToMany(() => User, () => UserQueue)
   users: Array<User & { UserQueue: UserQueue }>;

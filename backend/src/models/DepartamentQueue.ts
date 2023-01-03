@@ -4,7 +4,8 @@ import {
   CreatedAt,
   UpdatedAt,
   Model,
-  ForeignKey
+  ForeignKey,
+  BelongsTo
 } from "sequelize-typescript";
 import Departament from "./Departament";
 import Queue from "./Queue";

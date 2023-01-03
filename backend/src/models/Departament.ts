@@ -42,10 +42,7 @@ class Departament extends Model<Departament> {
   updatedAt: Date;
 
   @BelongsToMany(() => Queue, () => DepartamentQueue)
-  queues: Array<Queue & { DepartamentQueue: DepartamentQueue }>;
-
-  @HasMany(() => DepartamentQueue)
-  DepartamentQueue: DepartamentQueue[];
+  queues: Queue[];
 }
 
 export default Departament;
