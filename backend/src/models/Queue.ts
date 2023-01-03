@@ -10,6 +10,8 @@ import {
   Unique,
   BelongsToMany
 } from "sequelize-typescript";
+import Departament from "./Departament";
+import DepartamentQueue from "./DepartamentQueue";
 import User from "./User";
 import UserQueue from "./UserQueue";
 
@@ -52,6 +54,9 @@ class Queue extends Model<Queue> {
 
   @BelongsToMany(() => Whatsapp, () => WhatsappQueue)
   whatsapps: Array<Whatsapp & { WhatsappQueue: WhatsappQueue }>;
+
+  @BelongsToMany(() => Departament, () => DepartamentQueue)
+  departament: Array<DepartamentQueue & { DepartamentQueue: DepartamentQueue }>;
 
   @BelongsToMany(() => User, () => UserQueue)
   users: Array<User & { UserQueue: UserQueue }>;
