@@ -27,7 +27,7 @@ const syncUnreadMessages = async (wbot: Session) => {
         await handleMessage(msg, wbot);
       }
 
-      await chat.sendSeen();
+      // await chat.sendSeen();
     }
   }
 };
