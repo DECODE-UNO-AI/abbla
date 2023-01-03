@@ -3,6 +3,7 @@ import * as Yup from "yup";
 import AppError from "../../errors/AppError";
 
 import Departament from "../../models/Departament";
+import { SerializedDepartament } from "../../helpers/SerializeDepartament";
 import Queue from "../../models/Queue";
 
 interface Request {
@@ -15,7 +16,7 @@ interface Response {
   id: number;
   name: string;
   description: string;
-  //queueId: number[];
+  queues: Queue[];
 }
 
 const CreateDepartamentService = async ({
@@ -58,7 +59,7 @@ const CreateDepartamentService = async ({
 
   await departament.reload();
 
-  return departament;
+  return SerializedDepartament(departament);
 };
 
 export default CreateDepartamentService;

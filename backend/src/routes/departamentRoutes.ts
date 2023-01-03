@@ -9,4 +9,6 @@ departamentRoutes.get("/departament", DepartamentControler.index);
 
 departamentRoutes.post("/departament", DepartamentControler.store);
 
+departamentRoutes.delete("/departament/:id", DepartamentControler.remove);
+
 export default departamentRoutes;
