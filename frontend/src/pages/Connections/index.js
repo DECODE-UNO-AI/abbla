@@ -289,7 +289,7 @@ const Connections = () => {
 			</div>
 		);
 	};
-
+	console.log(whatsApps)
 	return (
 		<MainContainer>
 			<ConfirmationModal
@@ -389,8 +389,9 @@ const Connections = () => {
 												<IconButton
 													size="small"
 													onClick={() => handleEditWhatsApp(whatsApp)}
+													disabled={whatsApp.status === "CONNECTED"}
 												>
-													<Edit color="secondary" />
+													<Edit color={whatsApp.status === "CONNECTED"? "black" : "secondary" } />
 												</IconButton>
 
 												{/* <IconButton
