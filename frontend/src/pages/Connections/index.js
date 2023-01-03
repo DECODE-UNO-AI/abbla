@@ -289,7 +289,6 @@ const Connections = () => {
 			</div>
 		);
 	};
-	console.log(whatsApps)
 	return (
 		<MainContainer>
 			<ConfirmationModal
