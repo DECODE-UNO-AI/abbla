@@ -44,7 +44,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const reducer = (state, action) => {
-  if (action.type === "LOAD_DEPARTAMENTS") {
+  if (action.type === "LOAD_DEPARTAMENT") {
     const departaments = action.payload;
     const newDepartament = [];
     departaments.forEach((departament) => {
@@ -55,28 +55,25 @@ const reducer = (state, action) => {
         newDepartament.push(departament);
       }
     });
-
-
     return [...state, ...newDepartament];
   }
 
-  if (action.type === "UPDATE_DEPARTAMENTS") {
-    const queue = action.payload;
-    const queueIndex = state.findIndex((u) => u.id === queue.id);
-
-    if (queueIndex !== -1) {
-      state[queueIndex] = queue;
+  if (action.type === "UPDATE_DEPARTAMENT") {
+    const departament = action.payload;
+    const departamentIndex = state.findIndex((u) => u.id === departament.id);
+    if (departamentIndex !== -1) {
+      state[departamentIndex] = departament;
       return [...state];
     } else {
-      return [queue, ...state];
+      return [departament, ...state];
     }
   }
 
-  if (action.type === "DELETE_DEPARTAMENTS") {
-    const queueId = action.payload;
-    const queueIndex = state.findIndex((q) => q.id === queueId);
-    if (queueIndex !== -1) {
-      state.splice(queueIndex, 1);
+  if (action.type === "DELETE_DEPARTAMENT") {
+    const departamentId = action.payload;
+    const departamentIndex = state.findIndex((q) => q.id === departamentId);
+    if (departamentIndex !== -1) {
+      state.splice(departamentIndex, 1);
     }
     return [...state];
   }
@@ -101,7 +98,7 @@ const Departaments = () => {
       setLoading(true);
       try {
         const { data } = await api.get("/departament");
-        dispatch({ type: "LOAD_DEPARTAMENTS", payload: data });
+        dispatch({ type: "LOAD_DEPARTAMENT", payload: data });
         setLoading(false);
       } catch (err) {
         toastError(err);
@@ -113,13 +110,13 @@ const Departaments = () => {
   useEffect(() => {
     const socket = openSocket();
 
-    socket.on("queue", (data) => {
+    socket.on("departament", (data) => {
       if (data.action === "update" || data.action === "create") {
-        dispatch({ type: "UPDATE_QUEUES", payload: data.queue });
+        dispatch({ type: "UPDATE_DEPARTAMENT", payload: data.departament });
       }
 
       if (data.action === "delete") {
-        dispatch({ type: "DELETE_QUEUE", payload: data.queueId });
+        dispatch({ type: "DELETE_DEPARTAMENT", payload: data.departamentId });
       }
     });
 

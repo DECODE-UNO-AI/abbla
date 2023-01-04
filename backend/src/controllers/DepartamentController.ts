@@ -1,4 +1,5 @@
 import { Request, Response } from "express";
+import { getIO } from "../libs/socket";
 // import AppError from "../errors/AppError";
 import CreateDepartamentService from "../services/DepartamentServices/CreateDepartamentService";
 import DeleteDepartamentService from "../services/DepartamentServices/DeleteDepartamentService";
@@ -28,6 +29,12 @@ export const store = async (req: Request, res: Response): Promise<Response> => {
     queueIds
   });
 
+  const io = getIO();
+  io.emit("departament", {
+    action: "create",
+    departament
+  });
+
   return res.status(200).json(departament);
 };
 
@@ -55,9 +62,15 @@ export const update = async (
 
   const userData = req.body;
 
-  const queue = await UpdateDepartamentService({ id, userData });
+  const departament = await UpdateDepartamentService({ id, userData });
 
-  return res.status(201).json(queue);
+  const io = getIO();
+  io.emit("departament", {
+    action: "update",
+    departament
+  });
+
+  return res.status(201).json(departament);
 };
 
 export const remove = async (
@@ -71,6 +84,12 @@ export const remove = async (
   // }
 
   await DeleteDepartamentService(id);
+
+  const io = getIO();
+  io.emit("departament", {
+    action: "delete",
+    departamentId: +id
+  });
 
   return res.status(200).json({ message: "Departament deleted" });
 };
