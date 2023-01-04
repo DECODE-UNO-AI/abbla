@@ -5,14 +5,18 @@ import * as DepartamentControler from "../controllers/DepartamentController";
 
 const departamentRoutes = Router();
 
-departamentRoutes.get("/departament", DepartamentControler.index);
+departamentRoutes.get("/departament", isAuth, DepartamentControler.index);
 
-departamentRoutes.get("/departament/:id", DepartamentControler.show);
+departamentRoutes.get("/departament/:id", isAuth, DepartamentControler.show);
 
-departamentRoutes.post("/departament", DepartamentControler.store);
+departamentRoutes.post("/departament", isAuth, DepartamentControler.store);
 
-departamentRoutes.put("/departament/:id", DepartamentControler.update);
+departamentRoutes.put("/departament/:id", isAuth, DepartamentControler.update);
 
-departamentRoutes.delete("/departament/:id", DepartamentControler.remove);
+departamentRoutes.delete(
+  "/departament/:id",
+  isAuth,
+  DepartamentControler.remove
+);
 
 export default departamentRoutes;

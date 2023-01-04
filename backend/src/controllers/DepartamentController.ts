@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import { getIO } from "../libs/socket";
-// import AppError from "../errors/AppError";
+import AppError from "../errors/AppError";
 import CreateDepartamentService from "../services/DepartamentServices/CreateDepartamentService";
 import DeleteDepartamentService from "../services/DepartamentServices/DeleteDepartamentService";
 import ListDepartamentsService from "../services/DepartamentServices/ListDepartamentsService";
@@ -19,9 +19,9 @@ export const store = async (req: Request, res: Response): Promise<Response> => {
     queueIds
   }: { name: string; description: string; queueIds: number[] } = req.body;
 
-  // if (req.user.profile !== "admin") {
-  //   throw new AppError("ERR_NO_PERMISSION", 403);
-  // }
+  if (req.user.profile !== "admin") {
+    throw new AppError("ERR_NO_PERMISSION", 403);
+  }
 
   const departament = await CreateDepartamentService({
     name,
@@ -41,9 +41,9 @@ export const store = async (req: Request, res: Response): Promise<Response> => {
 export const show = async (req: Request, res: Response): Promise<Response> => {
   const { id } = req.params;
 
-  // if (req.user.profile !== "admin") {
-  //   throw new AppError("ERR_NO_PERMISSION", 403);
-  // }
+  if (req.user.profile !== "admin") {
+    throw new AppError("ERR_NO_PERMISSION", 403);
+  }
 
   const departament = await ShowDepartamentService(id);
 
@@ -56,9 +56,9 @@ export const update = async (
 ): Promise<Response> => {
   const { id } = req.params;
 
-  // if (req.user.profile !== "admin") {
-  //   throw new AppError("ERR_NO_PERMISSION", 403);
-  // }
+  if (req.user.profile !== "admin") {
+    throw new AppError("ERR_NO_PERMISSION", 403);
+  }
 
   const userData = req.body;
 
@@ -79,9 +79,9 @@ export const remove = async (
 ): Promise<Response> => {
   const { id } = req.params;
 
-  // if (req.user.profile !== "admin") {
-  //   throw new AppError("ERR_NO_PERMISSION", 403);
-  // }
+  if (req.user.profile !== "admin") {
+    throw new AppError("ERR_NO_PERMISSION", 403);
+  }
 
   await DeleteDepartamentService(id);
 
