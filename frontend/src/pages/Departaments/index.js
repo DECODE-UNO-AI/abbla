@@ -14,6 +14,7 @@ import {
   TableRow,
   Typography,
 } from "@material-ui/core";
+import Chip from "@material-ui/core/Chip";
 
 import MainContainer from "../../components/MainContainer";
 import MainHeader from "../../components/MainHeader";
@@ -40,6 +41,11 @@ const useStyles = makeStyles((theme) => ({
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
+  },
+  customQueueTableCell: {
+    display: "flex",
+    alignItems: "left",
+    justifyContent: "left",
   },
 }));
 
@@ -197,7 +203,7 @@ const Departaments = () => {
               <TableCell align="center">
                 {i18n.t("departaments.table.description")}
               </TableCell>
-              <TableCell align="center">
+              <TableCell align="left">
                 {i18n.t("departaments.table.queues")}
               </TableCell>
               <TableCell align="center">
@@ -213,7 +219,7 @@ const Departaments = () => {
                   <TableCell align="center">
                     <div className={classes.customTableCell}>
                       <Typography
-                        style={{ width: 100, align: "center" }}
+                        style={{ width: 400, align: "center" }}
                         noWrap
                         variant="body2"
                       >
@@ -221,14 +227,24 @@ const Departaments = () => {
                       </Typography>
                     </div>
                   </TableCell>
-                  <TableCell align="center">
-                    <div className={classes.customTableCell}>
+                  <TableCell align="left">
+                    <div className={classes.customQueueTableCell}>
                       <Typography
-                        style={{ width: 400, align: "center" }}
+                        style={{ width: 600, align: "left" }}
                         noWrap
                         variant="body2"
                       >
-                        Queues
+                        {
+                            departament.queues?.map((queue, index) => 
+                                <Chip
+                                    key={index}
+                                    style={{ backgroundColor: queue.color }}
+                                    variant="outlined"
+                                    label={queue.name}
+                                    className={classes.chip}
+                                />
+                            )
+                        }
                       </Typography>
                     </div>
                   </TableCell>
