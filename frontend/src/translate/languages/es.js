@@ -369,7 +369,8 @@ const messages = {
           apidocs: "Documentación",
           apititle: "API",
           apikey: "Clave API",
-          token: "Ficha"
+          token: "Ficha",
+          departaments: "Departamento"
         },
         appBar: {
           user: {
@@ -401,6 +402,21 @@ const messages = {
           deleteTitle: "Eliminar",
           deleteMessage: "¿Estás seguro? ¡Esta acción no se puede revertir! Los tickets de este sector seguirán existiendo, pero ya no tendrán ningún sector asignado.",
         },
+      },
+      departaments: {
+        title: "Departamentos",
+        notifications: {
+          departamentDeleted: "El departamento ha sido eliminado."
+        },
+        table: {
+          name: "Nombre",
+          description: "Descrição",
+          actions: "Acciones",
+          queues: "Sectores"
+        },
+        buttons: {
+          add: "Agregar departamento"
+        }
       },
       queueSelect: {
         inputLabel: "Sectores",

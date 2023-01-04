@@ -29,10 +29,6 @@ const UpdateDepartamentService = async ({
 }: Request): Promise<Response> => {
   const { name, description, queueIds = [] } = userData;
 
-  // if (req.user.profile !== "admin" && sessionUserId !== newUserId) {
-  //   throw new AppError("ERR_NO_PERMISSION", 403);
-  // }
-
   const schema = Yup.object().shape({
     name: Yup.string(),
     description: Yup.string()

@@ -34,6 +34,10 @@ export const store = async (req: Request, res: Response): Promise<Response> => {
 export const show = async (req: Request, res: Response): Promise<Response> => {
   const { id } = req.params;
 
+  // if (req.user.profile !== "admin") {
+  //   throw new AppError("ERR_NO_PERMISSION", 403);
+  // }
+
   const departament = await ShowDepartamentService(id);
 
   return res.status(200).json(departament);
@@ -44,6 +48,10 @@ export const update = async (
   res: Response
 ): Promise<Response> => {
   const { id } = req.params;
+
+  // if (req.user.profile !== "admin") {
+  //   throw new AppError("ERR_NO_PERMISSION", 403);
+  // }
 
   const userData = req.body;
 

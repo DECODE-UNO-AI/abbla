@@ -24,7 +24,8 @@ import {
   SettingsOutlined,
   SyncAlt,
   VpnKeyRounded,
-  WhatsApp
+  WhatsApp,
+  DnsOutlined
 } from "@material-ui/icons";
 
 import { i18n } from "../translate/i18n";
@@ -155,6 +156,11 @@ const MainListItems = (props) => {
               to="/users"
               primary={i18n.t("mainDrawer.listItems.users")}
               icon={<PeopleAltOutlined />}
+            />
+            <ListItemLink
+              to="/departaments"
+              primary={i18n.t("mainDrawer.listItems.departaments")}
+              icon={<DnsOutlined />}
             />
             <ListItemLink
               to="/queues"
