@@ -11,6 +11,8 @@ departamentRoutes.get("/departament/:id", DepartamentControler.show);
 
 departamentRoutes.post("/departament", DepartamentControler.store);
 
+departamentRoutes.put("/departament/:id", DepartamentControler.update);
+
 departamentRoutes.delete("/departament/:id", DepartamentControler.remove);
 
 export default departamentRoutes;

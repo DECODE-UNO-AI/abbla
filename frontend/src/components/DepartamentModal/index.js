@@ -14,8 +14,6 @@ import {
 	DialogActions,
 	DialogContent,
 	DialogTitle,
-	IconButton,
-	InputAdornment,
 	makeStyles,
 	TextField,
 } from "@material-ui/core";
@@ -27,7 +25,6 @@ import { i18n } from "../../translate/i18n";
 import api from "../../services/api";
 import toastError from "../../errors/toastError";
 import QueueSelect from "../QueueSelect";
-import { Colorize } from "@material-ui/icons";
 
 const useStyles = makeStyles(theme => ({
 	root: {
@@ -65,16 +62,12 @@ const useStyles = makeStyles(theme => ({
 	},
 }));
 
-const QueueSchema = Yup.object().shape({
+const DepartamentSchema = Yup.object().shape({
 	name: Yup.string()
 		.min(2, "Too Short!")
 		.max(50, "Too Long!")
 		.required("Required"),
-	color: Yup.string().min(3, "Too Short!").max(9, "Too Long!").required(),
-	greetingMessage: Yup.string(),
-	startWork: Yup.string(),
-	endWork: Yup.string(),
-	absenceMessage: Yup.string()
+	description: Yup.string(),
 });
 
 const DepartamentModal = ({ open, onClose, departamentId }) => {
@@ -83,15 +76,12 @@ const DepartamentModal = ({ open, onClose, departamentId }) => {
 	const initialState = {
 		name: "",
 		description: "",
-		queues: []
+		queueIds: []
 	};
 
-	const [queue, setQueue] = useState(initialState);
+	const [departament, setDepartament] = useState(initialState);
     const [selectedQueueIds, setSelectedQueueIds] = useState([]);
-	const greetingRef = useRef();
-	const absenceRef = useRef();
-	const startWorkRef = useRef();
-	const endWorkRef = useRef();
+	const descriptionRef = useRef();
 
 	useEffect(() => {
 		(async () => {
@@ -100,7 +90,7 @@ const DepartamentModal = ({ open, onClose, departamentId }) => {
 				const { data } = await api.get(`/departament/${departamentId}`);
                 const departamentQueues = data.queues?.map(queue => queue.id);
 				setSelectedQueueIds(departamentQueues);
-				setQueue(prevState => {
+				setDepartament(prevState => {
 					return { ...prevState, ...data };
 				});
 			} catch (err) {
@@ -109,34 +99,32 @@ const DepartamentModal = ({ open, onClose, departamentId }) => {
 		})();
 
 		return () => {
-			setQueue({
+			setDepartament({
 				name: "",
-				color: "",
-				greetingMessage: "",
-				startWork: "",
-				endWork: "",
-				absenceMessage: ""
+		        description: "",
+		        queueIds: []
 			});
 		};
 	}, [departamentId, open]);
 
 	const handleClose = () => {
 		onClose();
-		setQueue(initialState);
+		setDepartament(initialState);
 	};
 
 	const handleSaveQueue = async values => {
-		try {
-			if (departamentId) {
-				await api.put(`/queue/${departamentId}`, values);
-			} else {
-				await api.post("/queue", values);
-			}
-			toast.success(`${i18n.t("queueModal.notification.title")}`);
-			handleClose();
-		} catch (err) {
-			toastError(err);
-		}
+        const departamentData = { ...values, queueIds: selectedQueueIds };
+		 try {
+		 	if (departamentId) {
+		 		await api.put(`/departament/${departamentId}`, departamentData);
+		 	} else {
+		 		await api.post("/departament", departamentData);
+		 	}
+		 	toast.success(`${i18n.t("departamentModal.notification.title")}`);
+		 	handleClose();
+		 } catch (err) {
+		 	toastError(err);
+		 }
 	};
 
 	return (
@@ -148,9 +136,9 @@ const DepartamentModal = ({ open, onClose, departamentId }) => {
 						: `${i18n.t("departamentModal.title.add")}`}
 				</DialogTitle>
 				<Formik
-					initialValues={queue}
+					initialValues={departament}
 					enableReinitialize={true}
-					validationSchema={QueueSchema}
+					validationSchema={DepartamentSchema}
 					onSubmit={(values, actions) => {
 						setTimeout(() => {
 							handleSaveQueue(values);
@@ -176,17 +164,17 @@ const DepartamentModal = ({ open, onClose, departamentId }) => {
 									<Field
 										as={TextField}
 										label={i18n.t("departamentModal.form.description")}
-										type="greetingMessage"
+										type="description"
 										multiline
-										inputRef={greetingRef}
+										inputRef={descriptionRef}
 										rows={4}
 										fullWidth
-										name="greetingMessage"
+										name="description"
 										error={
-											touched.greetingMessage && Boolean(errors.greetingMessage)
+											touched.description && Boolean(errors.description)
 										}
 										helperText={
-											touched.greetingMessage && errors.greetingMessage
+											touched.description && errors.description
 										}
 										variant="outlined"
 										margin="dense"

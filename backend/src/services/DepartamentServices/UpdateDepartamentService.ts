@@ -42,6 +42,8 @@ const UpdateDepartamentService = async ({
 
   const departament = await ShowDepartamentService(id);
 
+  departament.update({ name, description });
+
   await departament.$set("queues", queueIds);
 
   await departament.reload();
