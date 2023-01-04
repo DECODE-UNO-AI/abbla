@@ -277,6 +277,7 @@ const messages = {
           admin: "Administrador",
           whatsapp: "Conexão Padrão",
           user: "Atendente",
+          supervisor: "Supervisor",
           startWork: "Inicio",
           endWork: "Termino"
         },

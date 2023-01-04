@@ -106,6 +106,7 @@ const UserModal = ({ open, onClose, userId }) => {
 	const [showPassword, setShowPassword] = useState(false);
 	const [showNotication, setShowNotification] = useState("")
 	const [whatsappId, setWhatsappId] = useState(false);
+	const [isSupervisor, setIsSupervisor] = useState(false)
 	const { loading, whatsApps } = useWhatsApps();
 	const startWorkRef = useRef();
 	const endWorkRef = useRef();
@@ -129,6 +130,20 @@ const UserModal = ({ open, onClose, userId }) => {
 
 		fetchUser();
 	}, [userId, open]);
+
+	useEffect(() => {
+		if (user.profile === "supervisor") {
+			setIsSupervisor(true)
+		}
+	}, [user.profile])
+
+	const handleOnProfileChange = (e) => {
+		if (e.target.value === "supervisor") {
+			setIsSupervisor(true)
+		} else {
+			setIsSupervisor(false)
+		}
+	}
 
 	const handleClose = () => {
 		onClose();
@@ -225,6 +240,7 @@ const UserModal = ({ open, onClose, userId }) => {
 										margin="dense"
 										fullWidth
 									/>
+									
 									<FormControl
 										variant="outlined"
 										className={classes.formControl}
@@ -241,6 +257,7 @@ const UserModal = ({ open, onClose, userId }) => {
 
 													<Field
 														as={Select}
+														// onChange={(e) => handleOnProfileChange(e)}
 														label={i18n.t("userModal.form.profile")}
 														name="profile"
 														labelId="profile-selection-label"
@@ -249,12 +266,26 @@ const UserModal = ({ open, onClose, userId }) => {
 													>
 														<MenuItem value="admin">{i18n.t("userModal.form.admin")}</MenuItem>
 														<MenuItem value="user">{i18n.t("userModal.form.user")}</MenuItem>
+														<MenuItem value="supervisor">{i18n.t("userModal.form.supervisor")}</MenuItem>
 													</Field>
 												</>
 											)}
 										/>
 									</FormControl>
 								</div>
+								{
+									isSupervisor ? 
+									<Can
+										role={loggedInUser.profile}
+										perform="user-modal:editQueues"
+										yes={() => (
+											<QueueSelect
+												selectedQueueIds={selectedQueueIds}
+												onChange={values => setSelectedQueueIds(values)}
+											/>
+										)}
+									/> : ""
+								}
 								<Can
 									role={loggedInUser.profile}
 									perform="user-modal:editQueues"
