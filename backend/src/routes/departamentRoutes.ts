@@ -7,6 +7,8 @@ const departamentRoutes = Router();
 
 departamentRoutes.get("/departament", DepartamentControler.index);
 
+departamentRoutes.get("/departament/:id", DepartamentControler.show);
+
 departamentRoutes.post("/departament", DepartamentControler.store);
 
 departamentRoutes.delete("/departament/:id", DepartamentControler.remove);

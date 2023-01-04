@@ -24,7 +24,7 @@ import { i18n } from "../../translate/i18n";
 import toastError from "../../errors/toastError";
 import api from "../../services/api";
 import { DeleteOutline, Edit } from "@material-ui/icons";
-import QueueModal from "../../components/QueueModal";
+import DepartamentModal from "../../components/DepartamentModal";
 import { toast } from "react-toastify";
 import ConfirmationModal from "../../components/ConfirmationModal";
 
@@ -92,7 +92,7 @@ const Departaments = () => {
   const [departaments, dispatch] = useReducer(reducer, []);
   const [loading, setLoading] = useState(false);
 
-  const [queueModalOpen, setQueueModalOpen] = useState(false);
+  const [departamentModalOpen, setDepartamentModalOpen] = useState(false);
   const [selectedDepartament, setSelectedDepartament] = useState(null);
   const [confirmModalOpen, setConfirmModalOpen] = useState(false);
 
@@ -130,18 +130,18 @@ const Departaments = () => {
   }, []);
 
   const handleOpenQueueModal = () => {
-    setQueueModalOpen(true);
+    setDepartamentModalOpen(true);
     setSelectedDepartament(null);
   };
 
   const handleCloseQueueModal = () => {
-    setQueueModalOpen(false);
+    setDepartamentModalOpen(false);
     setSelectedDepartament(null);
   };
 
-  const handleEditQueue = (queue) => {
-    setSelectedDepartament(queue);
-    setQueueModalOpen(true);
+  const handleEditDepartament = (departament) => {
+    setSelectedDepartament(departament);
+    setDepartamentModalOpen(true);
   };
 
   const handleCloseConfirmationModal = () => {
@@ -174,11 +174,11 @@ const Departaments = () => {
       >
         {i18n.t("departaments.confirmationModal.deleteMessage")}
       </ConfirmationModal>
-      {/* <QueueModal
-        open={queueModalOpen}
+      <DepartamentModal
+        open={departamentModalOpen}
         onClose={handleCloseQueueModal}
-        queueId={selectedQueue?.id}
-      /> */}
+        departamentId={selectedDepartament?.id}
+      />
       <MainHeader>
         <Title>{i18n.t("departaments.title")}</Title>
         <MainHeaderButtonsWrapper>
@@ -239,7 +239,7 @@ const Departaments = () => {
                   <TableCell align="center">
                     <IconButton
                       size="small"
-                      onClick={() => handleEditQueue(departament)}
+                      onClick={() => handleEditDepartament(departament)}
                     >
                       <Edit color="secondary" />
                     </IconButton>

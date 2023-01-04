@@ -246,6 +246,24 @@ const messages = {
           cancel: "Cancel",
         },
       },
+      departamentModal: {
+        title: {
+          add: "Add Departament",
+          edit: "Edit Departament",
+        },
+        notification: {
+          title: "Departament saved successfully!",
+        },
+        form: {
+          name: "Name",
+          description: "Description",
+        },
+        buttons: {
+          okAdd: "Add",
+          okEdit: "Save",
+          cancel: "Cancel",
+        },
+      },
       userModal: {
         title: {
           add: "Add Attendant",
