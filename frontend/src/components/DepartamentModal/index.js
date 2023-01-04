@@ -26,7 +26,7 @@ import { i18n } from "../../translate/i18n";
 
 import api from "../../services/api";
 import toastError from "../../errors/toastError";
-import ColorPicker from "../ColorPicker";
+import QueueSelect from "../QueueSelect";
 import { Colorize } from "@material-ui/icons";
 
 const useStyles = makeStyles(theme => ({
@@ -87,6 +87,7 @@ const DepartamentModal = ({ open, onClose, departamentId }) => {
 	};
 
 	const [queue, setQueue] = useState(initialState);
+    const [selectedQueueIds, setSelectedQueueIds] = useState([]);
 	const greetingRef = useRef();
 	const absenceRef = useRef();
 	const startWorkRef = useRef();
@@ -97,7 +98,8 @@ const DepartamentModal = ({ open, onClose, departamentId }) => {
 			if (!departamentId) return;
 			try {
 				const { data } = await api.get(`/departament/${departamentId}`);
-                console.log(data)
+                const departamentQueues = data.queues?.map(queue => queue.id);
+				setSelectedQueueIds(departamentQueues);
 				setQueue(prevState => {
 					return { ...prevState, ...data };
 				});
@@ -190,9 +192,10 @@ const DepartamentModal = ({ open, onClose, departamentId }) => {
 										margin="dense"
 									/>
 								</div>
-								<div>
-									
-								</div>
+								<QueueSelect
+									selectedQueueIds={selectedQueueIds}
+									onChange={selectedIds => setSelectedQueueIds(selectedIds)}
+								/>
 							</DialogContent>
 							<DialogActions>
 								<Button

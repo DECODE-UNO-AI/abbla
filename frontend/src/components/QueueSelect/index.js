@@ -32,6 +32,9 @@ const QueueSelect = ({ selectedQueueIds, onChange }) => {
 				toastError(err);
 			}
 		})();
+
+		return () => onChange([])
+	// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, []);
 
 	const handleChange = e => {

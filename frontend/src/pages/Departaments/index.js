@@ -102,7 +102,6 @@ const Departaments = () => {
       try {
         const { data } = await api.get("/departament");
         dispatch({ type: "LOAD_DEPARTAMENTS", payload: data });
-
         setLoading(false);
       } catch (err) {
         toastError(err);
