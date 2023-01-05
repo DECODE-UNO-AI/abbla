@@ -42,7 +42,8 @@ export const store = async (req: Request, res: Response): Promise<Response> => {
     whatsappId,
     startWork,
     endWork,
-    notificationSound
+    notificationSound,
+    departamentIds
   } = req.body;
 
   if (
@@ -63,7 +64,8 @@ export const store = async (req: Request, res: Response): Promise<Response> => {
     whatsappId,
     startWork,
     endWork,
-    notificationSound
+    notificationSound,
+    departamentIds
   });
 
   const io = getIO();

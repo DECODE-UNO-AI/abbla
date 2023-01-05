@@ -14,6 +14,7 @@ interface UserData {
   startWork?: string;
   endWork?: string;
   notificationSound?: boolean;
+  departamentIds?: number[];
 }
 
 interface Request {
@@ -50,7 +51,8 @@ const UpdateUserService = async ({
     whatsappId,
     startWork,
     endWork,
-    notificationSound
+    notificationSound,
+    departamentIds = []
   } = userData;
 
   try {
@@ -71,6 +73,8 @@ const UpdateUserService = async ({
   });
 
   await user.$set("queues", queueIds);
+
+  await user.$set("departaments", departamentIds);
 
   await user.reload();
 

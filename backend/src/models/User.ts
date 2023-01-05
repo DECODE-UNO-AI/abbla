@@ -20,6 +20,9 @@ import Ticket from "./Ticket";
 import Queue from "./Queue";
 import UserQueue from "./UserQueue";
 import Whatsapp from "./Whatsapp";
+import Departament from "./Departament";
+import DepartamentQueue from "./DepartamentQueue";
+import UserDepartament from "./UserDepartament";
 
 @Table
 class User extends Model<User> {
@@ -78,6 +81,9 @@ class User extends Model<User> {
 
   @BelongsToMany(() => Queue, () => UserQueue)
   queues: Queue[];
+
+  @BelongsToMany(() => Departament, () => UserDepartament)
+  departaments: Departament[];
 
   @BeforeUpdate
   @BeforeCreate

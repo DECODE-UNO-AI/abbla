@@ -15,9 +15,9 @@ import DepartamentQueue from "./DepartamentQueue";
 import Queue from "./Queue";
 import User from "./User";
 import UserQueue from "./UserQueue";
-
 import Whatsapp from "./Whatsapp";
 import WhatsappQueue from "./WhatsappQueue";
+import UserDepartament from "./UserDepartament";
 
 @Table
 class Departament extends Model<Departament> {
@@ -43,6 +43,9 @@ class Departament extends Model<Departament> {
 
   @BelongsToMany(() => Queue, () => DepartamentQueue)
   queues: Queue[];
+
+  @BelongsToMany(() => User, () => UserDepartament)
+  user: User[];
 }
 
 export default Departament;
