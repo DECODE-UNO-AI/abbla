@@ -19,7 +19,7 @@ const useStyles = makeStyles(theme => ({
 	},
 }));
 
-const QueueSelect = ({ selectedQueueIds, onChange }) => {
+const QueueSelect = ({ selectedQueueIds, onChange, isDisabled = false }) => {
 	const classes = useStyles();
 	const [queues, setQueues] = useState([]);
 
@@ -46,6 +46,7 @@ const QueueSelect = ({ selectedQueueIds, onChange }) => {
 			<FormControl fullWidth margin="dense" variant="outlined">
 				<InputLabel>{i18n.t("queueSelect.inputLabel")}</InputLabel>
 				<Select
+					disabled={isDisabled}
 					multiple
 					labelWidth={60}
 					value={selectedQueueIds}

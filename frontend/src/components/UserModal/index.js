@@ -105,6 +105,7 @@ const UserModal = ({ open, onClose, userId }) => {
 	const [user, setUser] = useState(initialState);
 	const [selectedQueueIds, setSelectedQueueIds] = useState([]);
 	const [selectedDepartamentIds, setSelectedDepartamentsIds] = useState([]);
+	const [selectedDepartaments, setSelectedDepartaments] = useState([])
 	const [showPassword, setShowPassword] = useState(false);
 	const [showNotication, setShowNotification] = useState("");
 	const [whatsappId, setWhatsappId] = useState(false);
@@ -141,6 +142,15 @@ const UserModal = ({ open, onClose, userId }) => {
 		return () => setIsSupervisor(false)
 	}, [user.profile])
 
+	useEffect(() => {
+		let newQueues = []
+		selectedDepartaments.map((dep) => dep.queues.map((q) =>  newQueues = [...newQueues, q.id]))
+		const newQueuesUnique = [...new Set(newQueues)]
+		setSelectedQueueIds(newQueuesUnique)
+
+		return () => setSelectedQueueIds([])
+	}, [selectedDepartaments])
+
 	const handleOnProfileChange = (e) => {
 		if (e.target.value === "supervisor") {
 			setIsSupervisor(true)
@@ -154,8 +164,9 @@ const UserModal = ({ open, onClose, userId }) => {
 		setUser(initialState);
 	};
 
+
 	const handleSaveUser = async values => {
-		const userData = { ...values, whatsappId, notificationSound: showNotication, queueIds: selectedQueueIds };
+		const userData = { ...values, whatsappId, notificationSound: showNotication, queueIds: selectedQueueIds, departamentIds: selectedDepartamentIds};
 		try {
 			if (userId) {
 				await api.put(`/users/${userId}`, userData);
@@ -286,6 +297,7 @@ const UserModal = ({ open, onClose, userId }) => {
 											<DepartamentSelect
 												selectedDepartamentIds={selectedDepartamentIds}
 												onChange={values => setSelectedDepartamentsIds(values)}
+												departamentsSeleted={setSelectedDepartaments}
 											/>
 										)}
 									/> : ""
@@ -297,6 +309,7 @@ const UserModal = ({ open, onClose, userId }) => {
 										<QueueSelect
 											selectedQueueIds={selectedQueueIds}
 											onChange={values => setSelectedQueueIds(values)}
+											isDisabled={selectedDepartamentIds.length > 0}
 										/>
 									)}
 								/>

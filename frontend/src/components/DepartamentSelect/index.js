@@ -19,7 +19,7 @@ const useStyles = makeStyles(theme => ({
 	},
 }));
 
-const DepartamentSelect = ({ selectedDepartamentIds, onChange }) => {
+const DepartamentSelect = ({ selectedDepartamentIds, onChange, departamentsSeleted }) => {
 	const classes = useStyles();
 	const [departaments, setDepartaments] = useState([]);
 
@@ -38,6 +38,8 @@ const DepartamentSelect = ({ selectedDepartamentIds, onChange }) => {
 	}, []);
 
 	const handleChange = e => {
+        const seletedDepartaments = departaments.filter((dep) => e.target.value.includes(dep.id))
+        departamentsSeleted(seletedDepartaments)
 		onChange(e.target.value);
 	};
 
