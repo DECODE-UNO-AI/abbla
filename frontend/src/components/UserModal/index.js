@@ -124,6 +124,8 @@ const UserModal = ({ open, onClose, userId }) => {
 				});
 				const userQueueIds = data.queues?.map(queue => queue.id);
 				setSelectedQueueIds(userQueueIds);
+				const userDepartamentIds = data.departaments?.map(dep => dep.id)
+				setSelectedDepartamentsIds(userDepartamentIds)
 				setWhatsappId(data.whatsappId ? data.whatsappId : '');
 				setShowNotification(data.notificationSound)
 			} catch (err) {
