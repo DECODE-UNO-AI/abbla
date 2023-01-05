@@ -17,11 +17,11 @@ import Api from "../pages/Api/";
 import ApiDocs from "../pages/ApiDocs/";
 import ApiKey from "../pages/ApiKey/";
 import Tags from "../pages/Tags";
+import Departaments from "../pages/Departaments";
 
 import { AuthProvider } from "../context/Auth/AuthContext";
 import { WhatsAppsProvider } from "../context/WhatsApp/WhatsAppsContext";
 import Route from "./Route";
-import Departaments from "../pages/Departaments";
 
 const Routes = () => {
   return (

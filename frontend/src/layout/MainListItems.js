@@ -136,6 +136,27 @@ const MainListItems = (props) => {
       />
       <Can
         role={user.profile}
+        perform="drawer-supervisor-items:view"
+        yes={() => (
+          <>
+            <Divider className={classes.divider}/>
+            <ListSubheader inset className={classes.sub}>
+              {i18n.t("mainDrawer.listItems.administration")}
+            </ListSubheader>
+            <ListItemLink
+              to="/connections"
+              primary={i18n.t("mainDrawer.listItems.connections")}
+              icon={
+                <Badge badgeContent={connectionWarning ? "!" : 0} color="error">
+                  <SyncAlt />
+                </Badge>
+              }
+            />
+          </>
+        )}
+      />
+      <Can
+        role={user.profile}
         perform="drawer-admin-items:view"
         yes={() => (
           <>
@@ -209,4 +230,4 @@ const MainListItems = (props) => {
   );
 };
 
-export default MainListItems;
+export default MainListItems;/*  */

@@ -2,6 +2,11 @@ const rules = {
 	user: {
 		static: [],
 	},
+	supervisor: {
+		static: [
+			"drawer-supervisor-items:view"
+		],
+	},
 	admin: {
 		static: [
 			"drawer-admin-items:view",
