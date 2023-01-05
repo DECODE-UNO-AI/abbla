@@ -37,6 +37,7 @@ import { i18n } from "../../translate/i18n";
 import api from "../../services/api";
 import toastError from "../../errors/toastError";
 import QueueSelect from "../QueueSelect";
+import DepartamentSelect from "../DepartamentSelect";
 import { AuthContext } from "../../context/Auth/AuthContext";
 import { Can } from "../Can";
 import useWhatsApps from "../../hooks/useWhatsApps";
@@ -103,10 +104,11 @@ const UserModal = ({ open, onClose, userId }) => {
 
 	const [user, setUser] = useState(initialState);
 	const [selectedQueueIds, setSelectedQueueIds] = useState([]);
+	const [selectedDepartamentIds, setSelectedDepartamentsIds] = useState([]);
 	const [showPassword, setShowPassword] = useState(false);
-	const [showNotication, setShowNotification] = useState("")
+	const [showNotication, setShowNotification] = useState("");
 	const [whatsappId, setWhatsappId] = useState(false);
-	const [isSupervisor, setIsSupervisor] = useState(false)
+	const [isSupervisor, setIsSupervisor] = useState(false);
 	const { loading, whatsApps } = useWhatsApps();
 	const startWorkRef = useRef();
 	const endWorkRef = useRef();
@@ -135,6 +137,8 @@ const UserModal = ({ open, onClose, userId }) => {
 		if (user.profile === "supervisor") {
 			setIsSupervisor(true)
 		}
+
+		return () => setIsSupervisor(false)
 	}, [user.profile])
 
 	const handleOnProfileChange = (e) => {
@@ -257,7 +261,7 @@ const UserModal = ({ open, onClose, userId }) => {
 
 													<Field
 														as={Select}
-														// onChange={(e) => handleOnProfileChange(e)}
+														inputProps={{ onChange: handleOnProfileChange}}
 														label={i18n.t("userModal.form.profile")}
 														name="profile"
 														labelId="profile-selection-label"
@@ -277,11 +281,11 @@ const UserModal = ({ open, onClose, userId }) => {
 									isSupervisor ? 
 									<Can
 										role={loggedInUser.profile}
-										perform="user-modal:editQueues"
+										perform="user-modal:editDepartaments"
 										yes={() => (
-											<QueueSelect
-												selectedQueueIds={selectedQueueIds}
-												onChange={values => setSelectedQueueIds(values)}
+											<DepartamentSelect
+												selectedDepartamentIds={selectedDepartamentIds}
+												onChange={values => setSelectedDepartamentsIds(values)}
 											/>
 										)}
 									/> : ""

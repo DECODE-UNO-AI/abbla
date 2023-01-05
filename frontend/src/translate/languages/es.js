@@ -440,6 +440,9 @@ const messages = {
       queueSelect: {
         inputLabel: "Sectores",
       },
+      departamentSelect: {
+        inputLabel: "Departamentos"
+      },
       quickAnswers: {
         title: "Respuestas rápidas",
         table: {
