@@ -1,4 +1,5 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
+import { AuthContext } from "../../context/Auth/AuthContext";
 import { makeStyles } from "@material-ui/core/styles";
 import InputLabel from "@material-ui/core/InputLabel";
 import MenuItem from "@material-ui/core/MenuItem";
@@ -23,11 +24,18 @@ const QueueSelect = ({ selectedQueueIds, onChange, isDisabled = false }) => {
 	const classes = useStyles();
 	const [queues, setQueues] = useState([]);
 
+	const { user } = useContext(AuthContext);
+
 	useEffect(() => {
 		(async () => {
 			try {
-				const { data } = await api.get("/queue");
-				setQueues(data);
+				if (user?.profile === "supervisor") {
+					const queues = user?.queues
+					setQueues(queues)
+				} else {
+					const { data } = await api.get("/queue");
+					setQueues(data);
+				}
 			} catch (err) {
 				toastError(err);
 			}
@@ -51,6 +59,7 @@ const QueueSelect = ({ selectedQueueIds, onChange, isDisabled = false }) => {
 					labelWidth={60}
 					value={selectedQueueIds}
 					onChange={handleChange}
+					required
 					MenuProps={{
 						anchorOrigin: {
 							vertical: "bottom",
