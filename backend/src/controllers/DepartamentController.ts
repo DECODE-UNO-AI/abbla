@@ -1,5 +1,4 @@
 import { Request, Response } from "express";
-import { Op } from "sequelize";
 import { getIO } from "../libs/socket";
 import AppError from "../errors/AppError";
 import CreateDepartamentService from "../services/DepartamentServices/CreateDepartamentService";
@@ -7,9 +6,7 @@ import DeleteDepartamentService from "../services/DepartamentServices/DeleteDepa
 import ListDepartamentsService from "../services/DepartamentServices/ListDepartamentsService";
 import ShowDepartamentService from "../services/DepartamentServices/ShowDepartamentService";
 import UpdateDepartamentService from "../services/DepartamentServices/UpdateDepartamentService";
-import User from "../models/User";
-import Departament from "../models/Departament";
-import Queue from "../models/Queue";
+import UpdateUserQueuesService from "../services/UserServices/UpdateUserQueuesService";
 
 export const index = async (req: Request, res: Response): Promise<Response> => {
   const departaments = await ListDepartamentsService();
@@ -68,34 +65,7 @@ export const update = async (
 
   const departament = await UpdateDepartamentService({ id, userData });
 
-  const users = await User.findAll({
-    include: [
-      {
-        model: Departament,
-        as: "departaments",
-        include: [
-          {
-            model: Queue,
-            as: "queues"
-          }
-        ]
-      }
-    ],
-    where: {
-      "$departaments.id$": departament.id
-    }
-  });
-
-  if (users && users.length > 0) {
-    users.forEach(async user => {
-      let newQueues: number[] = [];
-      user.departaments.forEach(dep => {
-        const queueIds = dep.queues.map(queue => queue.id);
-        newQueues = [...newQueues, ...queueIds];
-      });
-      await user.$set("queues", newQueues);
-    });
-  }
+  await UpdateUserQueuesService(departament);
 
   const io = getIO();
   io.emit("departament", {
