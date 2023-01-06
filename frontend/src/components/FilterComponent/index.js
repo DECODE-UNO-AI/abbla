@@ -156,16 +156,19 @@ const FilterComponent = ({ user, onSubmit, status = '' }) => {
         let departamentsQueues = []
         currentDepartaments.map((dep) => departamentsQueues = [...departamentsQueues, ...dep.queues])
         const queueFilterValues = departamentsQueues.map((queue) => { return {value: `${queue.id}`, label: queue.name}})
+        const uniqueQueueFilterValues = queueFilterValues.map((q) => JSON.stringify(q)).reduce((acc, cur) => (acc.includes(cur) || acc.push(cur), acc), []).map(e => JSON.parse(e))
         if(queueFilterValues.length > 0) {
-            setSetores(queueFilterValues)
+            setSetores(uniqueQueueFilterValues)
         } else {
             const queuesChildren =  user?.queues.map((queue) => { return {value: `${queue.id}`, label: queue.name}})
             setSetores(queuesChildren)
         }
-        dispatch({ type: "CHANGE_SETOR", payload: queueFilterValues });
+        const queuesIds = uniqueQueueFilterValues.map((e) => e.value)
+        dispatch({ type: "CHANGE_SETOR", payload: queuesIds });
     }
 
     const handleOnSetorChange = (e) => {
+        console.log(e)
         dispatch({ type: "CHANGE_SETOR", payload: e });
     }
 
