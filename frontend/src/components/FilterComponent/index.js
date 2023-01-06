@@ -243,22 +243,27 @@ const FilterComponent = ({ user, onSubmit, status = '' }) => {
                     </Space>
                 </div>
                     <Divider style={{ padding: 0, marginBottom: 0 }}/>
-
-                <div className={classes.filterOption}>
-                    <InputLabel style={{ marginBottom: 4 }}>Departamento</InputLabel>
-                        <Select
-                            optionFilterProp="label"
-                            onChange={handleOnDepartamentChange}
-                            value={selectedDepartaments}
-                            mode="multiple"
-                            allowClear
-                            size="large"
-                            style={{ width: '100%' }}
-                            placeholder="Departamentos"
-                            options={departaments}
-                        />
-                </div>
+                {
+                    user?.profile === "supervisor" ? 
+                    <>
+                        <div className={classes.filterOption}>
+                            <InputLabel style={{ marginBottom: 4 }}>Departamento</InputLabel>
+                                <Select
+                                    optionFilterProp="label"
+                                    onChange={handleOnDepartamentChange}
+                                    value={selectedDepartaments}
+                                    mode="multiple"
+                                    allowClear
+                                    size="large"
+                                    style={{ width: '100%' }}
+                                    placeholder="Departamentos"
+                                    options={departaments}
+                                />
+                        </div>
                     <Divider style={{ padding: 0, marginBottom: 0 }}/>
+                    </> : ""
+                }
+                
                 <div className={classes.filterOption}>
                     <InputLabel style={{ marginBottom: 4 }}>Setor</InputLabel>
                     <Select
