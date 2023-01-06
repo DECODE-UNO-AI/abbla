@@ -113,7 +113,7 @@ const FilterComponent = ({ user, onSubmit, status = '' }) => {
     }, [user.queues])
 
     useEffect(() => {
-        const departaments = user?.departaments.map((dep) => { return {value: `${dep.id}`, label: dep.name  }})
+        const departaments = user?.departaments?.map((dep) => { return {value: `${dep.id}`, label: dep.name  }})
         setDepartaments(departaments)
     }, [user.departaments])
 
