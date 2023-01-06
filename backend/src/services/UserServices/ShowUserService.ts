@@ -23,7 +23,13 @@ const ShowUserService = async (id: string | number): Promise<User> => {
       {
         model: Departament,
         as: "departaments",
-        attributes: ["id", "name"]
+        attributes: ["id", "name"],
+        include: [
+          {
+            model: Queue,
+            as: "queues"
+          }
+        ]
       }
     ],
     order: [[{ model: Queue, as: "queues" }, "name", "asc"]]

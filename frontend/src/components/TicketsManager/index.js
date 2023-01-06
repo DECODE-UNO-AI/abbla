@@ -126,6 +126,7 @@ const TicketsManager = () => {
   const userQueueIds = user.queues.map((q) => q.id);
   const [selectedQueueIds, setSelectedQueueIds] = useState(userQueueIds || []);
 
+
   const [adminFilterOptions, setAdminFilterOptions] = useState({})
 
   useEffect(() => {
@@ -184,7 +185,7 @@ const TicketsManager = () => {
           value={searchParam}
           onChange={handleSearch}
         />  
-        {user?.profile === "admin" ? 
+        {user?.profile === "admin" || user?.profile === 'supervisor' ? 
           <FilterComponent user={user} onSubmit={handleOnFilterSubmit} status={tab}/>
           :
           ""
@@ -260,7 +261,7 @@ const TicketsManager = () => {
             )}
           />
         </div>
-        {user?.profile === 'admin' ?
+        {user?.profile === 'admin' || user?.profile === 'supervisor' ?
           (
             tab === "open" || tab === "pending"?
             <div  style={{ flex: 1, display: "flex", justifyContent: "end" }}>
@@ -280,7 +281,7 @@ const TicketsManager = () => {
 
       </Paper>
       <TabPanel value={tab} name="open" className={classes.ticketsWrapper}>
-      {user?.profile !== "admin" ?
+      {user?.profile === "user" ?
         <TagsFilter onFiltered={handleOnUserSelectTags} selecteds={selectedTags} setSelecteds={setSelectedTags}/>
         :
         ""
@@ -308,7 +309,7 @@ const TicketsManager = () => {
       </TabPanel>
 
       <TabPanel value={tab} name="pending" className={classes.ticketsWrapper}>
-      {user?.profile !== "admin" ?
+      {user?.profile === "user" ?
         <TagsFilter onFiltered={handleOnUserSelectTags} selecteds={selectedTags} setSelecteds={setSelectedTags}/>
         :
         ""
@@ -326,7 +327,7 @@ const TicketsManager = () => {
 
 
       <TabPanel value={tab} name="closed" className={classes.ticketsWrapper}>
-      {user?.profile !== "admin" ?
+      {user?.profile === "user" ?
         <TagsFilter onFiltered={handleOnUserSelectTags} selecteds={selectedTags} setSelecteds={setSelectedTags}/>
         :
         ""
