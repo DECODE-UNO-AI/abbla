@@ -270,14 +270,10 @@ const ListTicketsServiceAdmin = async ({
     order: [["updatedAt", "DESC"]]
   });
 
-  let allTicketsCount = 0;
-
-  if (status !== "closed") {
-    allTicketsCount = await Ticket.count({
-      include: includeCondition,
-      where: whereCondition
-    });
-  }
+  const allTicketsCount = await Ticket.count({
+    include: includeCondition,
+    where: whereCondition
+  });
 
   const hasMore = count > offset + tickets.length;
 
