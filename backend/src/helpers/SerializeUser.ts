@@ -1,3 +1,4 @@
+import Departament from "../models/Departament";
 import Queue from "../models/Queue";
 import User from "../models/User";
 import Whatsapp from "../models/Whatsapp";
@@ -11,6 +12,7 @@ interface SerializedUser {
   whatsapp: Whatsapp;
   startWork: string;
   endWork: string;
+  departaments: Departament[];
 }
 
 export const SerializeUser = (user: User): SerializedUser => {
@@ -22,6 +24,7 @@ export const SerializeUser = (user: User): SerializedUser => {
     queues: user.queues,
     whatsapp: user.whatsapp,
     startWork: user.startWork,
-    endWork: user.endWork
+    endWork: user.endWork,
+    departaments: user.departaments,
   };
 };

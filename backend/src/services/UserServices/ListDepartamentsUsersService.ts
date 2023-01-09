@@ -7,6 +7,7 @@ import Whatsapp from "../../models/Whatsapp";
 interface Request {
   searchParam?: string;
   pageNumber?: string | number;
+  userQueues?: number[];
 }
 
 interface Response {
@@ -15,9 +16,10 @@ interface Response {
   hasMore: boolean;
 }
 
-const ListUsersService = async ({
+const ListDepartamentsUsersService = async ({
   searchParam = "",
-  pageNumber = "1"
+  pageNumber = "1",
+  userQueues = []
 }: Request): Promise<Response> => {
   const whereCondition = {
     [Op.or]: [
@@ -35,7 +37,6 @@ const ListUsersService = async ({
   const offset = limit * (+pageNumber - 1);
 
   const { count, rows: users } = await User.findAndCountAll({
-    where: whereCondition,
     attributes: [
       "name",
       "id",
@@ -49,14 +50,24 @@ const ListUsersService = async ({
     offset,
     order: [["createdAt", "DESC"]],
     include: [
-      { model: Queue, as: "queues", attributes: ["id", "name", "color"] },
+      {
+        model: Queue,
+        as: "queues",
+        attributes: ["id", "name", "color"],
+        where: {
+          id: { [Op.or]: userQueues }
+        }
+      },
       { model: Whatsapp, as: "whatsapp", attributes: ["id", "name"] },
       {
         model: Departament,
         as: "departaments",
         attributes: ["id", "name"]
       }
-    ]
+    ],
+    where: {
+      ...whereCondition
+    }
   });
 
   const hasMore = count > offset + users.length;
@@ -68,4 +79,4 @@ const ListUsersService = async ({
   };
 };
 
-export default ListUsersService;
+export default ListDepartamentsUsersService;

@@ -37,6 +37,7 @@ import { i18n } from "../../translate/i18n";
 import api from "../../services/api";
 import toastError from "../../errors/toastError";
 import QueueSelect from "../QueueSelect";
+import DepartamentSelect from "../DepartamentSelect";
 import { AuthContext } from "../../context/Auth/AuthContext";
 import { Can } from "../Can";
 import useWhatsApps from "../../hooks/useWhatsApps";
@@ -103,9 +104,12 @@ const UserModal = ({ open, onClose, userId }) => {
 
 	const [user, setUser] = useState(initialState);
 	const [selectedQueueIds, setSelectedQueueIds] = useState([]);
+	const [selectedDepartamentIds, setSelectedDepartamentsIds] = useState([]);
+	const [selectedDepartaments, setSelectedDepartaments] = useState([])
 	const [showPassword, setShowPassword] = useState(false);
-	const [showNotication, setShowNotification] = useState("")
+	const [showNotication, setShowNotification] = useState("");
 	const [whatsappId, setWhatsappId] = useState(false);
+	const [isSupervisor, setIsSupervisor] = useState(false);
 	const { loading, whatsApps } = useWhatsApps();
 	const startWorkRef = useRef();
 	const endWorkRef = useRef();
@@ -120,6 +124,8 @@ const UserModal = ({ open, onClose, userId }) => {
 				});
 				const userQueueIds = data.queues?.map(queue => queue.id);
 				setSelectedQueueIds(userQueueIds);
+				const userDepartamentIds = data.departaments?.map(dep => dep.id)
+				setSelectedDepartamentsIds(userDepartamentIds)
 				setWhatsappId(data.whatsappId ? data.whatsappId : '');
 				setShowNotification(data.notificationSound)
 			} catch (err) {
@@ -130,13 +136,39 @@ const UserModal = ({ open, onClose, userId }) => {
 		fetchUser();
 	}, [userId, open]);
 
+	useEffect(() => {
+		if (user.profile === "supervisor") {
+			setIsSupervisor(true)
+		}
+
+		return () => setIsSupervisor(false)
+	}, [user.profile])
+
+	useEffect(() => {
+		let newQueues = []
+		selectedDepartaments.map((dep) => dep.queues.map((q) =>  newQueues = [...newQueues, q.id]))
+		const newQueuesUnique = [...new Set(newQueues)]
+		setSelectedQueueIds(newQueuesUnique)
+
+		return () => setSelectedQueueIds([])
+	}, [selectedDepartaments])
+
+	const handleOnProfileChange = (e) => {
+		if (e.target.value === "supervisor") {
+			setIsSupervisor(true)
+		} else {
+			setIsSupervisor(false)
+		}
+	}
+
 	const handleClose = () => {
 		onClose();
 		setUser(initialState);
 	};
 
+
 	const handleSaveUser = async values => {
-		const userData = { ...values, whatsappId, notificationSound: showNotication, queueIds: selectedQueueIds };
+		const userData = { ...values, whatsappId, notificationSound: showNotication, queueIds: selectedQueueIds, departamentIds: selectedDepartamentIds};
 		try {
 			if (userId) {
 				await api.put(`/users/${userId}`, userData);
@@ -225,6 +257,7 @@ const UserModal = ({ open, onClose, userId }) => {
 										margin="dense"
 										fullWidth
 									/>
+									
 									<FormControl
 										variant="outlined"
 										className={classes.formControl}
@@ -241,6 +274,7 @@ const UserModal = ({ open, onClose, userId }) => {
 
 													<Field
 														as={Select}
+														inputProps={{ onChange: handleOnProfileChange}}
 														label={i18n.t("userModal.form.profile")}
 														name="profile"
 														labelId="profile-selection-label"
@@ -249,12 +283,27 @@ const UserModal = ({ open, onClose, userId }) => {
 													>
 														<MenuItem value="admin">{i18n.t("userModal.form.admin")}</MenuItem>
 														<MenuItem value="user">{i18n.t("userModal.form.user")}</MenuItem>
+														<MenuItem value="supervisor">{i18n.t("userModal.form.supervisor")}</MenuItem>
 													</Field>
 												</>
 											)}
 										/>
 									</FormControl>
 								</div>
+								{
+									isSupervisor ? 
+									<Can
+										role={loggedInUser.profile}
+										perform="user-modal:editDepartaments"
+										yes={() => (
+											<DepartamentSelect
+												selectedDepartamentIds={selectedDepartamentIds}
+												onChange={values => setSelectedDepartamentsIds(values)}
+												departamentsSeleted={setSelectedDepartaments}
+											/>
+										)}
+									/> : ""
+								}
 								<Can
 									role={loggedInUser.profile}
 									perform="user-modal:editQueues"
@@ -262,6 +311,7 @@ const UserModal = ({ open, onClose, userId }) => {
 										<QueueSelect
 											selectedQueueIds={selectedQueueIds}
 											onChange={values => setSelectedQueueIds(values)}
+											isDisabled={selectedDepartamentIds.length > 0}
 										/>
 									)}
 								/>

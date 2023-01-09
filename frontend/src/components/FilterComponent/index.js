@@ -99,6 +99,8 @@ const FilterComponent = ({ user, onSubmit, status = '' }) => {
     const [setores, setSetores] = useState([])
     const [atendentes, setAtendentes] = useState([])
     const [connections, setConnections] = useState([])
+    const [departaments, setDepartaments] = useState([])
+    const [selectedDepartaments, setSelectedDepartaments] = useState([])
     const [selectedsTags, setSelectedsTags] = useState([]);
     const [numberOfFilters, setNumberOfFilters] = useState(0)
     const [dateOrder, setDateOrder] = useState("createTicket")
@@ -110,7 +112,12 @@ const FilterComponent = ({ user, onSubmit, status = '' }) => {
         setSetores(queuesChildren)
     }, [user.queues])
 
-    useEffect( () => {
+    useEffect(() => {
+        const departaments = user?.departaments?.map((dep) => { return {value: `${dep.id}`, label: dep.name  }})
+        setDepartaments(departaments)
+    }, [user.departaments])
+
+    useEffect(() => {
         api.get("/users/", {}).then((data) => {
             const aten = data.data.users.map((e) => {return { value: e.id, label: e.name}})
             setAtendentes(aten)
@@ -143,6 +150,24 @@ const FilterComponent = ({ user, onSubmit, status = '' }) => {
         dispatch({ type: "CHANGE_DATE", payload: e });
     }
 
+    const handleOnDepartamentChange = (e) => {
+        setSelectedDepartaments(e)
+        const currentDepartaments = user?.departaments.filter((dep) => e.includes(`${dep.id}`))
+        let departamentsQueues = []
+        currentDepartaments.map((dep) => departamentsQueues = [...departamentsQueues, ...dep.queues])
+        const queueFilterValues = departamentsQueues.map((queue) => { return {value: `${queue.id}`, label: queue.name}})
+        // eslint-disable-next-line no-sequences
+        const uniqueQueueFilterValues = queueFilterValues.map((q) => JSON.stringify(q)).reduce((acc, cur) => (acc.includes(cur) || acc.push(cur), acc), []).map(e => JSON.parse(e))
+        if(queueFilterValues.length > 0) {
+            setSetores(uniqueQueueFilterValues)
+        } else {
+            const queuesChildren =  user?.queues.map((queue) => { return {value: `${queue.id}`, label: queue.name}})
+            setSetores(queuesChildren)
+        }
+        const queuesIds = uniqueQueueFilterValues.map((e) => e.value)
+        dispatch({ type: "CHANGE_SETOR", payload: queuesIds });
+    }
+
     const handleOnSetorChange = (e) => {
         dispatch({ type: "CHANGE_SETOR", payload: e });
     }
@@ -161,6 +186,7 @@ const FilterComponent = ({ user, onSubmit, status = '' }) => {
 
     const handleOnResetFilters = () =>{
         setSelectedsTags([])
+        setSelectedDepartaments([])
         dispatch({ type: "RESET_FILTERS" })
         onSubmit({})
     }
@@ -220,6 +246,27 @@ const FilterComponent = ({ user, onSubmit, status = '' }) => {
                     </Space>
                 </div>
                     <Divider style={{ padding: 0, marginBottom: 0 }}/>
+                {
+                    user?.profile === "supervisor" ? 
+                    <>
+                        <div className={classes.filterOption}>
+                            <InputLabel style={{ marginBottom: 4 }}>Departamento</InputLabel>
+                                <Select
+                                    optionFilterProp="label"
+                                    onChange={handleOnDepartamentChange}
+                                    value={selectedDepartaments}
+                                    mode="multiple"
+                                    allowClear
+                                    size="large"
+                                    style={{ width: '100%' }}
+                                    placeholder="Departamentos"
+                                    options={departaments}
+                                />
+                        </div>
+                    <Divider style={{ padding: 0, marginBottom: 0 }}/>
+                    </> : ""
+                }
+                
                 <div className={classes.filterOption}>
                     <InputLabel style={{ marginBottom: 4 }}>Setor</InputLabel>
                     <Select

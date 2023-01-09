@@ -9,6 +9,6 @@ module.exports = {
   },
 
   down: (queryInterface: QueryInterface) => {
-    return queryInterface.removeColumn("Users", "number");
+    return queryInterface.removeColumn("Users", "notificationSound");
   }
 };

@@ -1,5 +1,4 @@
-import React, { useContext, useEffect, useState } from "react";
-import { AuthContext } from "../../context/Auth/AuthContext";
+import React, { useEffect, useState } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import InputLabel from "@material-ui/core/InputLabel";
 import MenuItem from "@material-ui/core/MenuItem";
@@ -20,22 +19,15 @@ const useStyles = makeStyles(theme => ({
 	},
 }));
 
-const QueueSelect = ({ selectedQueueIds, onChange, isDisabled = false }) => {
+const DepartamentSelect = ({ selectedDepartamentIds, onChange, departamentsSeleted }) => {
 	const classes = useStyles();
-	const [queues, setQueues] = useState([]);
-
-	const { user } = useContext(AuthContext);
+	const [departaments, setDepartaments] = useState([]);
 
 	useEffect(() => {
 		(async () => {
 			try {
-				if (user?.profile === "supervisor") {
-					const queues = user?.queues
-					setQueues(queues)
-				} else {
-					const { data } = await api.get("/queue");
-					setQueues(data);
-				}
+				const { data } = await api.get("/departament");
+				setDepartaments(data);
 			} catch (err) {
 				toastError(err);
 			}
@@ -46,20 +38,20 @@ const QueueSelect = ({ selectedQueueIds, onChange, isDisabled = false }) => {
 	}, []);
 
 	const handleChange = e => {
+        const seletedDepartaments = departaments.filter((dep) => e.target.value.includes(dep.id))
+        departamentsSeleted(seletedDepartaments)
 		onChange(e.target.value);
 	};
 
 	return (
 		<div style={{ marginTop: 6 }}>
 			<FormControl fullWidth margin="dense" variant="outlined">
-				<InputLabel>{i18n.t("queueSelect.inputLabel")}</InputLabel>
+				<InputLabel>{i18n.t("departamentSelect.inputLabel")}</InputLabel>
 				<Select
-					disabled={isDisabled}
 					multiple
-					labelWidth={60}
-					value={selectedQueueIds}
+					labelWidth={120}
+					value={selectedDepartamentIds}
 					onChange={handleChange}
-					required
 					MenuProps={{
 						anchorOrigin: {
 							vertical: "bottom",
@@ -75,7 +67,7 @@ const QueueSelect = ({ selectedQueueIds, onChange, isDisabled = false }) => {
 						<div className={classes.chips}>
 							{selected?.length > 0 &&
 								selected.map(id => {
-									const queue = queues.find(q => q.id === id);
+									const queue = departaments.find(q => q.id === id);
 									return queue ? (
 										<Chip
 											key={id}
@@ -89,9 +81,9 @@ const QueueSelect = ({ selectedQueueIds, onChange, isDisabled = false }) => {
 						</div>
 					)}
 				>
-					{queues.map(queue => (
-						<MenuItem key={queue.id} value={queue.id}>
-							{queue.name}
+					{departaments.map(departaments => (
+						<MenuItem key={departaments.id} value={departaments.id}>
+							{departaments.name}
 						</MenuItem>
 					))}
 				</Select>
@@ -100,4 +92,4 @@ const QueueSelect = ({ selectedQueueIds, onChange, isDisabled = false }) => {
 	);
 };
 
-export default QueueSelect;
+export default DepartamentSelect;

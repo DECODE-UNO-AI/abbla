@@ -61,7 +61,7 @@ export const index = async (req: Request, res: Response): Promise<Response> => {
     }
   });
 
-  if (userProfile !== "admin" || Object.keys(notEmptyFilters).length === 0) {
+  if (userProfile === "user" || Object.keys(notEmptyFilters).length === 0) {
     let queueIds: number[] = [];
 
     const tagSelect = selectedTags ? JSON.parse(selectedTags) : [];

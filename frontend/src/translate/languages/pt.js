@@ -246,6 +246,24 @@ const messages = {
           cancel: "Cancelar",
         },
       },
+      departamentModal: {
+        title: {
+          add: "Adicionar Departamento",
+          edit: "Editar Departamento",
+        },
+        notification: {
+          title: "Departamento salvo com sucesso!",
+        },
+        form: {
+          name: "Nome",
+          description: "Descrição",
+        },
+        buttons: {
+          okAdd: "Adicionar",
+          okEdit: "Salvar",
+          cancel: "Cancelar",
+        },
+      },
       userModal: {
         title: {
           add: "Adicionar atendente",
@@ -259,6 +277,7 @@ const messages = {
           admin: "Administrador",
           whatsapp: "Conexão Padrão",
           user: "Atendente",
+          supervisor: "Supervisor",
           startWork: "Inicio",
           endWork: "Termino"
         },
@@ -369,7 +388,8 @@ const messages = {
           apidocs: "Documentação",
           apititle: "API",
           apikey: "API key",
-          token: "Token"
+          token: "Token",
+          departaments: "Departamentos"
         },
         appBar: {
           user: {
@@ -402,8 +422,30 @@ const messages = {
           deleteMessage: "Você tem certeza? Essa ação não pode ser revertida! Os tickets desse setor continuarão existindo, mas não terão mais nenhuma setor atribuído.",
         },
       },
+      departaments: {
+        title: "Departamentos",
+        notifications: {
+          departamentDeleted: "O departamento foi deletado"
+        },
+        table: {
+          name: "Nome",
+          description: "Descrição",
+          actions: "Ações",
+          queues: "Setores"
+        },
+        buttons: {
+          add: "Adicionar departamento"
+        },
+        confirmationModal: {
+          deleteTitle: "Excluir",
+          deleteMessage: "Você tem certeza? Essa ação não pode ser revertida! Os setores desse departamento continuarão existindo, mas não terão mais nenhum departamento atribuído.",
+        },
+      },
       queueSelect: {
         inputLabel: "Setores",
+      },
+      departamentSelect: {
+        inputLabel: "Departamentos"
       },
       quickAnswers: {
         title: "Respostas Rápidas",
