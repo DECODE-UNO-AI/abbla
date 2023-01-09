@@ -120,6 +120,8 @@ const TicketsManager = () => {
 
   const [OpenCount, setOpenCount] = useState(0);
   const [pendingCount, setPendingCount] = useState(0);
+  const [closedCount ,setClosedCount] = useState(0);
+  const [searchResultsCount, setSearchResultsCount] = useState(0);
   const [selectedTags, setSelectedTags] = useState([]);
   const [tagsId, setTagsId] = useState([])
 
@@ -135,7 +137,6 @@ const TicketsManager = () => {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
-
 
   const handleSearch = (e) => {
     const searchedTerm = e.target.value.toLowerCase();
@@ -263,9 +264,11 @@ const TicketsManager = () => {
         </div>
         {user?.profile === 'admin' || user?.profile === 'supervisor' ?
           (
-            tab === "open" || tab === "pending"?
+            tab === "open" || tab === "pending" || tab === "closed" || tab === "search"?
             <div  style={{ flex: 1, display: "flex", justifyContent: "end" }}>
-              <InputLabel>Tickets: {tab === "open" ? OpenCount : pendingCount}</InputLabel>
+              <InputLabel>
+                Tickets: {tab === "open" ? OpenCount : ""}{tab === "pending" ? pendingCount : ""}{tab === "closed" ? closedCount : ""}{tab === "search" ? searchResultsCount : ""}
+              </InputLabel>
             </div>
             :
             <div  style={{ flex: 1 }} />
@@ -336,6 +339,7 @@ const TicketsManager = () => {
           status="closed"
           showAll={true}
           selectedQueueIds={selectedQueueIds}
+          updateCount={setClosedCount}
           adminFilterOptions={adminFilterOptions}
           selectedTags={tagsId}
         />
@@ -345,6 +349,7 @@ const TicketsManager = () => {
         <TicketsList
           searchParam={searchParam}
           tags={selectedTags}
+          updateCount={setSearchResultsCount}
           showAll={true}
           selectedQueueIds={selectedQueueIds}
           adminFilterOptions={adminFilterOptions}
