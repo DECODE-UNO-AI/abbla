@@ -24,7 +24,8 @@ import {
   SettingsOutlined,
   SyncAlt,
   VpnKeyRounded,
-  WhatsApp
+  WhatsApp,
+  DnsOutlined
 } from "@material-ui/icons";
 
 import { i18n } from "../translate/i18n";
@@ -135,6 +136,27 @@ const MainListItems = (props) => {
       />
       <Can
         role={user.profile}
+        perform="drawer-supervisor-items:view"
+        yes={() => (
+          <>
+            <Divider className={classes.divider}/>
+            <ListSubheader inset className={classes.sub}>
+              {i18n.t("mainDrawer.listItems.administration")}
+            </ListSubheader>
+            <ListItemLink
+              to="/connections"
+              primary={i18n.t("mainDrawer.listItems.connections")}
+              icon={
+                <Badge badgeContent={connectionWarning ? "!" : 0} color="error">
+                  <SyncAlt />
+                </Badge>
+              }
+            />
+          </>
+        )}
+      />
+      <Can
+        role={user.profile}
         perform="drawer-admin-items:view"
         yes={() => (
           <>
@@ -155,6 +177,11 @@ const MainListItems = (props) => {
               to="/users"
               primary={i18n.t("mainDrawer.listItems.users")}
               icon={<PeopleAltOutlined />}
+            />
+            <ListItemLink
+              to="/departaments"
+              primary={i18n.t("mainDrawer.listItems.departaments")}
+              icon={<DnsOutlined />}
             />
             <ListItemLink
               to="/queues"
@@ -203,4 +230,4 @@ const MainListItems = (props) => {
   );
 };
 
-export default MainListItems;
+export default MainListItems;/*  */

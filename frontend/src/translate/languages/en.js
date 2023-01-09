@@ -246,6 +246,24 @@ const messages = {
           cancel: "Cancel",
         },
       },
+      departamentModal: {
+        title: {
+          add: "Add Departament",
+          edit: "Edit Departament",
+        },
+        notification: {
+          title: "Departament saved successfully!",
+        },
+        form: {
+          name: "Name",
+          description: "Description",
+        },
+        buttons: {
+          okAdd: "Add",
+          okEdit: "Save",
+          cancel: "Cancel",
+        },
+      },
       userModal: {
         title: {
           add: "Add Attendant",
@@ -259,6 +277,7 @@ const messages = {
           admin: "Administrator",
           whatsapp: "Standard Connection",
           user: "Attendant",
+          supervisor: "Supervisor",
           startWork: "Start",
           endWork: "Finish"
         },
@@ -369,7 +388,8 @@ const messages = {
           apidocs: "Documentation",
           apititle: "API",
           apikey: "API Key",
-          token: "Token"
+          token: "Token",
+          departaments: "Departaments"
         },
         appBar: {
           user: {
@@ -402,8 +422,26 @@ const messages = {
           deleteMessage: "Are you sure? This action cannot be reversed! Tickets from this sector will still exist, but will no longer have any sectors assigned.",
         },
       },
+      departaments: {
+        title: "Departaments",
+        notifications: {
+          departamentDeleted: "The departament has been deleted"
+        },
+        table: {
+          name: "Name",
+          description: "Description",
+          actions: "Actions",
+          queues: "Queues"
+        },
+        buttons: {
+          add: "Add departament"
+        }
+      },
       queueSelect: {
         inputLabel: "Sectors",
+      },
+      departamentSelect: {
+        inputLabel: "Departaments"
       },
       quickAnswers: {
         title: "Quick Answers",

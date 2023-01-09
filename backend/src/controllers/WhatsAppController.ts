@@ -9,6 +9,9 @@ import DeleteWhatsAppService from "../services/WhatsappService/DeleteWhatsAppSer
 import ListWhatsAppsService from "../services/WhatsappService/ListWhatsAppsService";
 import ShowWhatsAppService from "../services/WhatsappService/ShowWhatsAppService";
 import UpdateWhatsAppService from "../services/WhatsappService/UpdateWhatsAppService";
+import ListSupervisorWhatsAppsService from "../services/WhatsappService/ListSupervisorWhatsAppsService";
+import User from "../models/User";
+import Departament from "../models/Departament";
 
 interface WhatsappData {
   name: string;
@@ -20,14 +23,30 @@ interface WhatsappData {
 }
 
 export const index = async (req: Request, res: Response): Promise<Response> => {
-  const whatsapps = await ListWhatsAppsService();
+  const { user } = req;
+
+  if (user.profile === "admin") {
+    const whatsapps = await ListWhatsAppsService();
+    return res.status(200).json(whatsapps);
+  }
+
+  const currentUser = await User.findByPk(user.id, {
+    include: [
+      {
+        model: Departament,
+        as: "departaments"
+      }
+    ]
+  });
+
+  const departaments = currentUser?.departaments.map(dep => dep.id);
+  const whatsapps = await ListSupervisorWhatsAppsService(departaments);
 
   return res.status(200).json(whatsapps);
 };
 
 export const store = async (req: Request, res: Response): Promise<Response> => {
-
-const WhatsApps = await ListWhatsAppsService();
+  const WhatsApps = await ListWhatsAppsService();
 
   if (WhatsApps.length >= Number(process.env.CONNECTIONS_LIMIT)) {
     throw new AppError("ERR_CONNECTION_CREATION_COUNT", 403);

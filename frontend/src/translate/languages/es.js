@@ -246,6 +246,24 @@ const messages = {
           cancel: "Cancelar",
         },
       },
+      departamentModal: {
+        title: {
+          add: "Agregar Departamento",
+          edit: "Editar Departamento",
+        },
+        notification: {
+          title: "¡Departamento guardado con éxito!",
+        },
+        form: {
+          name: "Nombre",
+          description: "Descripción",
+        },
+        buttons: {
+          okAdd: "Agregar",
+          okEdit: "Guardar",
+          cancel: "Cancelar",
+        },
+      },
       userModal: {
         title: {
           add: "Agregar asistente",
@@ -259,6 +277,7 @@ const messages = {
           admin: "Administrador",
           whatsapp: "Conexión estándar",
           asistente: "Asistente",
+          supervisor: "Supervisor",
           startWork: "Inicio",
           endWork: "Finalizar"
         },
@@ -369,7 +388,8 @@ const messages = {
           apidocs: "Documentación",
           apititle: "API",
           apikey: "Clave API",
-          token: "Ficha"
+          token: "Ficha",
+          departaments: "Departamento"
         },
         appBar: {
           user: {
@@ -402,8 +422,26 @@ const messages = {
           deleteMessage: "¿Estás seguro? ¡Esta acción no se puede revertir! Los tickets de este sector seguirán existiendo, pero ya no tendrán ningún sector asignado.",
         },
       },
+      departaments: {
+        title: "Departamentos",
+        notifications: {
+          departamentDeleted: "El departamento ha sido eliminado."
+        },
+        table: {
+          name: "Nombre",
+          description: "Descrição",
+          actions: "Acciones",
+          queues: "Sectores"
+        },
+        buttons: {
+          add: "Agregar departamento"
+        }
+      },
       queueSelect: {
         inputLabel: "Sectores",
+      },
+      departamentSelect: {
+        inputLabel: "Departamentos"
       },
       quickAnswers: {
         title: "Respuestas rápidas",

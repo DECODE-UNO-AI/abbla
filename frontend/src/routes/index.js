@@ -5,7 +5,7 @@ import { ToastContainer } from "react-toastify";
 import LoggedInLayout from "../layout";
 import Dashboard from "../pages/Dashboard/";
 import Tickets from "../pages/Tickets/";
-import Signup from "../pages/Signup/";
+// import Signup from "../pages/Signup/";
 import Login from "../pages/Login/";
 import Connections from "../pages/Connections/";
 import Settings from "../pages/Settings/";
@@ -17,6 +17,7 @@ import Api from "../pages/Api/";
 import ApiDocs from "../pages/ApiDocs/";
 import ApiKey from "../pages/ApiKey/";
 import Tags from "../pages/Tags";
+import Departaments from "../pages/Departaments";
 
 import { AuthProvider } from "../context/Auth/AuthContext";
 import { WhatsAppsProvider } from "../context/WhatsApp/WhatsAppsContext";
@@ -37,6 +38,7 @@ const Routes = () => {
               <Route exact path="/contacts" component={Contacts} isPrivate />
               <Route exact path="/users" component={Users} isPrivate />
               <Route exact path="/quickAnswers" component={QuickAnswers} isPrivate />
+              <Route exact path="/departaments" component={Departaments} isPrivate />
               <Route exact path="/Settings" component={Settings} isPrivate />
               <Route exact path="/api" component={Api} isPrivate />
               <Route exact path="/apidocs" component={ApiDocs} isPrivate />
