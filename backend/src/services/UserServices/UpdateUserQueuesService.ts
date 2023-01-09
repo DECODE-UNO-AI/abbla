@@ -34,7 +34,8 @@ const UpdateUserQueuesService = async (
         const queueIds = dep.queues.map(queue => queue.id);
         newQueues = [...newQueues, ...queueIds];
       });
-      await user.$set("queues", newQueues);
+      const newQueuesUnique = [...new Set(newQueues)];
+      await user.$set("queues", newQueuesUnique);
     });
   }
 };
