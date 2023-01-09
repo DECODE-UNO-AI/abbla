@@ -169,7 +169,6 @@ const FilterComponent = ({ user, onSubmit, status = '' }) => {
     }
 
     const handleOnSetorChange = (e) => {
-        console.log(e)
         dispatch({ type: "CHANGE_SETOR", payload: e });
     }
 
