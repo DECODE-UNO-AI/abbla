@@ -156,6 +156,7 @@ const FilterComponent = ({ user, onSubmit, status = '' }) => {
         let departamentsQueues = []
         currentDepartaments.map((dep) => departamentsQueues = [...departamentsQueues, ...dep.queues])
         const queueFilterValues = departamentsQueues.map((queue) => { return {value: `${queue.id}`, label: queue.name}})
+        // eslint-disable-next-line no-sequences
         const uniqueQueueFilterValues = queueFilterValues.map((q) => JSON.stringify(q)).reduce((acc, cur) => (acc.includes(cur) || acc.push(cur), acc), []).map(e => JSON.parse(e))
         if(queueFilterValues.length > 0) {
             setSetores(uniqueQueueFilterValues)

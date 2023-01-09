@@ -9,6 +9,9 @@ import ListUsersService from "../services/UserServices/ListUsersService";
 import UpdateUserService from "../services/UserServices/UpdateUserService";
 import ShowUserService from "../services/UserServices/ShowUserService";
 import DeleteUserService from "../services/UserServices/DeleteUserService";
+import ListDepartamentsUsersService from "../services/UserServices/ListDepartamentsUsersService";
+import User from "../models/User";
+import Queue from "../models/Queue";
 
 type IndexQuery = {
   searchParam: string;
@@ -17,6 +20,26 @@ type IndexQuery = {
 
 export const index = async (req: Request, res: Response): Promise<Response> => {
   const { searchParam, pageNumber } = req.query as IndexQuery;
+
+  const { user } = req;
+
+  if (user.profile === "supervisor") {
+    const currentUser = await User.findByPk(user.id, {
+      include: [
+        {
+          model: Queue,
+          as: "queues"
+        }
+      ]
+    });
+    const userQueues = currentUser?.queues.map(dep => dep.id) || [];
+    const { users, count, hasMore } = await ListDepartamentsUsersService({
+      searchParam,
+      pageNumber,
+      userQueues
+    });
+    return res.json({ users, count, hasMore });
+  }
 
   const { users, count, hasMore } = await ListUsersService({
     searchParam,
