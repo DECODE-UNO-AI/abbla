@@ -4,6 +4,7 @@ import { Client } from "whatsapp-web.js";
 import { getIO } from "../../libs/socket";
 import Whatsapp from "../../models/Whatsapp";
 import { logger } from "../../utils/logger";
+import NotificateOnDisconnected from "./NotificateOnDisconnected";
 import { StartWhatsAppSession } from "./StartWhatsAppSession";
 
 interface Session extends Client {
@@ -56,6 +57,7 @@ const wbotMonitor = async (
       logger.info(`Disconnected session: ${sessionName}, reason: ${reason}`);
       try {
         await whatsapp.update({ status: "OPENING", session: "" });
+        await NotificateOnDisconnected(whatsapp);
       } catch (err) {
         Sentry.captureException(err);
         logger.error(err);

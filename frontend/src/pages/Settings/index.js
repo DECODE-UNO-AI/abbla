@@ -3,6 +3,7 @@ import openSocket from "socket.io-client";
 import { useHistory } from "react-router-dom";
 
 import { makeStyles, withStyles } from "@material-ui/core/styles";
+import MoreVertOutlined from "@material-ui/icons/MoreVertOutlined";
 import Paper from "@material-ui/core/Paper";
 import Typography from "@material-ui/core/Typography";
 import Container from "@material-ui/core/Container";
@@ -29,6 +30,22 @@ const useStyles = makeStyles(theme => ({
 		padding: theme.spacing(2),
 		display: "flex",
 		alignItems: "center",
+	},
+
+	paperWithMoreSettings: {
+		padding: theme.spacing(2),
+		display: "flex",
+		alignItems: "center",
+		justifyContent: "space-between"
+	},
+
+	moreSetting: {
+		padding: 3,
+		display: "flex",
+		alignItems: "center",
+		justifyContent: "center",
+		borderRadius: 999,
+		cursor: "pointer",
 	},
 
 	settingOption: {
@@ -269,7 +286,22 @@ const Settings = () => {
 						/>
 					</Tooltip>
 				</Paper>
-
+				<Typography variant="body2" gutterBottom></Typography>
+				<Paper className={classes.paperWithMoreSettings}>
+					<Tooltip title={i18n.t("settings.settings.notificateOnDisconnect.note")}>
+						<FormControlLabel
+							control={
+								<IOSSwitch
+									checked={settings && settings.length > 0 && getSettingValue("notificateOnDisconnect") === "enabled"}
+									onChange={handleChangeBooleanSetting} name="notificateOnDisconnect"
+								/>}
+							label={i18n.t("settings.settings.notificateOnDisconnect.name")}
+						/>
+					</Tooltip>
+					<Paper className={classes.moreSetting}>
+						<MoreVertOutlined/>
+					</Paper>
+				</Paper>
 				<Typography variant="body2" gutterBottom></Typography>
 					<Tooltip title={i18n.t("settings.settings.timeCreateNewTicket.note")}>
 					     <Paper className={classes.paper} elevation={3}>

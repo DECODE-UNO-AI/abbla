@@ -552,6 +552,14 @@ const messages = {
               disabled: "Desativado",
             },
           },
+          notificateOnDisconnect: {
+            name: "Notificar desconexão",
+            note: "Envia uma notificação quando a conexão é desconectada",
+            options: {
+              enabled: "Ativado",
+              disabled: "Desativado",
+            },
+          },
           timeCreateNewTicket: {
             name: "Cria novo ticket após",
             note: "Selecione o tempo que será necessário para abrir um novo ticket, caso o cliente entre em contatos novamente",

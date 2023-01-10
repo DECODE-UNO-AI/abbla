@@ -548,6 +548,14 @@ const messages = {
               disabled: "Disabled",
             },
           },
+          notificateOnDisconnect: {
+            name: "Notificate disconnection",
+            note: "Send a notification on disconnection",
+            options: {
+              enabled: "Enabled",
+              disabled: "Disabled",
+            },
+          },
           timeCreateNewTicket: {
             name: "Create new ticket after",
             note: "Select the time it will take to openlaugh a new ticket, in case the customer gets in touch again",
