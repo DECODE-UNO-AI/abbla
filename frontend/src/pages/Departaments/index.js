@@ -44,8 +44,8 @@ const useStyles = makeStyles((theme) => ({
   },
   customQueueTableCell: {
     display: "flex",
-    alignItems: "left",
-    justifyContent: "left",
+    alignItems: "center",
+    justifyContent: "center",
   },
 }));
 
@@ -203,7 +203,7 @@ const Departaments = () => {
               <TableCell align="center">
                 {i18n.t("departaments.table.description")}
               </TableCell>
-              <TableCell align="left">
+              <TableCell align="center">
                 {i18n.t("departaments.table.queues")}
               </TableCell>
               <TableCell align="center">
@@ -219,7 +219,7 @@ const Departaments = () => {
                   <TableCell align="center">
                     <div className={classes.customTableCell}>
                       <Typography
-                        style={{ width: 400, align: "center" }}
+                        style={{ width: 200, align: "center" }}
                         noWrap
                         variant="body2"
                       >
@@ -227,11 +227,10 @@ const Departaments = () => {
                       </Typography>
                     </div>
                   </TableCell>
-                  <TableCell align="left">
+                  <TableCell align="center">
                     <div className={classes.customQueueTableCell}>
                       <Typography
-                        style={{ width: 600, align: "left" }}
-                        noWrap
+                        style={{ width: 600, align: "center"}}
                         variant="body2"
                       >
                         {
