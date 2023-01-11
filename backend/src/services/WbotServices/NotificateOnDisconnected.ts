@@ -9,12 +9,11 @@ const NotificateOnDisconnected = async (whatsapp: any): Promise<void> => {
   });
   if (!shouldNotificate || shouldNotificate.value === "disabled") return;
   // Getting connection to notificate
-  console.log("5")
   const whatsId = await ListSettingsServiceOne({
     key: "notificationWhatsappId"
   });
 
-  if (!whatsId || !whatsId.value || whatsId.value === "null") return
+  if (!whatsId || !whatsId.value || whatsId.value === "null") return;
   const wbot = getWbot(+whatsId.value);
 
   if (!wbot) return;
@@ -23,10 +22,10 @@ const NotificateOnDisconnected = async (whatsapp: any): Promise<void> => {
     key: "notificateAdminOnDisconnect"
   });
   const shouldNotificateAdmins = notificateAdmins?.value;
-  const NotificateDepartaments = await ListSettingsServiceOne({
-    key: "notificateDepartamentOnDisconnect"
-  });
-  const shouldNotificateDepartaments = NotificateDepartaments?.value;
+  // const NotificateDepartaments = await ListSettingsServiceOne({
+  //   key: "notificateDepartamentOnDisconnect"
+  // });
+  // const shouldNotificateDepartaments = NotificateDepartaments?.value;
 
   // Getting Admins
 
@@ -40,7 +39,8 @@ const NotificateOnDisconnected = async (whatsapp: any): Promise<void> => {
         admin.whatsappNumber !== ""
       ) {
         // wbot.sendMessage();
-        console.log(admin.name);
+        console.log(admin.whatsappNumber);
+        wbot.sendMessage(`${admin.whatsappNumber}@$c.us`, "oi");
       }
     });
   }
