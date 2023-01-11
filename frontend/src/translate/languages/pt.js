@@ -280,6 +280,7 @@ const messages = {
         },
         form: {
           name: "Nome",
+          whatsappNumber: "Número do whatsapp",
           email: "E-mail",
           password: "Senha",
           profile: "Perfil",

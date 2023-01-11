@@ -277,6 +277,7 @@ const messages = {
         },
         form: {
           name: "Name",
+          whatsappNumber: "Whatsapp number",
           email: "Email",
           password: "Password",
           profile: "Profile",

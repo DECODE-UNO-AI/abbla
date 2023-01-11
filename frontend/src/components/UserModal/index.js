@@ -97,6 +97,7 @@ const UserModal = ({ open, onClose, userId }) => {
 		password: "",
 		profile: "user",
 		startWork: "",
+		whatsappNumber: "",
 		endWork: "",
 	};
 
@@ -262,6 +263,7 @@ const UserModal = ({ open, onClose, userId }) => {
 										variant="outlined"
 										className={classes.formControl}
 										margin="dense"
+										style={{ marginRight: 0}}
 									>
 										<Can
 											role={loggedInUser.profile}
@@ -289,6 +291,17 @@ const UserModal = ({ open, onClose, userId }) => {
 											)}
 										/>
 									</FormControl>
+								</div>
+								<div>
+									<Field
+										as={TextField}
+										label={i18n.t("userModal.form.whatsappNumber")}
+										placeholder={"0DD900000000"}
+										name="whatsappNumber"
+										variant="outlined"
+										margin="dense"
+										fullWidth
+									/>
 								</div>
 								{
 									isSupervisor ? 
@@ -409,6 +422,7 @@ const UserModal = ({ open, onClose, userId }) => {
 												variant="outlined"
 												margin="dense"
 												className={classes.textField}
+												style={{ marginRight: 0}}
 											/>
 										</form>
 									)}
