@@ -107,7 +107,7 @@ const TicketActionButtons = ({ ticket }) => {
 			)}
 			<Can
 				role={user.profile}
-				perform="drawer-admin-items:view"
+				perform="drawer-supervisor-items:view"
 				yes={() => (
 					<>
 						{ticket.status === "pending" && (
