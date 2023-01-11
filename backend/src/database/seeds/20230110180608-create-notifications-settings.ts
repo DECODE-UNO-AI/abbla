@@ -24,8 +24,8 @@ module.exports = {
           updatedAt: new Date()
         },
         {
-          key: "NotificationWhatsappId",
-          value: null,
+          key: "notificationWhatsappId",
+          value: "null",
           createdAt: new Date(),
           updatedAt: new Date()
         }

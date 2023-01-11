@@ -264,6 +264,12 @@ const messages = {
           cancel: "Cancelar",
         },
       },
+      settingModal: {
+        title: "Notificación de configuración",
+        form: {
+          connection: "Conexión para notificar",
+        },
+      },
       userModal: {
         title: {
           add: "Agregar asistente",
@@ -549,6 +555,22 @@ const messages = {
             },
           },
           notificateOnDisconnect: {
+            name: "Notificar desconexión",
+            note: "Envía una notificación cuando se desconecta la conexión",
+            options: {
+              enabled: "Habilitado",
+              disabled: "Deshabilitado",
+            },
+          },
+          notificateDepartamentOnDisconnect: {
+            name: "Notificar desconexión",
+            note: "Envía una notificación cuando se desconecta la conexión",
+            options: {
+              enabled: "Habilitado",
+              disabled: "Deshabilitado",
+            },
+          },
+          notificateAdminOnDisconnect: {
             name: "Notificar desconexión",
             note: "Envía una notificación cuando se desconecta la conexión",
             options: {

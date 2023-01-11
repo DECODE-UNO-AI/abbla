@@ -264,6 +264,15 @@ const messages = {
           cancel: "Cancelar",
         },
       },
+      settingModal: {
+        title: "Configurações de notificação",
+        notification: {
+          title: "Departamento salvo com sucesso!",
+        },
+        form: {
+          connection: "Conexão de notificação",
+        },
+      },
       userModal: {
         title: {
           add: "Adicionar atendente",
@@ -555,6 +564,22 @@ const messages = {
           notificateOnDisconnect: {
             name: "Notificar desconexão",
             note: "Envia uma notificação quando a conexão é desconectada",
+            options: {
+              enabled: "Ativado",
+              disabled: "Desativado",
+            },
+          },
+          notificateDepartamentOnDisconnect: {
+            name: "Notificar departamento",
+            note: "Enviar uma notificação para os supervisores do departamento quando a conexão é desconectada",
+            options: {
+              enabled: "Ativado",
+              disabled: "Desativado",
+            },
+          },
+          notificateAdminOnDisconnect: {
+            name: "Notificar administradores",
+            note: "Enviar uma notificação para os administradores quando a conexão é desconectada",
             options: {
               enabled: "Ativado",
               disabled: "Desativado",
