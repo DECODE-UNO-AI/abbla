@@ -24,6 +24,39 @@ const NotificateOnDisconnected = async (whatsapp: Whatsapp): Promise<void> => {
 
   if (!wbot || !wbotStatus) return;
 
+  // Getting personalizated message
+  const notificateMessage = await ListSettingsServiceOne({
+    key: "messageOnDisconnect"
+  });
+  const message =
+    notificateMessage &&
+    notificateMessage.value &&
+    notificateMessage.value !== ""
+      ? notificateMessage.value
+      : "Deconexão: (name)";
+
+  const replacedMessage = message
+    .replace("(id)", `${whatsapp.id}`)
+    .replace("(name)", `${whatsapp.name}`)
+    .replace("(number)", `${whatsapp.number}`);
+
+  // User notification
+  const notificateUser = await ListSettingsServiceOne({
+    key: "notificateUserOnDisconnect"
+  });
+  const shouldNotificateUser = notificateUser?.value;
+
+  if (shouldNotificateUser) {
+    const whatsNumber = whatsapp.number;
+    if (whatsNumber && whatsNumber !== "null" && whatsNumber !== "") {
+      try {
+        await wbot.sendMessage(`${whatsNumber}@c.us`, replacedMessage);
+      } catch (err) {
+        logger.error(err);
+      }
+    }
+  }
+
   // Admins notification
   const notificateAdmins = await ListSettingsServiceOne({
     key: "notificateAdminOnDisconnect"
@@ -40,7 +73,10 @@ const NotificateOnDisconnected = async (whatsapp: Whatsapp): Promise<void> => {
           admin.whatsappNumber !== ""
         ) {
           try {
-            await wbot.sendMessage(`${admin.whatsappNumber}@c.us`, "oi");
+            await wbot.sendMessage(
+              `${admin.whatsappNumber}@c.us`,
+              replacedMessage
+            );
           } catch (err) {
             logger.error(err);
           }
@@ -67,7 +103,10 @@ const NotificateOnDisconnected = async (whatsapp: Whatsapp): Promise<void> => {
           supervisor.whatsappNumber !== ""
         ) {
           try {
-            await wbot.sendMessage(`${supervisor.whatsappNumber}@c.us`, "oi");
+            await wbot.sendMessage(
+              `${supervisor.whatsappNumber}@c.us`,
+              replacedMessage
+            );
           } catch (err) {
             logger.error(err);
           }
