@@ -268,6 +268,8 @@ const messages = {
         title: "Notifications Settings",
         form: {
           connection: "Connection to notificate",
+          saveMessageButton: "Save",
+          messageLabel: "Desconnection message"
         },
       },
       userModal: {
@@ -557,6 +559,14 @@ const messages = {
           },
           notificateOnDisconnect: {
             name: "Notificate disconnection",
+            note: "Send a notification on disconnection",
+            options: {
+              enabled: "Enabled",
+              disabled: "Disabled",
+            },
+          },
+          notificateUserOnDisconnect: {
+            name: "Notificate responsible for the connection",
             note: "Send a notification on disconnection",
             options: {
               enabled: "Enabled",

@@ -266,11 +266,10 @@ const messages = {
       },
       settingModal: {
         title: "Configurações de notificação",
-        notification: {
-          title: "Departamento salvo com sucesso!",
-        },
         form: {
           connection: "Conexão de notificação",
+          saveMessageButton: "Salvar",
+          messageLabel: "Mensagem de desconexão"
         },
       },
       userModal: {
@@ -565,6 +564,14 @@ const messages = {
           notificateOnDisconnect: {
             name: "Notificar desconexão",
             note: "Envia uma notificação quando a conexão é desconectada",
+            options: {
+              enabled: "Ativado",
+              disabled: "Desativado",
+            },
+          },
+          notificateUserOnDisconnect: {
+            name: "Notificar responsável pela conexão",
+            note: "Envia uma notificação para o telefone da conexão quando a conexão é desconectada",
             options: {
               enabled: "Ativado",
               disabled: "Desativado",

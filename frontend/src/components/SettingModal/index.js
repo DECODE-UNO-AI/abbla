@@ -82,7 +82,7 @@ const SettingModal = ({ openModal, onClose, children, settings, getSettingValue,
 								maxRows={5}
 								minRows={4}
 								value={message}
-								label={`Mensagem de desconexão`}
+								label={`${i18n.t("settingModal.form.messageLabel")}`}
 								name="messageOnDisconnect"
 								onChange={(e) => setMessage(e.target.value)}
 							/>
@@ -93,7 +93,7 @@ const SettingModal = ({ openModal, onClose, children, settings, getSettingValue,
 							style={{ position: "absolute", right: 10, bottom: 10}}
 							onClick={()=> handleChangeSetting({ target: { name: "messageOnDisconnect", value: message}})}
 							>
-								Salvar
+								{`${i18n.t("settingModal.form.saveMessageButton")}`}
 							</Button>
 						</FormControl>
 						

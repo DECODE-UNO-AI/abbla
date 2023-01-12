@@ -34,6 +34,12 @@ module.exports = {
           value: "Desconexão",
           createdAt: new Date(),
           updatedAt: new Date()
+        },
+        {
+          key: "notificateUserOnDisconnect",
+          value: "disabled",
+          createdAt: new Date(),
+          updatedAt: new Date()
         }
       ],
       {}
