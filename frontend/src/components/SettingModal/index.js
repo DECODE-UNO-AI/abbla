@@ -38,7 +38,7 @@ const SettingModal = ({ openModal, onClose, children, settings, getSettingValue,
 
     const classes = useStyles();
     const { whatsApps } = useWhatsApps();
-	const [message, setMessage] = useState('Meu cu');
+	const [message, setMessage] = useState("");
 
 
 	useEffect(()=> {
@@ -52,7 +52,7 @@ const SettingModal = ({ openModal, onClose, children, settings, getSettingValue,
 			aria-labelledby="confirm-dialog"
 		    >
                 <DialogTitle id="confirm-dialog">{`${i18n.t("settingModal.title")}`}</DialogTitle>
-			    <DialogContent dividers style={{ width: 600}}>
+			    <DialogContent dividers>
                     { children }
                     <Paper className={classes.paper}>
 						<FormControl fullWidth >
@@ -72,8 +72,8 @@ const SettingModal = ({ openModal, onClose, children, settings, getSettingValue,
 						</FormControl>
 					</Paper>
 					<Typography variant="body2" gutterBottom></Typography>
-					<div>
-						<FormControl fullWidth style={{ marginTop: 20, marginBottom: 20, position: "relative"}} >
+					<div style={{ display: "flex", flexDirection: "column", alignItems: "flex-end"}}>
+						<FormControl fullWidth style={{ marginTop: 20, marginBottom: 20}} >
 							<TextField
 								labelId="messageOnDisconnect-label"
 								id="messageOnDisconnect"
@@ -86,16 +86,15 @@ const SettingModal = ({ openModal, onClose, children, settings, getSettingValue,
 								name="messageOnDisconnect"
 								onChange={(e) => setMessage(e.target.value)}
 							/>
-							<Button
-							type="submit"
-							color="primary"
-							variant="contained"
-							style={{ position: "absolute", right: 10, bottom: 10}}
-							onClick={()=> handleChangeSetting({ target: { name: "messageOnDisconnect", value: message}})}
-							>
-								{`${i18n.t("settingModal.form.saveMessageButton")}`}
-							</Button>
 						</FormControl>
+						<Button
+						type="submit"
+						color="primary"
+						variant="contained"
+						onClick={()=> handleChangeSetting({ target: { name: "messageOnDisconnect", value: message}})}
+						>
+							{`${i18n.t("settingModal.form.saveMessageButton")}`}
+						</Button>
 						
 					</div>
 			    </DialogContent>
