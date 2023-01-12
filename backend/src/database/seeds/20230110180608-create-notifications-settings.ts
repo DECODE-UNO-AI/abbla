@@ -28,6 +28,12 @@ module.exports = {
           value: "null",
           createdAt: new Date(),
           updatedAt: new Date()
+        },
+        {
+          key: "messageOnDisconnect",
+          value: "Desconexão",
+          createdAt: new Date(),
+          updatedAt: new Date()
         }
       ],
       {}

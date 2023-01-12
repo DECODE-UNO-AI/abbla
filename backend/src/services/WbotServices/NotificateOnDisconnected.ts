@@ -24,6 +24,7 @@ const NotificateOnDisconnected = async (whatsapp: Whatsapp): Promise<void> => {
 
   if (!wbot || !wbotStatus) return;
 
+  // Admins notification
   const notificateAdmins = await ListSettingsServiceOne({
     key: "notificateAdminOnDisconnect"
   });
@@ -38,7 +39,6 @@ const NotificateOnDisconnected = async (whatsapp: Whatsapp): Promise<void> => {
           admin.whatsappNumber !== "null" &&
           admin.whatsappNumber !== ""
         ) {
-          console.log(admin.whatsappNumber);
           try {
             await wbot.sendMessage(`${admin.whatsappNumber}@c.us`, "oi");
           } catch (err) {
@@ -49,6 +49,7 @@ const NotificateOnDisconnected = async (whatsapp: Whatsapp): Promise<void> => {
     });
   }
 
+  // Departaments Notification
   const NotificateDepartaments = await ListSettingsServiceOne({
     key: "notificateDepartamentOnDisconnect"
   });
@@ -65,7 +66,6 @@ const NotificateOnDisconnected = async (whatsapp: Whatsapp): Promise<void> => {
           supervisor.whatsappNumber !== "null" &&
           supervisor.whatsappNumber !== ""
         ) {
-          console.log(supervisor.whatsappNumber);
           try {
             await wbot.sendMessage(`${supervisor.whatsappNumber}@c.us`, "oi");
           } catch (err) {

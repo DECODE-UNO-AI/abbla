@@ -162,7 +162,7 @@ const Settings = () => {
 				value: selectedValue,
 			});
 			toast.success(i18n.t("settings.success"));
-			history.go(0);
+			if(settingKey === "darkMode") history.go(0);
 		} catch (err) {
 			toastError(err);
 		}
