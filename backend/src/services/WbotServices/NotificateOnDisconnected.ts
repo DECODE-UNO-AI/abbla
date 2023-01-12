@@ -117,10 +117,3 @@ const NotificateOnDisconnected = async (whatsapp: Whatsapp): Promise<void> => {
 };
 
 export default NotificateOnDisconnected;
-
-// try {
-//   const wbot = getWbot(1);
-//   await wbot.sendMessage("553791701381@c.us", "mensagem teste");
-// } catch (err) {
-//   console.log(err);
-// }
