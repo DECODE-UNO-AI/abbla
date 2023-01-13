@@ -42,7 +42,7 @@ const SettingModal = ({ openModal, onClose, children, settings, getSettingValue,
 
 
 	useEffect(()=> {
-		setMessage(settings && settings.length > 0 && getSettingValue("messageOnDisconnect") ? getSettingValue("messageOnDisconnect") : 'O')
+		setMessage(settings && settings.length > 0 && getSettingValue("messageOnDisconnect") ? getSettingValue("messageOnDisconnect") : '')
 	}, [getSettingValue, settings])
 
     return(
