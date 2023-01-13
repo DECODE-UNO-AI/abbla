@@ -296,7 +296,7 @@ const UserModal = ({ open, onClose, userId }) => {
 									<Field
 										as={TextField}
 										label={i18n.t("userModal.form.whatsappNumber")}
-										placeholder={"0DD900000000"}
+										placeholder={"Ex: 551188888888"}
 										name="whatsappNumber"
 										variant="outlined"
 										margin="dense"
