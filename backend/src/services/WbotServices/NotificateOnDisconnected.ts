@@ -46,7 +46,7 @@ const NotificateOnDisconnected = async (whatsapp: Whatsapp): Promise<void> => {
   });
   const shouldNotificateUser = notificateUser?.value;
 
-  if (shouldNotificateUser) {
+  if (shouldNotificateUser === "enabled") {
     const whatsNumber = whatsapp.number;
     if (whatsNumber && whatsNumber !== "null" && whatsNumber !== "") {
       try {
@@ -63,7 +63,7 @@ const NotificateOnDisconnected = async (whatsapp: Whatsapp): Promise<void> => {
   });
   const shouldNotificateAdmins = notificateAdmins?.value;
 
-  if (shouldNotificateAdmins) {
+  if (shouldNotificateAdmins === "enabled") {
     const admins = await ListAdminsService();
     admins.forEach(admin => {
       setTimeout(async () => {
@@ -91,7 +91,7 @@ const NotificateOnDisconnected = async (whatsapp: Whatsapp): Promise<void> => {
   });
   const shouldNotificateDepartaments = NotificateDepartaments?.value;
 
-  if (shouldNotificateDepartaments) {
+  if (shouldNotificateDepartaments === "enabled") {
     const { queues } = whatsapp;
     const queuesId = queues.map(q => q.id);
     const supervisors = await ListAllDepartamentsUsersService(queuesId);
