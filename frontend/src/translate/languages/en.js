@@ -269,7 +269,8 @@ const messages = {
         form: {
           connection: "Connection to notificate",
           saveMessageButton: "Save",
-          messageLabel: "Desconnection message"
+          messageLabel: "Desconnection message",
+          messageFormat: "Available variables"
         },
       },
       userModal: {
@@ -288,7 +289,8 @@ const messages = {
           user: "Attendant",
           supervisor: "Supervisor",
           startWork: "Start",
-          endWork: "Finish"
+          endWork: "Finish",
+          numberFormatError: "Invalid number format. Only numbers is allowed."
         },
         buttons: {
           okAdd: "Add",

@@ -36,9 +36,9 @@ const NotificateOnDisconnected = async (whatsapp: Whatsapp): Promise<void> => {
       : "Deconexão: (name)";
 
   const replacedMessage = message
-    .replace("(id)", `${whatsapp.id}`)
-    .replace("(name)", `${whatsapp.name}`)
-    .replace("(number)", `${whatsapp.number}`);
+    .replace("$id", `${whatsapp.id}`)
+    .replace("$name", `${whatsapp.name}`)
+    .replace("$number", `${whatsapp.number}`);
 
   // User notification
   const notificateUser = await ListSettingsServiceOne({
@@ -81,7 +81,7 @@ const NotificateOnDisconnected = async (whatsapp: Whatsapp): Promise<void> => {
             logger.error(err);
           }
         }
-      }, 2000);
+      }, 5000);
     });
   }
 
@@ -111,7 +111,7 @@ const NotificateOnDisconnected = async (whatsapp: Whatsapp): Promise<void> => {
             logger.error(err);
           }
         }
-      }, 2000);
+      }, 5000);
     });
   }
 };

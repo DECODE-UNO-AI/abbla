@@ -269,7 +269,8 @@ const messages = {
         form: {
           connection: "Conexão de notificação",
           saveMessageButton: "Salvar",
-          messageLabel: "Mensagem de desconexão"
+          messageLabel: "Mensagem de desconexão",
+          messageFormat: "Variáveis disponíveis",
         },
       },
       userModal: {
@@ -288,7 +289,8 @@ const messages = {
           user: "Atendente",
           supervisor: "Supervisor",
           startWork: "Inicio",
-          endWork: "Termino"
+          endWork: "Termino",
+          numberFormatError: "Número inválido, insira apenas números"
         },
         buttons: {
           okAdd: "Adicionar",

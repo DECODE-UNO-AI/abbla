@@ -72,6 +72,7 @@ const SettingModal = ({ openModal, onClose, children, settings, getSettingValue,
 						</FormControl>
 					</Paper>
 					<Typography variant="body2" gutterBottom></Typography>
+					<InputLabel style={{ fontSize: 12, marginTop: 20 }}>{`${i18n.t("settingModal.form.messageFormat")}`}: $id, $name, $number</InputLabel>
 					<div style={{ display: "flex", flexDirection: "column", alignItems: "flex-end"}}>
 						<FormControl fullWidth style={{ marginTop: 20, marginBottom: 20}} >
 							<TextField
