@@ -65,7 +65,7 @@ const messages = {
         buttons: {
           add: "Add WhatsApp",
           disconnect: "disconnect",
-          tryAgain: "Try again",
+          tryAgain: "Reconnect",
           qrcode: "QR CODE",
           newQr: "New QR CODE",
           connecting: "Connecting",

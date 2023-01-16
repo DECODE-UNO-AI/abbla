@@ -1,5 +1,7 @@
 import qrCode from "qrcode-terminal";
-import { Client, LocalAuth } from "whatsapp-web.js";
+import { Client, LocalAuth, DefaultOptions } from "whatsapp-web.js";
+import path from "path";
+import { rm } from "fs/promises";
 import { getIO } from "./socket";
 import Whatsapp from "../models/Whatsapp";
 import AppError from "../errors/AppError";
@@ -39,7 +41,6 @@ export const initWbot = async (whatsapp: Whatsapp): Promise<Session> => {
       const io = getIO();
       const sessionName = whatsapp.name;
       let sessionCfg;
-
       if (whatsapp && whatsapp.session) {
         sessionCfg = JSON.parse(whatsapp.session);
       }
@@ -49,43 +50,51 @@ export const initWbot = async (whatsapp: Whatsapp): Promise<Session> => {
         authStrategy: new LocalAuth({ clientId: `bd_${whatsapp.id}` }),
         puppeteer: {
           args: [
-            "--no-sandbox",
-            "--disable-setuid-sandbox",
-            "--log-level=3",
-            "--no-default-browser-check",
-            "--disable-site-isolation-trials",
-            "--no-experiments",
-            "--ignore-gpu-blacklist",
-            "--ignore-certificate-errors",
-            "--ignore-certificate-errors-spki-list",
-            "--disable-gpu",
-            "--disable-extensions",
+            "--autoplay-policy=user-gesture-required",
+            "--disable-background-networking",
+            "--disable-background-timer-throttling",
+            "--disable-backgrounding-occluded-windows",
+            "--disable-breakpad",
+            "--disable-client-side-phishing-detection",
+            "--disable-component-update",
             "--disable-default-apps",
-            "--enable-features=NetworkService",
+            "--disable-dev-shm-usage",
+            "--disable-domain-reliability",
+            "--disable-extensions",
+            "--disable-features=AudioServiceOutOfProcess",
+            "--disable-gpu",
+            "--disable-hang-monitor",
+            "--disable-ipc-flooding-protection",
+            "--disable-notifications",
+            "--disable-offer-store-unmasked-wallet-cards",
+            "--disable-popup-blocking",
+            "--disable-print-preview",
+            "--disable-prompt-on-repost",
+            "--disable-renderer-backgrounding",
             "--disable-setuid-sandbox",
+            "--disable-speech-api",
+            "--disable-sync",
+            "--hide-scrollbars",
+            "--ignore-gpu-blacklist",
+            "--metrics-recording-only",
+            "--mute-audio",
+            "--no-default-browser-check",
+            "--no-first-run",
+            "--no-pings",
             "--no-sandbox",
-            "--disable-webgl",
-            "--disable-threaded-animation",
-            "--disable-threaded-scrolling",
-            "--disable-in-process-stack-traces",
-            "--disable-histogram-customizer",
-            "--disable-gl-extensions",
-            "--disable-composited-antialiasing",
-            "--disable-canvas-aa",
-            "--disable-3d-apis",
-            "--disable-accelerated-2d-canvas",
-            "--disable-accelerated-jpeg-decoding",
-            "--disable-accelerated-mjpeg-decode",
-            "--disable-app-list-dismiss-on-blur",
-            "--disable-accelerated-video-decode"
+            "--no-zygote",
+            "--password-store=basic",
+            "--use-gl=swiftshader",
+            "--use-mock-keychain",
+            `--user-agent=${DefaultOptions.userAgent}`
           ],
           executablePath: process.env.CHROME_BIN || undefined
         }
       });
-
+      wbot.id = whatsapp.id;
       wbot.initialize();
-
       wbot.on("qr", async qr => {
+        if (whatsapp.status === "CONNECTED") return;
         logger.info("Session:", sessionName);
         qrCode.generate(qr, { small: true });
         await whatsapp.update({ qrcode: qr, status: "qrcode", retries: 0 });
@@ -184,5 +193,16 @@ export const removeWbot = (whatsappId: number): void => {
     }
   } catch (err: any) {
     logger.error(err);
+  }
+};
+
+export const deleteSession = async (id: number | string): Promise<void> => {
+  const pathRoot = path.resolve(__dirname, "..", "..", ".wwebjs_auth");
+  const pathSession = `${pathRoot}/session-bd_${id}`;
+  try {
+    await rm(pathSession, { recursive: true, force: true });
+  } catch (error) {
+    logger.info(`DeleteSession:: ${pathSession}`);
+    logger.error(error);
   }
 };

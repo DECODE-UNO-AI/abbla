@@ -63,6 +63,7 @@ const CreateUserService = async ({
     throw new AppError(err.message);
   }
 
+
   const user = await User.create(
     {
       email,

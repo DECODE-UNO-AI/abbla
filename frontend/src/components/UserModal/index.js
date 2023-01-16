@@ -109,7 +109,7 @@ const UserModal = ({ open, onClose, userId }) => {
 	const [selectedDepartamentIds, setSelectedDepartamentsIds] = useState([]);
 	const [selectedDepartaments, setSelectedDepartaments] = useState([])
 	const [showPassword, setShowPassword] = useState(false);
-	const [showNotication, setShowNotification] = useState("");
+	const [showNotication, setShowNotification] = useState(true);
 	const [whatsappId, setWhatsappId] = useState(false);
 	const [isSupervisor, setIsSupervisor] = useState(false);
 	const { loading, whatsApps } = useWhatsApps();
@@ -363,7 +363,6 @@ const UserModal = ({ open, onClose, userId }) => {
 												onChange={(e) => setShowNotification(e.target.value)}
 												label={"Notificações"}
 											>
-												<MenuItem value={''}>&nbsp;</MenuItem>
 												<MenuItem key={true} value={true}>Ativadas</MenuItem>
 												<MenuItem key={false} value={false}>Desativadas</MenuItem>
 												

@@ -122,7 +122,7 @@ const Connections = () => {
 
 	const handleRequestNewQrCode = async whatsAppId => {
 		try {
-			await api.put(`/whatsappsession/${whatsAppId}`);
+			await api.put(`/whatsappsession/${whatsAppId}`, { isQrcode: true });
 		} catch (err) {
 			toastError(err);
 		}
