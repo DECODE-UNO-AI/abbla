@@ -33,7 +33,7 @@ const NotificateOnDisconnected = async (whatsapp: Whatsapp): Promise<void> => {
     notificateMessage.value &&
     notificateMessage.value !== ""
       ? notificateMessage.value
-      : "Deconexão: (name)";
+      : "Disconnected on: $number";
 
   const replacedMessage = message
     .replace("$id", `${whatsapp.id}`)
