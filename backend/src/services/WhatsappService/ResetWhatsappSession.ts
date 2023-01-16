@@ -14,8 +14,6 @@ const ResetWhatsappSession = async (
     session: ""
   });
 
-  // await AssociateWhatsappQueue(whatsapp, queueIds);
-
   return { whatsapp };
 };
 

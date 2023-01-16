@@ -2,7 +2,6 @@ import { Request, Response } from "express";
 import { deleteSession, getWbot, removeWbot } from "../libs/wbot";
 import ShowWhatsAppService from "../services/WhatsappService/ShowWhatsAppService";
 import { StartWhatsAppSession } from "../services/WbotServices/StartWhatsAppSession";
-// import UpdateWhatsAppService from "../services/WhatsappService/UpdateWhatsAppService";
 import { getIO } from "../libs/socket";
 import ResetWhatsappSession from "../services/WhatsappService/ResetWhatsappSession";
 
