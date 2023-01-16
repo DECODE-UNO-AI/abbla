@@ -264,6 +264,15 @@ const messages = {
           cancel: "Cancelar",
         },
       },
+      settingModal: {
+        title: "Configurações de notificação",
+        form: {
+          connection: "Conexão de notificação",
+          saveMessageButton: "Salvar",
+          messageLabel: "Mensagem de desconexão",
+          messageFormat: "Variáveis disponíveis",
+        },
+      },
       userModal: {
         title: {
           add: "Adicionar atendente",
@@ -271,6 +280,7 @@ const messages = {
         },
         form: {
           name: "Nome",
+          whatsappNumber: "Número do whatsapp",
           email: "E-mail",
           password: "Senha",
           profile: "Perfil",
@@ -279,7 +289,8 @@ const messages = {
           user: "Atendente",
           supervisor: "Supervisor",
           startWork: "Inicio",
-          endWork: "Termino"
+          endWork: "Termino",
+          numberFormatError: "Número inválido, insira apenas números"
         },
         buttons: {
           okAdd: "Adicionar",
@@ -547,6 +558,38 @@ const messages = {
           visualizeMessage: {
             name: "Visualizar mensagem somente na resposta",
             note: "Ativa a visualização das mensagens somente nas respostas",
+            options: {
+              enabled: "Ativado",
+              disabled: "Desativado",
+            },
+          },
+          notificateOnDisconnect: {
+            name: "Notificar desconexão",
+            note: "Envia uma notificação quando a conexão é desconectada",
+            options: {
+              enabled: "Ativado",
+              disabled: "Desativado",
+            },
+          },
+          notificateUserOnDisconnect: {
+            name: "Notificar responsável pela conexão",
+            note: "Envia uma notificação para o telefone da conexão quando a conexão é desconectada",
+            options: {
+              enabled: "Ativado",
+              disabled: "Desativado",
+            },
+          },
+          notificateDepartamentOnDisconnect: {
+            name: "Notificar departamento",
+            note: "Enviar uma notificação para os supervisores do departamento quando a conexão é desconectada",
+            options: {
+              enabled: "Ativado",
+              disabled: "Desativado",
+            },
+          },
+          notificateAdminOnDisconnect: {
+            name: "Notificar administradores",
+            note: "Enviar uma notificação para os administradores quando a conexão é desconectada",
             options: {
               enabled: "Ativado",
               disabled: "Desativado",

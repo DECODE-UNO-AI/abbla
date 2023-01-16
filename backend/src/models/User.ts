@@ -55,6 +55,9 @@ class User extends Model<User> {
   @Column
   notificationSound: boolean;
 
+  @Column
+  whatsappNumber: string;
+
   @ForeignKey(() => Whatsapp)
   @Column
   whatsappId: number;

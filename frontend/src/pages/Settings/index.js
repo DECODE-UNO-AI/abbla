@@ -3,6 +3,8 @@ import openSocket from "socket.io-client";
 import { useHistory } from "react-router-dom";
 
 import { makeStyles, withStyles } from "@material-ui/core/styles";
+
+import MoreVertOutlined from "@material-ui/icons/MoreVertOutlined";
 import Paper from "@material-ui/core/Paper";
 import Typography from "@material-ui/core/Typography";
 import Container from "@material-ui/core/Container";
@@ -17,6 +19,8 @@ import toastError from "../../errors/toastError";
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Switch from '@material-ui/core/Switch';
 
+import SettingModal from "../../components/SettingModal";
+
 const useStyles = makeStyles(theme => ({
 	root: {
 		backgroundColor: theme.palette.background.default,
@@ -29,6 +33,22 @@ const useStyles = makeStyles(theme => ({
 		padding: theme.spacing(2),
 		display: "flex",
 		alignItems: "center",
+	},
+
+	paperWithMoreSettings: {
+		padding: theme.spacing(2),
+		display: "flex",
+		alignItems: "center",
+		justifyContent: "space-between"
+	},
+
+	moreSetting: {
+		padding: 3,
+		display: "flex",
+		alignItems: "center",
+		justifyContent: "center",
+		borderRadius: 999,
+		cursor: "pointer",
 	},
 
 	settingOption: {
@@ -99,6 +119,7 @@ const Settings = () => {
 	const history = useHistory();
 
 	const [settings, setSettings] = useState([]);
+	const [openModal, setOpenModal] = useState(false);
 
 	useEffect(() => {
 		const fetchSession = async () => {
@@ -125,11 +146,12 @@ const Settings = () => {
 				});
 			}
 		});
-
+		
 		return () => {
 			socket.disconnect();
 		};
 	}, []);
+
 
 	const handleChangeBooleanSetting = async e => {
 		const selectedValue = e.target.checked ? "enabled" : "disabled";
@@ -140,7 +162,7 @@ const Settings = () => {
 				value: selectedValue,
 			});
 			toast.success(i18n.t("settings.success"));
-			history.go(0);
+			if(settingKey === "darkMode") history.go(0);
 		} catch (err) {
 			toastError(err);
 		}
@@ -269,7 +291,22 @@ const Settings = () => {
 						/>
 					</Tooltip>
 				</Paper>
-
+				<Typography variant="body2" gutterBottom></Typography>
+				<Paper className={classes.paperWithMoreSettings}>
+					<Tooltip title={i18n.t("settings.settings.notificateOnDisconnect.note")}>
+						<FormControlLabel
+							control={
+								<IOSSwitch
+									checked={settings && settings.length > 0 && getSettingValue("notificateOnDisconnect") === "enabled"}
+									onChange={handleChangeBooleanSetting} name="notificateOnDisconnect"
+								/>}
+							label={i18n.t("settings.settings.notificateOnDisconnect.name")}
+						/>
+					</Tooltip>
+					<Paper className={classes.moreSetting} onClick={() => setOpenModal(true)}>
+						<MoreVertOutlined/>
+					</Paper>
+				</Paper>
 				<Typography variant="body2" gutterBottom></Typography>
 					<Tooltip title={i18n.t("settings.settings.timeCreateNewTicket.note")}>
 					     <Paper className={classes.paper} elevation={3}>
@@ -331,6 +368,47 @@ const Settings = () => {
 				             </Paper>
 					</Tooltip>
 			</Container>
+			<SettingModal openModal={openModal} onClose={setOpenModal} settings={settings} getSettingValue={getSettingValue} handleChangeSetting={handleChangeSetting}>
+				<Paper className={classes.paper}>
+					<Tooltip title={i18n.t("settings.settings.notificateAdminOnDisconnect.note")}>
+						<FormControlLabel
+							control={
+								<IOSSwitch
+									checked={settings && settings.length > 0 && getSettingValue("notificateAdminOnDisconnect") === "enabled"}
+									onChange={handleChangeBooleanSetting} name="notificateAdminOnDisconnect"
+								/>}
+							label={i18n.t("settings.settings.notificateAdminOnDisconnect.name")}
+						/>
+					</Tooltip>
+				</Paper>
+				<Typography variant="body2" gutterBottom></Typography>
+				<Paper className={classes.paper}>
+					<Tooltip title={i18n.t("settings.settings.notificateDepartamentOnDisconnect.note")}>
+						<FormControlLabel
+							control={
+								<IOSSwitch
+									checked={settings && settings.length > 0 && getSettingValue("notificateDepartamentOnDisconnect") === "enabled"}
+									onChange={handleChangeBooleanSetting} name="notificateDepartamentOnDisconnect"
+								/>}
+							label={i18n.t("settings.settings.notificateDepartamentOnDisconnect.name")}
+						/>
+					</Tooltip>
+				</Paper>
+				<Typography variant="body2" gutterBottom></Typography>
+				<Paper className={classes.paper}>
+					<Tooltip title={i18n.t("settings.settings.notificateUserOnDisconnect.note")}>
+						<FormControlLabel
+							control={
+								<IOSSwitch
+									checked={settings && settings.length > 0 && getSettingValue("notificateUserOnDisconnect") === "enabled"}
+									onChange={handleChangeBooleanSetting} name="notificateUserOnDisconnect"
+								/>}
+							label={i18n.t("settings.settings.notificateUserOnDisconnect.name")}
+						/>
+					</Tooltip>
+				</Paper>
+				<Typography variant="body2" gutterBottom></Typography>
+			</SettingModal>
 		</div>
 	);
 };

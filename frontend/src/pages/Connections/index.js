@@ -1,5 +1,5 @@
 import React, { useState, useCallback, useContext } from "react";
-import { toast } from "react-toastify";
+//import { toast } from "react-toastify";
 import { format, parseISO } from "date-fns";
 
 import { makeStyles } from "@material-ui/core/styles";
@@ -24,7 +24,7 @@ import {
 	SignalCellularConnectedNoInternet0Bar,
 	SignalCellular4Bar,
 	CropFree,
-	DeleteOutline,
+	//DeleteOutline,
 } from "@material-ui/icons";
 
 import MainContainer from "../../components/MainContainer";

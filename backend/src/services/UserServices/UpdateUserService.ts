@@ -14,6 +14,7 @@ interface UserData {
   startWork?: string;
   endWork?: string;
   notificationSound?: boolean;
+  whatsappNumber?: string;
   departamentIds?: number[];
 }
 
@@ -52,6 +53,7 @@ const UpdateUserService = async ({
     startWork,
     endWork,
     notificationSound,
+    whatsappNumber = null,
     departamentIds = []
   } = userData;
 
@@ -69,6 +71,7 @@ const UpdateUserService = async ({
     whatsappId: whatsappId || null,
     startWork,
     endWork,
+    whatsappNumber,
     notificationSound
   });
 

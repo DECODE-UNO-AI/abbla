@@ -264,6 +264,15 @@ const messages = {
           cancel: "Cancel",
         },
       },
+      settingModal: {
+        title: "Notifications Settings",
+        form: {
+          connection: "Connection to notificate",
+          saveMessageButton: "Save",
+          messageLabel: "Desconnection message",
+          messageFormat: "Available variables"
+        },
+      },
       userModal: {
         title: {
           add: "Add Attendant",
@@ -271,6 +280,7 @@ const messages = {
         },
         form: {
           name: "Name",
+          whatsappNumber: "Whatsapp number",
           email: "Email",
           password: "Password",
           profile: "Profile",
@@ -279,7 +289,8 @@ const messages = {
           user: "Attendant",
           supervisor: "Supervisor",
           startWork: "Start",
-          endWork: "Finish"
+          endWork: "Finish",
+          numberFormatError: "Invalid number format. Only numbers is allowed."
         },
         buttons: {
           okAdd: "Add",
@@ -543,6 +554,38 @@ const messages = {
           visualizeMessage: {
             name: "Visualize message just on response",
             note: "Disable message visualize confirmation until message is previewed",
+            options: {
+              enabled: "Enabled",
+              disabled: "Disabled",
+            },
+          },
+          notificateOnDisconnect: {
+            name: "Notificate disconnection",
+            note: "Send a notification on disconnection",
+            options: {
+              enabled: "Enabled",
+              disabled: "Disabled",
+            },
+          },
+          notificateUserOnDisconnect: {
+            name: "Notificate responsible for the connection",
+            note: "Send a notification on disconnection",
+            options: {
+              enabled: "Enabled",
+              disabled: "Disabled",
+            },
+          },
+          notificateDepartamentOnDisconnect: {
+            name: "Notificate departament",
+            note: "Send a notification to supervisor on disconnection",
+            options: {
+              enabled: "Enabled",
+              disabled: "Disabled",
+            },
+          },
+          notificateAdminOnDisconnect: {
+            name: "Notificate admin",
+            note: "Send a notification to admins on disconnection",
             options: {
               enabled: "Enabled",
               disabled: "Disabled",

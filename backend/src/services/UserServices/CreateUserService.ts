@@ -14,6 +14,7 @@ interface Request {
   startWork?: string;
   endWork?: string;
   notificationSound?: boolean;
+  whatsappNumber?: string | null;
   departamentIds?: number[];
 }
 
@@ -34,6 +35,7 @@ const CreateUserService = async ({
   startWork,
   endWork,
   notificationSound = true,
+  whatsappNumber = null,
   departamentIds = []
 }: Request): Promise<Response> => {
   const schema = Yup.object().shape({
@@ -71,7 +73,8 @@ const CreateUserService = async ({
       whatsappId: whatsappId || null,
       startWork,
       endWork,
-      notificationSound
+      notificationSound,
+      whatsappNumber
     },
     { include: ["queues", "whatsapp", "departaments"] }
   );

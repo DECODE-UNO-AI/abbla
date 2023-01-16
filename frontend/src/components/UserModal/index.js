@@ -86,6 +86,7 @@ const UserSchema = Yup.object().shape({
 		.required("Required"),
 	password: Yup.string().min(5, "Too Short!").max(50, "Too Long!"),
 	email: Yup.string().email("Invalid email").required("Required"),
+	whatsappNumber: Yup.string().min(8, "Too Short!").max(50, "Too Long!").matches(/^\d+$/, i18n.t("userModal.form.numberFormatError")),
 });
 
 const UserModal = ({ open, onClose, userId }) => {
@@ -97,6 +98,7 @@ const UserModal = ({ open, onClose, userId }) => {
 		password: "",
 		profile: "user",
 		startWork: "",
+		whatsappNumber: "",
 		endWork: "",
 	};
 
@@ -262,6 +264,7 @@ const UserModal = ({ open, onClose, userId }) => {
 										variant="outlined"
 										className={classes.formControl}
 										margin="dense"
+										style={{ marginRight: 0}}
 									>
 										<Can
 											role={loggedInUser.profile}
@@ -289,6 +292,19 @@ const UserModal = ({ open, onClose, userId }) => {
 											)}
 										/>
 									</FormControl>
+								</div>
+								<div>
+									<Field
+										as={TextField}
+										label={i18n.t("userModal.form.whatsappNumber")}
+										placeholder={"Ex: 5513912344321"}
+										error={touched.whatsappNumber && Boolean(errors.whatsappNumber)}
+										helperText={touched.whatsappNumber && errors.whatsappNumber}
+										name="whatsappNumber"
+										variant="outlined"
+										margin="dense"
+										fullWidth
+									/>
 								</div>
 								{
 									isSupervisor ? 
@@ -408,6 +424,7 @@ const UserModal = ({ open, onClose, userId }) => {
 												variant="outlined"
 												margin="dense"
 												className={classes.textField}
+												style={{ marginRight: 0}}
 											/>
 										</form>
 									)}

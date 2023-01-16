@@ -264,6 +264,15 @@ const messages = {
           cancel: "Cancelar",
         },
       },
+      settingModal: {
+        title: "Notificación de configuración",
+        form: {
+          connection: "Conexión para notificar",
+          saveMessageButton: "Guardar",
+          messageLabel: "Mensaje de desconexión",
+          messageFormat: "Variables disponibles"
+        },
+      },
       userModal: {
         title: {
           add: "Agregar asistente",
@@ -271,6 +280,7 @@ const messages = {
         },
         form: {
           name: "Nombre",
+          whatsappNumber: "Número del whatsapp",
           email: "Correo electrónico",
           password: "Contraseña",
           profile: "Perfil",
@@ -279,7 +289,8 @@ const messages = {
           asistente: "Asistente",
           supervisor: "Supervisor",
           startWork: "Inicio",
-          endWork: "Finalizar"
+          endWork: "Finalizar",
+          numberFormatError: "Formato de número no válido. Solo se permiten números"
         },
         buttons: {
           okAdd: "Agregar",
@@ -543,6 +554,38 @@ const messages = {
           visualizeMessage: {
             name: "Ver mensaje solo en respuesta",
             note: "Habilita la visualización de mensajes solo en las respuestas.",
+            options: {
+              enabled: "Habilitado",
+              disabled: "Deshabilitado",
+            },
+          },
+          notificateOnDisconnect: {
+            name: "Notificar desconexión",
+            note: "Envía una notificación cuando se desconecta la conexión",
+            options: {
+              enabled: "Habilitado",
+              disabled: "Deshabilitado",
+            },
+          },
+          notificateUserOnDisconnect: {
+            name: "Notificar al responsable de la conexión",
+            note: "Envía una notificación al teléfono que se conecta cuando se desconecta la conexión",
+            options: {
+              enabled: "Habilitado",
+              disabled: "Deshabilitado",
+            },
+          },
+          notificateDepartamentOnDisconnect: {
+            name: "Notificar desconexión",
+            note: "Envía una notificación cuando se desconecta la conexión",
+            options: {
+              enabled: "Habilitado",
+              disabled: "Deshabilitado",
+            },
+          },
+          notificateAdminOnDisconnect: {
+            name: "Notificar desconexión",
+            note: "Envía una notificación cuando se desconecta la conexión",
             options: {
               enabled: "Habilitado",
               disabled: "Deshabilitado",

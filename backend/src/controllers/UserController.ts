@@ -12,6 +12,7 @@ import DeleteUserService from "../services/UserServices/DeleteUserService";
 import ListDepartamentsUsersService from "../services/UserServices/ListDepartamentsUsersService";
 import User from "../models/User";
 import Queue from "../models/Queue";
+import CheckIsValidContact from "../services/WbotServices/CheckIsValidContact";
 
 type IndexQuery = {
   searchParam: string;
@@ -66,7 +67,8 @@ export const store = async (req: Request, res: Response): Promise<Response> => {
     startWork,
     endWork,
     notificationSound,
-    departamentIds
+    departamentIds,
+    whatsappNumber
   } = req.body;
 
   if (
@@ -76,6 +78,10 @@ export const store = async (req: Request, res: Response): Promise<Response> => {
     throw new AppError("ERR_USER_CREATION_DISABLED", 403);
   } else if (req.url !== "/signup" && req.user.profile !== "admin") {
     throw new AppError("ERR_NO_PERMISSION", 403);
+  }
+
+  if (whatsappNumber && whatsappNumber !== "") {
+    await CheckIsValidContact(whatsappNumber);
   }
 
   const user = await CreateUserService({
@@ -88,7 +94,8 @@ export const store = async (req: Request, res: Response): Promise<Response> => {
     startWork,
     endWork,
     notificationSound,
-    departamentIds
+    departamentIds,
+    whatsappNumber
   });
 
   const io = getIO();
@@ -122,6 +129,10 @@ export const update = async (
   }
 
   const userData = req.body;
+
+  if (userData.whatsappNumber && userData.whatsappNumber !== "") {
+    await CheckIsValidContact(userData.whatsappNumber);
+  }
 
   const user = await UpdateUserService({ userData, userId });
 
