@@ -24,7 +24,6 @@ const update = async (req: Request, res: Response): Promise<Response> => {
   }
 
   const { whatsapp } = await ResetWhatsappSession(whatsappId);
-  await NotificateOnDisconnected(whatsapp);
 
   StartWhatsAppSession(whatsapp);
 
@@ -47,6 +46,8 @@ const remove = async (req: Request, res: Response): Promise<Response> => {
     qrcode: null,
     retries: 0
   });
+
+  await NotificateOnDisconnected(whatsapp);
 
   io.emit("whatsappSession", {
     action: "update",
