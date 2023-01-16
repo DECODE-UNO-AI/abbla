@@ -4,6 +4,7 @@ import ShowWhatsAppService from "../services/WhatsappService/ShowWhatsAppService
 import { StartWhatsAppSession } from "../services/WbotServices/StartWhatsAppSession";
 import { getIO } from "../libs/socket";
 import ResetWhatsappSession from "../services/WhatsappService/ResetWhatsappSession";
+import NotificateOnDisconnected from "../services/WbotServices/NotificateOnDisconnected";
 
 const store = async (req: Request, res: Response): Promise<Response> => {
   const { whatsappId } = req.params;
@@ -23,6 +24,7 @@ const update = async (req: Request, res: Response): Promise<Response> => {
   }
 
   const { whatsapp } = await ResetWhatsappSession(whatsappId);
+  await NotificateOnDisconnected(whatsapp);
 
   StartWhatsAppSession(whatsapp);
 
