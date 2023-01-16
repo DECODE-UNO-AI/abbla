@@ -22,7 +22,6 @@ const update = async (req: Request, res: Response): Promise<Response> => {
   if (isQrcode) {
     await deleteSession(whatsappId);
   }
-  await deleteSession(whatsappId);
 
   const { whatsapp } = await ResetWhatsappSession(whatsappId);
 
