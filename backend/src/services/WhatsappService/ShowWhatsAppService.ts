@@ -15,7 +15,7 @@ const ShowWhatsAppService = async (id: string | number): Promise<Whatsapp> => {
   });
 
   if (!whatsapp) {
-    throw new AppError("ERR_NO_WAPP_FOUND", 404);
+    throw new AppError("ERR_NO_WAPP_FOUND444", 404);
   }
 
   return whatsapp;
