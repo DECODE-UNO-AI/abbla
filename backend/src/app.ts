@@ -11,6 +11,7 @@ import uploadConfig from "./config/upload";
 import AppError from "./errors/AppError";
 import routes from "./routes";
 import { logger } from "./utils/logger";
+import { startJobs } from "./libs/campaignQueue";
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 require("events").EventEmitter.defaultMaxListeners = Infinity;
@@ -32,6 +33,9 @@ app.use("/public", express.static(uploadConfig.directory));
 app.use(routes);
 
 app.use(Sentry.Handlers.errorHandler());
+
+// starting a campaigns
+startJobs();
 
 app.use(async (err: Error, req: Request, res: Response, _: NextFunction) => {
   if (err instanceof AppError) {
