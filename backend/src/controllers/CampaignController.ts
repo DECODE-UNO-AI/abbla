@@ -6,7 +6,7 @@ import CreateCampaignService from "../services/CampaignServices/CreateCampaignSe
 import ListCampaignService from "../services/CampaignServices/ListCampaignService";
 // import ListCampaignService from "../services/CampaignServices/ListCampaignService";
 // import DeleteCampaignService from "../services/CampaignServices/DeleteCampaignService";
-// import UpdateCampaignService from "../services/CampaignServices/UpdateCampaignService";
+import UpdateCampaignService from "../services/CampaignServices/UpdateCampaignService";
 // import StartCampaignService from "../services/CampaignServices/StartCampaignService";
 // import CancelCampaignService from "../services/CampaignServices/CancelCampaignService";
 
@@ -72,50 +72,48 @@ export const index = async (req: Request, res: Response): Promise<Response> => {
   return res.status(200).json(campaigns);
 };
 
-// export const update = async (
-//   req: Request,
-//   res: Response
-// ): Promise<Response> => {
-//   const { tenantId } = req.user;
-//   const medias = req.files as Express.Multer.File[];
+export const update = async (
+  req: Request,
+  res: Response
+): Promise<Response> => {
+  const { id, profile } = req.user;
+  const medias = req.files as Express.Multer.File[];
 
-//   if (req.user.profile !== "admin") {
-//     throw new AppError("ERR_NO_PERMISSION", 403);
-//   }
-//   const campaignData: CampaignData = {
-//     ...req.body,
-//     userId: req.user.id,
-//     tenantId
-//   };
+  if (profile !== "admin") {
+    throw new AppError("ERR_NO_PERMISSION", 403);
+  }
+  const campaignData: CampaignData = {
+    ...req.body,
+    userId: id
+  };
 
-//   const schema = Yup.object().shape({
-//     name: Yup.string().required(),
-//     start: Yup.string().required(),
-//     message1: Yup.string().required(),
-//     message2: Yup.string().required(),
-//     message3: Yup.string().required(),
-//     mediaUrl: Yup.string().required(),
-//     userId: Yup.string().required(),
-//     sessionId: Yup.string().required(),
-//     tenantId: Yup.number().required()
-//   });
+  const schema = Yup.object().shape({
+    name: Yup.string().required(),
+    start: Yup.string().required(),
+    message1: Yup.string().required(),
+    message2: Yup.string(),
+    message3: Yup.string(),
+    message4: Yup.string(),
+    message5: Yup.string(),
+    userId: Yup.string().required(),
+    whatsappId: Yup.string().required()
+  });
 
-//   try {
-//     await schema.validate(campaignData);
-//   } catch (error) {
-//     throw new AppError(error.message);
-//   }
+  try {
+    await schema.validate(campaignData);
+  } catch (error) {
+    throw new AppError(error.message);
+  }
 
-//   const { campaignId } = req.params;
-//   const campaignObj = await UpdateCampaignService({
-//     campaignData,
-//     medias,
-//     campaignId,
-//     tenantId
-//   });
+  const { campaignId } = req.params;
+  const campaignObj = await UpdateCampaignService({
+    campaignData,
+    medias,
+    campaignId
+  });
 
-//   return res.status(200).json(campaignObj);
-// };
+  return res.status(200).json(campaignObj);
+};
 
 // export const remove = async (
 //   req: Request,

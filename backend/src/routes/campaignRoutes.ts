@@ -8,12 +8,19 @@ const campaignRoutes = express.Router();
 const upload = multer(uploadConfig);
 
 campaignRoutes.post(
-  "/campaings",
+  "/campaigns",
   isAuth,
   upload.array("medias"),
   CampaignController.store
 );
 
-campaignRoutes.get("/campaings", isAuth, CampaignController.index);
+campaignRoutes.get("/campaigns", isAuth, CampaignController.index);
+
+campaignRoutes.put(
+  "/campaigns/:campaignId",
+  isAuth,
+  upload.array("medias"),
+  CampaignController.update
+);
 
 export default campaignRoutes;
