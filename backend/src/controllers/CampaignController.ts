@@ -3,6 +3,7 @@ import { Request, Response } from "express";
 import AppError from "../errors/AppError";
 
 import CreateCampaignService from "../services/CampaignServices/CreateCampaignService";
+import ListCampaignService from "../services/CampaignServices/ListCampaignService";
 // import ListCampaignService from "../services/CampaignServices/ListCampaignService";
 // import DeleteCampaignService from "../services/CampaignServices/DeleteCampaignService";
 // import UpdateCampaignService from "../services/CampaignServices/UpdateCampaignService";
@@ -62,13 +63,14 @@ export const store = async (req: Request, res: Response): Promise<Response> => {
   return res.status(200).json(newCampaign);
 };
 
-// export const index = async (req: Request, res: Response): Promise<Response> => {
-//   const { id, profile } = req.user;
-//   const tags = await ListCampaignService({
-//     tenantId
-//   });
-//   return res.status(200).json(tags);
-// };
+export const index = async (req: Request, res: Response): Promise<Response> => {
+  const { profile } = req.user;
+  if (profile !== "admin") {
+    throw new AppError("ERR_NO_PERMISSION", 403);
+  }
+  const campaigns = await ListCampaignService();
+  return res.status(200).json(campaigns);
+};
 
 // export const update = async (
 //   req: Request,

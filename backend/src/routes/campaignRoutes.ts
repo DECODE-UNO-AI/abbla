@@ -14,4 +14,6 @@ campaignRoutes.post(
   CampaignController.store
 );
 
+campaignRoutes.get("/campaings", isAuth, CampaignController.index);
+
 export default campaignRoutes;
