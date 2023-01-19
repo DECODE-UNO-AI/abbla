@@ -18,6 +18,7 @@ import ApiDocs from "../pages/ApiDocs/";
 import ApiKey from "../pages/ApiKey/";
 import Tags from "../pages/Tags";
 import Departaments from "../pages/Departaments";
+import Campaigns from "../pages/Campaigns";
 
 import { AuthProvider } from "../context/Auth/AuthContext";
 import { WhatsAppsProvider } from "../context/WhatsApp/WhatsAppsContext";
@@ -34,6 +35,7 @@ const Routes = () => {
             <LoggedInLayout>
               <Route exact path="/" component={Dashboard} isPrivate />
               <Route exact path="/tickets/:ticketId?" component={Tickets} isPrivate />
+              <Route exact path="/campaigns" component={Campaigns} isPrivate />
               <Route exact path="/connections" component={Connections} isPrivate />
               <Route exact path="/contacts" component={Contacts} isPrivate />
               <Route exact path="/users" component={Users} isPrivate />

@@ -400,7 +400,8 @@ const messages = {
           apititle: "API",
           apikey: "API Key",
           token: "Token",
-          departaments: "Departaments"
+          departaments: "Departaments",
+          campaigns: "Campaigns"
         },
         appBar: {
           user: {
@@ -446,6 +447,21 @@ const messages = {
         },
         buttons: {
           add: "Add departament"
+        }
+      },
+      campaigns: {
+        title: "Campaigns",
+        notifications: {
+          departamentDeleted: "The campaing has been deleted"
+        },
+        table: {
+          name: "Name",
+          description: "Description",
+          actions: "Actions",
+          queues: "Queues"
+        },
+        buttons: {
+          add: "Add campaign"
         }
       },
       queueSelect: {

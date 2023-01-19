@@ -25,7 +25,8 @@ import {
   SyncAlt,
   VpnKeyRounded,
   WhatsApp,
-  DnsOutlined
+  DnsOutlined,
+  PhonelinkRing,
 } from "@material-ui/icons";
 
 import { i18n } from "../translate/i18n";
@@ -164,6 +165,11 @@ const MainListItems = (props) => {
             <ListSubheader inset className={classes.sub}>
               {i18n.t("mainDrawer.listItems.administration")}
             </ListSubheader>
+            <ListItemLink
+              to="/campaigns"
+              primary={i18n.t("mainDrawer.listItems.campaigns")}
+              icon={<PhonelinkRing />}
+            />
             <ListItemLink
               to="/connections"
               primary={i18n.t("mainDrawer.listItems.connections")}

@@ -400,7 +400,8 @@ const messages = {
           apititle: "API",
           apikey: "API key",
           token: "Token",
-          departaments: "Departamentos"
+          departaments: "Departamentos",
+          campaigns: "Campanhas"
         },
         appBar: {
           user: {
@@ -451,6 +452,21 @@ const messages = {
           deleteTitle: "Excluir",
           deleteMessage: "Você tem certeza? Essa ação não pode ser revertida! Os setores desse departamento continuarão existindo, mas não terão mais nenhum departamento atribuído.",
         },
+      },
+      campaigns: {
+        title: "Campanhas",
+        notifications: {
+          departamentDeleted: "A campanha foi deletada"
+        },
+        table: {
+          name: "Name",
+          description: "Description",
+          actions: "Actions",
+          queues: "Queues"
+        },
+        buttons: {
+          add: "Adicionar Campanha"
+        }
       },
       queueSelect: {
         inputLabel: "Setores",
