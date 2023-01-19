@@ -14,9 +14,7 @@ const csvFileToArray = async (csvPathFile: string): Promise<IContact[]> => {
 };
 
 const sendMessageCampaign = async (campaign: Campaign): Promise<void> => {
-  // await campaign.update({ status: "processing" });
-
-  // await campaign.reload();
+  await campaign.update({ status: "processing" });
 
   const csvPathFile = resolve(
     __dirname,
@@ -61,7 +59,8 @@ const sendMessageCampaign = async (campaign: Campaign): Promise<void> => {
   const range = delay.map(num => parseInt(num, 10));
 
   // interate over contacts array
-  csvArray.forEach((contact, index) => {
+  for (let i = campaign.lastLineContact; i < csvArray.length; i += 1) {
+    const contact = csvArray[i];
     const randomDelay = Math.floor(
       Math.random() * (range[1] - range[0] + 1) + range[0]
     );
@@ -73,10 +72,14 @@ const sendMessageCampaign = async (campaign: Campaign): Promise<void> => {
       if (status !== "processing") {
         return;
       }
-      await campaign.update({ lastLineContact: index });
       console.log(contact);
-    }, randomDelay * 1000); // add a delay to campaing model
-  });
+      // Message sending logic
+      // await campaign.update({ lastLineContact: i });
+      if (i + 1 === csvArray.length) {
+        // await campaign.update({ status: "finished" });
+      }
+    }, randomDelay * 1000);
+  }
 };
 
 export default sendMessageCampaign;
