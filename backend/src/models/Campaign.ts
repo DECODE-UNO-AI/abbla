@@ -10,7 +10,6 @@ import {
   CreatedAt,
   UpdatedAt,
   Default,
-  AfterFind
 } from "sequelize-typescript";
 import User from "./User";
 import Whatsapp from "./Whatsapp";
@@ -31,11 +30,21 @@ class Campaign extends Model<Campaign> {
   @Column
   end: Date;
 
+  @Default(0)
+  @Column
+  lastLineContact: number;
+
   @Default("pending")
   @Column(
     DataType.ENUM("pending", "scheduled", "processing", "canceled", "finished")
   )
   status: string;
+
+  @Default("15-30")
+  @Column(
+    DataType.ENUM("1-5", "5-10", "10-15", "15-30", "30-60", "60-120", "120-240")
+  )
+  delay: string;
 
   @Column
   message1: string;

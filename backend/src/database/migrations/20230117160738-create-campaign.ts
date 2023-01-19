@@ -26,6 +26,16 @@ module.exports = {
         allowNull: false,
         defaultValue: "pending"
       },
+      lastLineContact: {
+        type: DataTypes.INTEGER,
+        defaultValue: 0,
+        allowNull: true
+      },
+      delay: {
+        type: DataTypes.STRING,
+        defaultValue: "30-60",
+        allowNull: false
+      },
       whatsappId: {
         type: DataTypes.INTEGER,
         references: { model: "Whatsapps", key: "id" },
