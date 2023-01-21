@@ -10,7 +10,9 @@ interface IContact {
 }
 
 const csvFileToArray = async (csvPathFile: string): Promise<IContact[]> => {
-  return csv({ delimiter: [";", ".", ",", " ", "-"] }).fromFile(csvPathFile);
+  return csv({ delimiter: [";", ".", ",", " ", "-", "/", "|", "_"] }).fromFile(
+    csvPathFile
+  );
 };
 
 const sendMessageCampaign = async (campaign: Campaign): Promise<void> => {

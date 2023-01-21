@@ -9,7 +9,15 @@ const useStyles = makeStyles(theme => ({
         display: "flex",
         justifyContent: "space-beteewn",
         flexWrap: "wrap",
-        gap: 10
+        gap: 10,
+        "@media (max-width: 900px)": {
+            gap: 4,
+        },
+        "@media (max-width: 720px)": {
+            flexDirection: "column",
+            alignItems: "center",
+            justifyContent: "center",
+        }
     },
     cardContainer: {
         flex: 1,
@@ -26,17 +34,16 @@ const useStyles = makeStyles(theme => ({
     }
 }));
 
-const SpeedMessageCards = () => {
-    const classes = useStyles();
-    const [selectedCard, setSelectedCard] = useState(0);
+const SpeedMessageCards = ({ delay, setDelay}) => {
+    const classes = useStyles()
 
     return (
         <Box className={classes.container}>
-            <SpeedMessageCard isSelected={selectedCard === 0} onClick={() => setSelectedCard(0)} mainColor="#B4B1AE" title="Muito Lento" description="15 / Hora"/>
-            <SpeedMessageCard isSelected={selectedCard === 1} onClick={() => setSelectedCard(1)} mainColor="#14E2EC" title="Lento" description="30 / Hora"/>
-            <SpeedMessageCard isSelected={selectedCard === 2} onClick={() => setSelectedCard(2)} mainColor="#21E13E" title="Recomendado" description="60 / Hora"/>
-            <SpeedMessageCard isSelected={selectedCard === 3} onClick={() => setSelectedCard(3)} mainColor="#EDEA0E" title="Médio" description="120 / Hora"/>
-            <SpeedMessageCard isSelected={selectedCard === 4} onClick={() => setSelectedCard(4)} mainColor="#FC6D00" title="Rápido" description="240 / Hora"/>
+            <SpeedMessageCard isSelected={delay === "15"} onClick={() => setDelay("15")} mainColor="#B4B1AE" title="Muito Lento" description="15 / Hora"/>
+            <SpeedMessageCard isSelected={delay === "30"} onClick={() => setDelay("30")} mainColor="#14E2EC" title="Lento" description="30 / Hora"/>
+            <SpeedMessageCard isSelected={delay === "60"} onClick={() => setDelay("60")} mainColor="#21E13E" title="Recomendado" description="60 / Hora"/>
+            <SpeedMessageCard isSelected={delay === "120"} onClick={() => setDelay("120")} mainColor="#EDEA0E" title="Médio" description="120 / Hora"/>
+            <SpeedMessageCard isSelected={delay === "240"} onClick={() => setDelay("240")} mainColor="#FC6D00" title="Rápido" description="240 / Hora"/>
         </Box>
     );
 }

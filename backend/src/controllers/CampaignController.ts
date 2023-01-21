@@ -37,6 +37,8 @@ export const store = async (req: Request, res: Response): Promise<Response> => {
     userId: id
   };
 
+  console.log(campaign);
+
   const schema = Yup.object().shape({
     name: Yup.string().required(),
     start: Yup.string().required(),
@@ -54,6 +56,8 @@ export const store = async (req: Request, res: Response): Promise<Response> => {
   } catch (error) {
     throw new AppError(error.message);
   }
+
+  // Throw new error if no data was sent
 
   const newCampaign = await CreateCampaignService({
     campaign,

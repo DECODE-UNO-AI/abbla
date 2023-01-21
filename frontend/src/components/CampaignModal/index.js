@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext, useRef } from "react";
+import React, { useState, useEffect } from "react";
 
 import * as Yup from "yup";
 import {
@@ -6,7 +6,6 @@ import {
 	Form,
 	Field
 } from "formik";
-import { toast } from "react-toastify";
 
 import {
 	Button,
@@ -20,37 +19,26 @@ import {
 	InputLabel,
 	makeStyles,
 	MenuItem,
-	FormControl,
+    Chip,
 	TextField,
-	InputAdornment,
-	IconButton,
-    Card,
-    CardContent
+    Checkbox,
+    Typography,
+    Tab,
+    Tabs,
+    AppBar,
+    Box
 } from '@material-ui/core';
 
-import { 
-	Visibility, 
-	VisibilityOff,
-    SpeedOutlined
-} from '@material-ui/icons';
-
-import { green } from "@material-ui/core/colors";
 
 import { i18n } from "../../translate/i18n";
+import { toast } from "react-toastify";
+import toastError from "../../errors/toastError";
 
 import api from "../../services/api";
-import toastError from "../../errors/toastError";
-import QueueSelect from "../QueueSelect";
-import DepartamentSelect from "../DepartamentSelect";
-import { AuthContext } from "../../context/Auth/AuthContext";
-import { Can } from "../Can";
 import useWhatsApps from "../../hooks/useWhatsApps";
-import AppBar from '@material-ui/core/AppBar';
-import Tabs from '@material-ui/core/Tabs';
-import Tab from '@material-ui/core/Tab';
-import Typography from '@material-ui/core/Typography';
-import Box from '@material-ui/core/Box';
 import SpeedMessageCards from "../SpeedMessageCards";
+import Papa from 'papaparse';
+
 
 const useStyles = makeStyles(theme => ({
     slider: {
@@ -60,7 +48,8 @@ const useStyles = makeStyles(theme => ({
     },
     messageTab: {
         "& > div": {
-            padding: 0
+            padding: 0,
+            paddingTop: 20
         }
     },
     dialog: {
@@ -78,6 +67,48 @@ const useStyles = makeStyles(theme => ({
 	},
     box: {
         marginBottom: 30
+    },
+    multipleInput: {
+        display: "flex",
+        width: "100%",
+        justifyContent: "space-between",
+        marginBottom: 30,
+        "@media (max-width: 720px)": {
+            flexDirection: "column"
+        }
+    },
+    dateInput: {
+        "& > div > input": {
+            padding: "11px 14px",
+        },
+        "& > div": {
+            width: "200px",
+        },
+        "@media (max-width: 720px)": {
+            "& > div": {
+                width: "100%",
+            }
+        }
+    },
+    inputBox: {
+        display: "flex",
+        alignItems: "center",
+        "@media (max-width: 720px)": {
+            flexDirection: "column",
+            alignItems: "start",
+            justifyContent: "center"
+        }
+    },
+    variableContent: {
+        display: "flex",
+        width: "100%",
+
+    },
+    chipBox: {
+        display: "flex",
+        alignItems: "center",
+        flexWrap: "wrap",
+        gap: 2
     }
 }));
 
@@ -138,41 +169,150 @@ function a11yProps(index) {
   };
 }
 
+const CampaignSchema = Yup.object().shape({
+	name: Yup.string()
+		.min(2, i18n.t("campaignModal.errors.tooShort"))
+		.max(50, i18n.t("campaignModal.errors.tooLong"))
+		.required(" "),
+	sendTime: Yup.array().required(),
+    whatsappId: Yup.string().required("Required"),
+    message1: Yup.string()
+        .min(5, i18n.t("campaignModal.errors.tooShort"))
+        .max(255, i18n.t("campaignModal.errors.tooLong"))
+        .required(i18n.t("campaignModal.errors.message")),
+    message2: Yup.string().min(5, i18n.t("campaignModal.errors.tooShort")).max(255, i18n.t("campaignModal.errors.tooLong")),
+    message3: Yup.string().min(5, i18n.t("campaignModal.errors.tooShort")).max(255, i18n.t("campaignModal.errors.tooLong")),
+    message4: Yup.string().min(5, i18n.t("campaignModal.errors.tooShort")).max(255, i18n.t("campaignModal.errors.tooLong")),
+    message5: Yup.string().min(5, i18n.t("campaignModal.errors.tooShort")).max(255, i18n.t("campaignModal.errors.tooLong")),
+    columnName: Yup.string().required(" "),
+});
+
+const getFirstDate = () =>{
+    const currentDate = new Date();
+    currentDate.setDate(currentDate.getDate() + 1);
+    const dateString = currentDate.toISOString().substring(0,16);
+    return dateString
+}
+
 const CampaignModal = ({ open, onClose, campaignId }) => {
 	const classes = useStyles();
+    const { whatsApps } = useWhatsApps()
 
-    const [value, setValue] = React.useState(0);
-    const [value2, setValue2] = React.useState([0, 24]);
-
-  const handleChange2 = (event, newValue2) => {
-    setValue2(newValue2);
-  };
-
-    const handleChange = (event, newValue) => {
-    
-      setValue(newValue);
+    const initialState = {
+        name: "",
+        sendTime: [0, 24],
+        delay: "15",
+        inicialDate: getFirstDate(),
+        startNow: false,
+        whatsappId: "",
+        message1: "",
+        message2: "",
+        message3: "",
+        message4: "",
+        message5: "",
+        columnName: "",
     };
+
+    const [campaignForm, setCapaignForm] = useState(initialState)
+    const [sendTime, setSendTime] = useState(initialState.sendTime);
+    const [delay, setDelay] = useState("15")
+    const [tabValue, setTabValue] = useState(0);
+    const [startNow, setStartNow] = useState(false);
+    const [cvsFile, setCsvFile] = useState(null)
+    const [csvColumns, setCsvColumns] = useState([])
+    const [mediaFile, setMediaFile] = useState(null)
+
+    useEffect(() => {
+        (async () => {
+			if (!campaignId) return;
+			try {
+				const { data } = await api.get(`/campaign/${campaignId}`);
+				setCapaignForm(prevState => {
+					return { ...prevState, ...data };
+				});
+			} catch (err) {
+				toastError(err);
+			}
+		})();
+
+		return () => {
+			setCapaignForm({});
+		};
+    }, [campaignId])
+
+
+    const handleOnSendTimeInputChange = (event, value) => {
+        setSendTime(value);
+    };
+
+    const handleTabChange = (event, newValue) => {
+        setTabValue(newValue);
+    };
+
+    const handleOnChecked = () => {
+        setStartNow(e => !e)
+    }
+
+    const handleOnCsvFileChange = (file) => {
+        if (!file.target.files[0]) {
+            setCsvFile(null)
+            setCsvColumns([])
+            return
+        }
+        setCsvFile(file.target.files[0])
+        Papa.parse(file.target.files[0], {
+            header: true,
+            preview: 1,
+            delimitersToGuess: [";", ".", ",", " ", "-", "/", "|", "_"],
+            complete: (results) => { 
+                setCsvColumns(Object.keys(results.data[0])) 
+            }
+          });
+
+    }
+
+    const handleOnMediaFileChange = (file) => {
+        if (!file.target.files[0]) {
+            setMediaFile(null)
+            return
+        }
+    }
+
+    const handleOnSave = async(values) => {
+       const campaignData = ({...values, delay, startNow, sendTime})
+        try {
+            if (campaignId) {
+                await api.put(`/campaigns/${campaignId}`, campaignData);
+            } else {
+                await api.post("/campaigns", campaignData);
+            }
+            toast.success(`${i18n.t("departamentModal.notification.title")}`);
+            onClose();
+        } catch (err) {
+            toastError(err);
+        }
+    }
 
 	return (
 
 			<Dialog
-				open={true}
-				onClose={()=> {}}
+				open={open}
+				onClose={onClose}
 				className={classes.dialog}
 				scroll="paper"
 			>
 				<DialogTitle id="form-dialog-title">
-					{true
-						? `${i18n.t("userModal.title.edit")}`
-						: `${i18n.t("userModal.title.add")}`}
+					{campaignId
+						? `${i18n.t("campaignModal.title.edit")}`
+						: `${i18n.t("campaignModal.title.add")}`}
 				</DialogTitle>
 				<Formik
-					initialValues={{}}
+					initialValues={campaignForm}
 					enableReinitialize={true}
-					// validationSchema={()=> {}}
+					validationSchema={CampaignSchema}
 					onSubmit={(values, actions) => {
 						setTimeout(() => {
-							// handleSaveQueue(values);
+							handleOnSave(values);
 							actions.setSubmitting(false);
 						}, 400);
 					}}
@@ -182,40 +322,40 @@ const CampaignModal = ({ open, onClose, campaignId }) => {
 							<DialogContent dividers style={{ widht: 800, display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center"}}>
                                 <Box sx={{ width: "100%" }}  className={classes.box}>
                                     <Typography variant="h6">
-                                        {/* {i18n.t("campaigns.title")} */} Horário da campanha
+                                        {i18n.t("campaignModal.form.sendTime")}
                                     </Typography>
                                     <div style={{ paddingLeft: 15, paddingRight: 15}}>
                                         <Field 
                                             as={Slider}
                                             getAriaLabel={() => 'Hours'}
-                                            value={value2}
+                                            name="sendTime"
                                             step={1}
                                             max={24}
-                                            onChange={handleChange2}
+                                            onChange={handleOnSendTimeInputChange}
                                             valueLabelDisplay="auto"
                                             marks={marks}
-                                            getAriaValueText={(value2) => `${value2}:00HRS`}
-                                            valueLabelFormat={(value2) => `${value2}:00`}
+                                            value={sendTime}
+                                            getAriaValueText={(value) => `${value}:00HRS`}
+                                            valueLabelFormat={(value) => `${value}:00`}
                                         />
                                     </div>   
 
                                 </Box>
                                 <Box sx={{ width: "100%" }} className={classes.box}>
                                     <Typography variant="h6">
-                                        {/* {i18n.t("campaigns.title")} */} Velocidade de envio
+                                        {i18n.t("campaignModal.form.delay")}
                                     </Typography> 
                                     <Box>
-                                        <SpeedMessageCards />
+                                        <SpeedMessageCards delay={delay} setDelay={setDelay}/>
                                     </Box> 
                                 </Box>
                                 <Box sx={{ width: "100%" }} className={classes.box}>
                                     <Typography variant="h6">
-                                        {/* {i18n.t("campaigns.title")} */} Nome da campanha
+                                        {i18n.t("campaignModal.form.name")}
                                     </Typography> 
                                     <Field
                                         as={TextField}
-                                        // label={i18n.t("departamentModal.form.name")}
-                                        placeholder="Nome da campanha"
+                                        placeholder={i18n.t("campaignModal.form.name")}
                                         name="name"
                                         error={touched.name && Boolean(errors.name)}
                                         helperText={touched.name && errors.name}
@@ -225,157 +365,227 @@ const CampaignModal = ({ open, onClose, campaignId }) => {
                                         className={classes.textField}
                                     />
                                 </Box>
-                                <Box style={{ display: "flex", width: "100%", justifyContent: "space-between"}}>
+                                <Box className={classes.multipleInput}>
                                     <Box style={{ width: "50%"}}>
                                         <Typography variant="h6">
-                                            {/* {i18n.t("campaigns.title")} */} Inicio
+                                            {i18n.t("campaignModal.form.start")}
                                         </Typography> 
-                                        <Field
-                                            as={TextField}
-                                            id="datetime-local"
-                                            type="datetime-local"
-                                            defaultValue="2017-05-24T10:30"
-                                            variant="outlined"
-                                            //className={classes.textField}
-                                            InputLabelProps={{
-                                              shrink: true,
-                                            }}
-                                        />
+                                        <Box className={classes.inputBox }>
+                                            <Field
+                                                as={TextField}
+                                                id="inicialDate"
+                                                name="inicialDate"
+                                                type="datetime-local"
+                                                variant="outlined"
+                                                disabled={startNow}
+                                                className={classes.dateInput}
+                                                InputLabelProps={{
+                                                    shrink: true,
+                                                }}
+                                            />
+                                            <Box style={{ display: "flex", alignItems: "center" }}>
+                                                <Checkbox
+                                                  checked={startNow}
+                                                  name="startNow"
+                                                  onChange={handleOnChecked}
+                                                  color={"primary"}
+                                                  inputProps={{ 'aria-label': 'primary checkbox' }}
+                                                />
+                                                <InputLabel>{i18n.t("campaignModal.form.startCheck")}</InputLabel>
+                                            </Box>
+                                        </Box>
                                     </Box>
                                     <Box style={{ width: "50%"}}>
                                         <Typography variant="h6">
-                                            {/* {i18n.t("campaigns.title")} */} WhatsApp Bot
+                                            {i18n.t("campaignModal.form.whatsappId")}
                                         </Typography> 
                                         <Field
-                                            as={Select}
-                                            // label={i18n.t("departamentModal.form.name")}
-                                            placeholder="Nome da campanha"
-                                            name="name"
-                                            error={touched.name && Boolean(errors.name)}
-                                            helperText={touched.name && errors.name}
+											as={Select}
+											name="whatsappId"
+                                            error={touched.whatsappId && Boolean(errors.whatsappId)}
+                                            helperText={touched.whatsappId && errors.whatsappId}
                                             variant="outlined"
                                             margin="dense"
-                                            style={{ width : "100%"}}
-                                            className={classes.textField}
-                                        />
+                                            style={{ width: "100%", paddingRight: 10}}
+										>
+											{whatsApps?.map((whatsapp) => (
+												<MenuItem key={whatsapp.id} value={`${whatsapp.id}`}>{whatsapp.name}</MenuItem>
+											))}
+										</Field>
+                                    </Box>
+                                </Box>
+                                <Box sx={{ width: "100%" }} className={classes.box}>
+                                    <Box className={classes.multipleInput}>
+                                        <Box style={{ width: "50%"}}>
+                                            <Typography variant="h6">
+                                                {i18n.t("campaignModal.form.csvMedia")}
+                                            </Typography>
+                                            <input 
+                                                style={{ marginTop: 5 }}
+                                                onChange={handleOnCsvFileChange}
+                                                accept=".csv"
+                                                type="file" 
+                                            />
+                                        </Box>
+                                        <Box style={{ width: "50%"}}>
+                                            <Typography variant="h6">
+                                                {i18n.t("campaignModal.form.columnName")}
+                                            </Typography> 
+                                            <Field
+                                                as={Select}
+                                                name="columnName"
+                                                error={touched.columnName && Boolean(errors.columnName)}
+                                                helperText={touched.columnName && errors.columnName}
+                                                variant="outlined"
+                                                margin="dense"
+                                                placeholder="test"
+                                                style={{ width: "100%", paddingRight: 10}}
+                                            >
+                                                {csvColumns?.map((col, index) => (
+                                                    <MenuItem key={index} value={`${col}`}>{col}</MenuItem>
+                                                ))}
+                                            </Field>
+                                        </Box>
                                     </Box>
                                 </Box>
                                 <Box sx={{ width: "100%" }} className={classes.box}>
                                     <Typography variant="h6">
-                                        {/* {i18n.t("campaigns.title")} */} Mensagens
+                                        {i18n.t("campaignModal.form.messages")}
                                     </Typography> 
                                     <AppBar position="static" color="transparent">
                                         <Tabs
-                                            value={value}
-                                            onChange={handleChange}
+                                            value={tabValue}
+                                            onChange={handleTabChange}
                                             indicatorColor="primary"
                                             textColor="primary"
                                             variant="scrollable"
                                             scrollButtons="auto"
                                             aria-label="scrollable auto tabs example"
                                         >
-                                        <Tab label="Item One" {...a11yProps(0)} />
-                                        <Tab label="Item Two" {...a11yProps(1)} />
-                                        <Tab label="Item Three" {...a11yProps(2)} />
-                                        <Tab label="Item Four" {...a11yProps(3)} />
-                                        <Tab label="Item Five" {...a11yProps(4)} />
+                                        <Tab label={`${i18n.t("campaignModal.form.tab")} 1`} {...a11yProps(0)} />
+                                        <Tab label={`${i18n.t("campaignModal.form.tab")} 2`} {...a11yProps(1)} />
+                                        <Tab label={`${i18n.t("campaignModal.form.tab")} 3`} {...a11yProps(2)} />
+                                        <Tab label={`${i18n.t("campaignModal.form.tab")} 4`} {...a11yProps(3)} />
+                                        <Tab label={`${i18n.t("campaignModal.form.tab")} 5`} {...a11yProps(4)} />
                                         </Tabs>
                                     </AppBar>
-                                    <TabPanel value={value} index={0} className={classes.messageTab}>
+                                    <TabPanel value={tabValue} index={0} className={classes.messageTab} variant={"div"}>
+                                        <Box>
                                         <Field
                                             as={TextField}
 									        style={{ width: "100%", padding: 0}}
-                                            labelId="messageOnDisconnect-label"
-                                            id="messageOnDisconnect"
+                                            labelId="message1-label"
+                                            id="message1"
                                             variant="outlined"
                                             margin="none"
                                             multiline
                                             maxRows={5}
                                             minRows={4}
-                                            // value={""}
-                                            // label={`${i18n.t("settingModal.form.messageLabel")}`}
-                                            name="messageOnDisconnect"
-                                            onChange={(e) => console.log(e.target.value)}
+                                            name="message1"
+                                            error={touched.message1 && Boolean(errors.message1)}
+                                            helperText={touched.message1 && errors.message1}
 								        />
+                                        </Box>
                                     </TabPanel>
-                                    <TabPanel value={value} index={1} className={classes.messageTab}>
+                                    <TabPanel value={tabValue} index={1} className={classes.messageTab} variant={"div"}>
                                         <Field
                                             as={TextField}
 									        style={{ width: "100%", padding: 0}}
-                                            labelId="messageOnDisconnect-label"
-                                            id="messageOnDisconnect"
+                                            labelId="message2-label"
+                                            id="message2"
                                             variant="outlined"
                                             margin="none"
                                             multiline
                                             maxRows={5}
                                             minRows={4}
-                                            // value={""}
-                                            // label={`${i18n.t("settingModal.form.messageLabel")}`}
-                                            name="messageOnDisconnect"
-                                            onChange={(e) => console.log(e.target.value)}
+                                            name="message2"
+                                            error={touched.message2 && Boolean(errors.message2)}
+                                            helperText={touched.message2 && errors.message2}
 								        />
                                     </TabPanel>
-                                    <TabPanel value={value} index={2} className={classes.messageTab}>
+                                    <TabPanel value={tabValue} index={2} className={classes.messageTab} variant={"div"}>
                                         <Field
                                             as={TextField}
 									        style={{ width: "100%", padding: 0}}
-                                            labelId="messageOnDisconnect-label"
-                                            id="messageOnDisconnect"
+                                            labelId="message3-label"
+                                            id="message3"
                                             variant="outlined"
                                             margin="none"
                                             multiline
                                             maxRows={5}
                                             minRows={4}
-                                            // value={""}
-                                            // label={`${i18n.t("settingModal.form.messageLabel")}`}
-                                            name="messageOnDisconnect"
-                                            onChange={(e) => console.log(e.target.value)}
+                                            name="message3"
+                                            error={touched.message3 && Boolean(errors.message3)}
+                                            helperText={touched.message3 && errors.message3}
 								        />
                                     </TabPanel>
-                                    <TabPanel value={value} index={3} className={classes.messageTab}>
+                                    <TabPanel value={tabValue} index={3} className={classes.messageTab} variant={"div"}>
                                         <Field
                                             as={TextField}
 									        style={{ width: "100%", padding: 0}}
-                                            labelId="messageOnDisconnect-label"
-                                            id="messageOnDisconnect"
+                                            labelId="message4-label"
+                                            id="message4"
                                             variant="outlined"
                                             margin="none"
                                             multiline
                                             maxRows={5}
                                             minRows={4}
-                                            // value={""}
-                                            // label={`${i18n.t("settingModal.form.messageLabel")}`}
-                                            name="messageOnDisconnect"
-                                            onChange={(e) => console.log(e.target.value)}
+                                            name="message4"
+                                            error={touched.message4 && Boolean(errors.message4)}
+                                            helperText={touched.message4 && errors.message4}
 								        />
                                     </TabPanel>
-                                    <TabPanel value={value} index={4} className={classes.messageTab}>
+                                    <TabPanel value={tabValue} index={4} className={classes.messageTab} variant={"div"}>
                                         <Field
                                             as={TextField}
 									        style={{ width: "100%", padding: 0}}
-                                            labelId="messageOnDisconnect-label"
-                                            id="messageOnDisconnect"
+                                            labelId="message5-label"
+                                            id="message5"
                                             variant="outlined"
                                             margin="none"
                                             multiline
                                             maxRows={5}
                                             minRows={4}
-                                            // value={""}
-                                            // label={`${i18n.t("settingModal.form.messageLabel")}`}
-                                            name="messageOnDisconnect"
-                                            onChange={(e) => console.log(e.target.value)}
+                                            name="message5"
+                                            error={touched.message5 && Boolean(errors.message5)}
+                                            helperText={touched.message5 && errors.message5}
 								        />
                                     </TabPanel>
+                                    {   
+                                        errors.message1 ? setTabValue(0) :
+                                        errors.message2 ? setTabValue(1) :
+                                        errors.message3 ? setTabValue(2) : 
+                                        errors.message4 ? setTabValue(3) :
+                                        errors.message5 ? setTabValue(4) : ""
+                                    }
+                                </Box>
+                                <Box className={classes.variableContent}>
+                                    <InputLabel style={{ display: "flex", alignItems: "center", marginRight: 2}}>{i18n.t("campaignModal.form.variables")}</InputLabel>
+                                    <Box className={classes.chipBox}>
+                                        {csvColumns.map((col, index) => 
+                                            <Chip key={index} label={col} />
+                                        )}
+                                    </Box>
+                                </Box>
+                                <Box sx={{ width: "100%", marginTop: 10 }} className={classes.box}>
+                                    <Typography variant="h6">
+                                        {i18n.t("campaignModal.form.messageMedia")}
+                                    </Typography> 
+                                    <input
+                                        style={{ marginTop: 5 }}
+                                        onChange={handleOnMediaFileChange}
+                                        type="file"                                      
+                                    />
                                 </Box>
 							</DialogContent>
 							<DialogActions>
 								<Button
-									onClick={()=> {}}
+									onClick={onClose}
 									color="secondary"
 									disabled={isSubmitting}
 									variant="outlined"
 								>
-									{i18n.t("departamentModal.buttons.cancel")}
+									{i18n.t("campaignModal.buttons.cancel")}
 								</Button>
 								<Button
 									type="submit"
@@ -385,8 +595,8 @@ const CampaignModal = ({ open, onClose, campaignId }) => {
 									className={classes.btnWrapper}
 								>
 									{campaignId
-										? `${i18n.t("departamentModal.buttons.okEdit")}`
-										: `${i18n.t("departamentModal.buttons.okAdd")}`}
+										? `${i18n.t("campaignModal.buttons.okEdit")}`
+										: `${i18n.t("campaignModal.buttons.okAdd")}`}
 									{isSubmitting && (
 										<CircularProgress
 											size={24}

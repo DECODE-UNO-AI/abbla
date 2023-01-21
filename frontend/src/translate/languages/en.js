@@ -299,6 +299,32 @@ const messages = {
         },
         success: "Attendant saved successfully.",
       },
+      campaignModal: {
+        title: {
+          add: "Add Campaign",
+          edit: "Edit Campaign"
+        },
+        form: {
+          name: "Campaign name",
+          sendTime: "Campaign schedule",
+          delay: "Sending delay",
+          start: "Start",
+          startCheck: "Starts now",
+          whatsappId: "Whatsapp Bot",
+          messageMedia: "Message attachment",
+          csvMedia: "Contacts file .csv",
+          messages: "Message text",
+          variables: "Available variables: (use $nome-da-variável)",
+          tab: "Text",
+          columnName: "Number column"
+        },
+        buttons: {
+          okAdd: "Add",
+          okEdit: "Save",
+          cancel: "Cancel",
+        },
+        success: "Capaign saved successfully.",
+      },
       chat: {
         noTicketMessage: "Select a ticket to start chatting.",
       },

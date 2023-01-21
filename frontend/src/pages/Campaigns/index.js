@@ -73,17 +73,18 @@ const useStyles = makeStyles(theme => ({
 
 const Campaigns = () => {
 	const classes = useStyles();
-
+	const [modalOpen, setModalOpen] = useState(false)
+	const [selectedCampaignId, setSelectedCampaignId] = useState(null)
 	return (
 		<MainContainer>
-            <CampaignModal />
+            <CampaignModal open={modalOpen} onClose={() => setModalOpen(false)} campaignId={selectedCampaignId} />
 			<MainHeader>
                 <Title>{i18n.t("campaigns.title")}</Title>
                 <MainHeaderButtonsWrapper>
                 <Button
                     variant="contained"
                     color="primary"
-                    onClick={() => alert("Nada ainda")}
+                    onClick={() => setModalOpen(true)}
                 >
                     {i18n.t("campaigns.buttons.add")}
                 </Button>

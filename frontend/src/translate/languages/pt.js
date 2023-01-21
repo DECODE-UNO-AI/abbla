@@ -299,6 +299,38 @@ const messages = {
         },
         success: "Atendente salvo com sucesso.",
       },
+      campaignModal: {
+        title: {
+          add: "Adicionar Campanha",
+          edit: "Editar Campanha"
+        },
+        form: {
+          name: "Nome da campanha",
+          sendTime: "Horário da campanha",
+          delay: "Velocidade de envio",
+          start: "Início",
+          startCheck: "Iniciar agora",
+          whatsappId: "Whatsapp Bot",
+          messageMedia: "Anexo da mensagem",
+          csvMedia: "Arquivo .csv de contatos",
+          messages: "Texto das mensagens",
+          tab: "Texto",
+          variables: "Variáveis disponíveis: (utilize $nome-da-variável)",
+          columnName: "Coluna de telefones"
+        },
+        errors: {
+          tooShort: "Muito curto",
+          tooLong: "Muito comprido",
+          nameRequired: "O nome é obrigatório",
+          message: "A mensagem deve ser preenchida"
+        },
+        buttons: {
+          okAdd: "Adicionar",
+          okEdit: "Salvar",
+          cancel: "Cancelar",
+        },
+        success: "Campanha salva com sucesso.",
+      },
       chat: {
         noTicketMessage: "Selecione um ticket para começar a conversar.",
       },

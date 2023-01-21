@@ -299,6 +299,32 @@ const messages = {
         },
         success: "El asistente guardó con éxito.",
       },
+      campaignModal: {
+        title: {
+          add: "Agregar campaña",
+          edit: "Editar campaña"
+        },
+        form: {
+          name: "Nombre de campaña",
+          sendTime: "Cronograma de la campaña",
+          delay: "Velocidad de envío",
+          start: "Comienzo",
+          startCheck: "Empezar ahora",
+          whatsappId: "Whatsapp Bot",
+          messageMedia: "Archivo adjunto de mensaje",
+          csvMedia: "Archivo .csv del contactos",
+          messages: "Mensaje de texto",
+          variables: "Variables disponibles: (usar $nome-da-variável)",
+          tab: "Texto",
+          columnName: "Columna telefonica"
+        },
+        buttons: {
+          okAdd: "Agregar",
+          okEdit: "Guardar",
+          cancel: "Cancelar",
+        },
+        success: "Campaña guardá con éxito.",
+      },
       chat: {
         noTicketMessage: "Seleccione un ticket para comenzar a chatear.",
       },
