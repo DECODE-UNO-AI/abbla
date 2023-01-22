@@ -13,12 +13,16 @@ module.exports = {
         type: DataTypes.STRING,
         allowNull: false
       },
-      start: {
+      inicialDate: {
         type: DataTypes.DATE,
         allowNull: false
       },
-      end: {
-        type: DataTypes.DATE,
+      startNow: {
+        type: DataTypes.BOOLEAN,
+        defaultValue: false
+      },
+      sendTime: {
+        type: DataTypes.STRING,
         allowNull: false
       },
       status: {
@@ -34,6 +38,10 @@ module.exports = {
       delay: {
         type: DataTypes.STRING,
         defaultValue: "30-60",
+        allowNull: false
+      },
+      columnName: {
+        type: DataTypes.STRING,
         allowNull: false
       },
       whatsappId: {
@@ -58,13 +66,13 @@ module.exports = {
         type: DataTypes.TEXT,
         allowNull: true
       },
-      contacts: {
-        type: DataTypes.STRING,
-        allowNull: false
-      },
       message5: {
         type: DataTypes.TEXT,
         allowNull: true
+      },
+      contactsCsv: {
+        type: DataTypes.STRING,
+        allowNull: false
       },
       mediaUrl: {
         type: DataTypes.STRING,

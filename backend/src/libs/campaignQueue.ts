@@ -12,7 +12,7 @@ export const alljobs: Array<{
 export const startJobs = (): void => {
   getCampaigns().then(jobQueues =>
     jobQueues.forEach(async jobQueue => {
-      const startDate = jobQueue.start;
+      const startDate = jobQueue.inicialDate;
       const startNow = Date.now() + 10;
       const job = schedule.scheduleJob(startNow, () => {
         console.log("starting job");
@@ -24,7 +24,7 @@ export const startJobs = (): void => {
 };
 
 export const startJob = (campaign: Campaign): void => {
-  const date = campaign.start;
+  const date = campaign.inicialDate;
   const job = schedule.scheduleJob(date, () => {
     sendMessageCampaign(campaign);
   });

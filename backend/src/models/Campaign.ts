@@ -25,10 +25,13 @@ class Campaign extends Model<Campaign> {
   name: string;
 
   @Column
-  start: Date;
+  inicialDate: Date;
 
   @Column
-  end: Date;
+  sendTime: string;
+
+  @Column
+  startNow: boolean;
 
   @Default(0)
   @Column
@@ -62,7 +65,7 @@ class Campaign extends Model<Campaign> {
   message5: string;
 
   @Column
-  contacts: string;
+  contactsCsv: string;
 
   @Column(DataType.STRING)
   get mediaUrl(): string | null {

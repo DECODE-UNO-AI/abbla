@@ -22,7 +22,7 @@ const sendMessageCampaign = async (campaign: Campaign): Promise<void> => {
     __dirname,
     "../../../",
     "public",
-    `${campaign.contacts}`
+    `${campaign.contactsCsv}`
   );
   let csvArray: Array<IContact>;
   try {
