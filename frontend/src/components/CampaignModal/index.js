@@ -480,7 +480,7 @@ const CampaignModal = ({ open, onClose, campaignId }) => {
                                             </Typography>
                                             <Box style={{ display: "flex", flexDirection: "column", alignItems: "start", marginTop: 15}}>
                                                 {
-                                                    !campaignId ? 
+                                                    campaignId ? 
                                                         <Button
                                                             style={{ marginBottom: 10 }}
                                                             onClick={() => handleDownload(true)}
@@ -646,7 +646,7 @@ const CampaignModal = ({ open, onClose, campaignId }) => {
                                     </Typography>
                                     <Box style={{ display: "flex", alignItems: "center", gap: 10, marginTop: 15}}>
                                         {
-                                            !campaignId && campaignForm.mediaUrl ? 
+                                            campaignId && campaignForm.mediaUrl ? 
                                                 <>
                                                 <Button
                                                     style={{ marginBottom: 10 }}
