@@ -1,36 +1,16 @@
-import { resolve } from "path";
-import csv from "csvtojson";
 import Campaign from "../../models/Campaign";
+import CampaignContact from "../../models/CampaignContact";
+import GetCampaignContactsService from "../../services/CampaignContactService/GetCampaignContactsService";
 import { logger } from "../../utils/logger";
-import { getWbot } from "../wbot";
-
-interface IContact {
-  name: string;
-  number: string;
-}
-
-const csvFileToArray = async (csvPathFile: string): Promise<IContact[]> => {
-  return csv({ delimiter: [";", ".", ",", " ", "-", "/", "|", "_"] }).fromFile(
-    csvPathFile
-  );
-};
+import { reSheduleJob } from "../campaignQueue";
 
 const sendMessageCampaign = async (campaign: Campaign): Promise<void> => {
   await campaign.update({ status: "processing" });
 
-  const csvPathFile = resolve(
-    __dirname,
-    "../../../",
-    "public",
-    `${campaign.contactsCsv}`
+  const penddingContacts = await GetCampaignContactsService(
+    campaign.id,
+    "pending"
   );
-  let csvArray: Array<IContact>;
-  try {
-    csvArray = await csvFileToArray(csvPathFile);
-  } catch (err) {
-    logger.error("Invalid .csv file");
-    return;
-  }
 
   // getting wbot
 
@@ -42,6 +22,9 @@ const sendMessageCampaign = async (campaign: Campaign): Promise<void> => {
 
   // get messages
   const messages = [campaign.message1];
+
+  // get sending hours interval
+  const sendTime = campaign.sendTime.split("-");
 
   if (campaign.message2 && campaign.message2 !== "") {
     messages.push(campaign.message2);
@@ -60,27 +43,56 @@ const sendMessageCampaign = async (campaign: Campaign): Promise<void> => {
   const delay = campaign.delay.split("-");
   const range = delay.map(num => parseInt(num, 10));
 
-  // interate over contacts array
-  for (let i = campaign.lastLineContact; i < csvArray.length; i += 1) {
-    const contact = csvArray[i];
+  // interate over contatcs
+  const sendMessage = async (
+    contact: CampaignContact,
+    index: number
+    // eslint-disable-next-line consistent-return
+  ): Promise<void | string> => {
+    const { status } = await campaign.reload();
+    if (status !== "processing") {
+      return "break";
+    }
+    // verify if campaign is in time
+    const currentDate = new Date();
+    if (
+      !(
+        currentDate.getHours() >= +sendTime[0] &&
+        currentDate.getHours() < +sendTime[1]
+      )
+    ) {
+      await campaign.update({
+        status: "timeout"
+      });
+      currentDate.setDate(currentDate.getDate() + 1);
+      currentDate.setHours(+sendTime[0]);
+      currentDate.setMinutes(0);
+      reSheduleJob(campaign, currentDate);
+      return "break";
+    }
+
+    // random delay and message
     const randomDelay = Math.floor(
       Math.random() * (range[1] - range[0] + 1) + range[0]
     );
-    const randomMessage = Math.floor(Math.random() * messages.length);
+    const randomMessage = messages[Math.floor(Math.random() * messages.length)];
 
     setTimeout(async () => {
-      // checking if campaign is paused
-      const { status } = await campaign.reload();
-      if (status !== "processing") {
-        return;
-      }
-      console.log(contact);
       // Message sending logic
+      console.log(contact.number);
       // await campaign.update({ lastLineContact: i });
-      if (i + 1 === csvArray.length) {
-        // await campaign.update({ status: "finished" });
+      if (index + 1 === penddingContacts.length) {
+        await campaign.update({ status: "finished" });
       }
     }, randomDelay * 1000);
+  };
+
+  for (let i = 0; i < penddingContacts.length; i += 1) {
+    // eslint-disable-next-line no-await-in-loop
+    const message = await sendMessage(penddingContacts[i], i);
+    if (message === "break") {
+      break;
+    }
   }
 };
 

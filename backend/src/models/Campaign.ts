@@ -9,7 +9,7 @@ import {
   DataType,
   CreatedAt,
   UpdatedAt,
-  Default,
+  Default
 } from "sequelize-typescript";
 import User from "./User";
 import Whatsapp from "./Whatsapp";
@@ -39,7 +39,14 @@ class Campaign extends Model<Campaign> {
 
   @Default("pending")
   @Column(
-    DataType.ENUM("pending", "scheduled", "processing", "canceled", "finished")
+    DataType.ENUM(
+      "pending",
+      "scheduled",
+      "timeout",
+      "processing",
+      "canceled",
+      "finished"
+    )
   )
   status: string;
 

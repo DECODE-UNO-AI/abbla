@@ -9,13 +9,14 @@ import CreateCampaignContactsService from "../services/CampaignContactService/Cr
 // import DeleteCampaignService from "../services/CampaignServices/DeleteCampaignService";
 import UpdateCampaignService from "../services/CampaignServices/UpdateCampaignService";
 import ShowCampaignService from "../services/CampaignServices/ShowCampaignService";
+import { alljobs, startJob } from "../libs/campaignQueue";
 // import StartCampaignService from "../services/CampaignServices/StartCampaignService";
 // import CancelCampaignService from "../services/CampaignServices/CancelCampaignService";
 
 interface CampaignData {
   name: string;
   inicialDate: string;
-  startNow?: boolean;
+  startNow?: string;
   columnName: string;
   sendTime: string;
   delay?: string;
@@ -41,7 +42,6 @@ export const store = async (req: Request, res: Response): Promise<Response> => {
     ...req.body,
     userId: id
   };
-  console.log(campaign);
   const schema = Yup.object().shape({
     name: Yup.string().required(),
     inicialDate: Yup.string().required(),
@@ -73,7 +73,7 @@ export const store = async (req: Request, res: Response): Promise<Response> => {
   } catch (err) {
     throw new AppError("Invalid .cvs file");
   }
-
+  startJob(newCampaign);
   return res.status(200).json(newCampaign);
 };
 
@@ -113,7 +113,9 @@ export const update = async (
 
   const schema = Yup.object().shape({
     name: Yup.string().required(),
-    start: Yup.string().required(),
+    inicialDate: Yup.string().required(),
+    columnName: Yup.string().required(),
+    sendTime: Yup.string().required(),
     message1: Yup.string().required(),
     message2: Yup.string(),
     message3: Yup.string(),

@@ -269,6 +269,10 @@ const CampaignModal = ({ open, onClose, campaignId }) => {
 
 		return () => {
 			setCapaignForm({});
+            setCsvColumns([]);
+            setMediaFile(null);
+            setCsvFile(null);
+            setStartNow(false)
 		};
     }, [campaignId])
 

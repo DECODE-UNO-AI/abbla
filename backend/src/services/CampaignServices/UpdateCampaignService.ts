@@ -1,8 +1,9 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { setMinutes, setHours, parseISO } from "date-fns";
 import AppError from "../../errors/AppError";
 import Campaign from "../../models/Campaign";
 import { logger } from "../../utils/logger";
+import CreateCampaignContactsService from "../CampaignContactService/CreateCampaignContactsService";
+import DeleteCampaignContactService from "../CampaignContactService/DeleteCampaignContactService";
 
 const cArquivoName = (url: string | undefined) => {
   if (!url) return "";
@@ -12,7 +13,11 @@ const cArquivoName = (url: string | undefined) => {
 };
 interface CampaignData {
   name: string;
-  start: string;
+  inicialDate: string;
+  startNow?: string;
+  columnName: string;
+  delay?: string;
+  sendTime: string;
   message1: string;
   message2?: string;
   message3?: string;
@@ -37,10 +42,19 @@ const UpdateCampaignService = async ({
 }: Request): Promise<Campaign> => {
   let mediaData: Express.Multer.File | undefined;
   let contacts: Express.Multer.File | undefined;
+
+  let startDate;
+  if (campaignData.startNow !== "false") {
+    startDate = new Date();
+    startDate.setMinutes(startDate.getMinutes() + 2);
+  } else {
+    startDate = new Date(campaignData.inicialDate);
+  }
+
   let data: any = {
     ...campaignData,
     mediaUrl: cArquivoName(campaignData.mediaUrl),
-    start: setHours(setMinutes(parseISO(campaignData.start), 0), 8)
+    inicialDate: startDate
   };
 
   const campaignModel = await Campaign.findOne({
@@ -72,12 +86,23 @@ const UpdateCampaignService = async ({
         }
       })
     );
-    data = {
-      ...campaignData,
-      contacts: contacts?.filename,
-      mediaUrl: mediaData?.filename,
-      mediaType: mediaData?.mimetype.substr(0, mediaData.mimetype.indexOf("/"))
-    };
+    if (contacts) {
+      data = {
+        ...campaignData,
+        contacts: contacts?.filename
+      };
+    }
+
+    if (mediaData) {
+      data = {
+        ...campaignData,
+        mediaUrl: mediaData?.filename,
+        mediaType: mediaData?.mimetype.substr(
+          0,
+          mediaData.mimetype.indexOf("/")
+        )
+      };
+    }
   } else if (campaignData.mediaUrl === "null") {
     data = {
       ...campaignData,
@@ -93,6 +118,11 @@ const UpdateCampaignService = async ({
   await campaignModel.update(data);
 
   await campaignModel.reload();
+
+  if (contacts) {
+    await DeleteCampaignContactService(campaignModel);
+    await CreateCampaignContactsService(campaignModel);
+  }
 
   return campaignModel;
 };
