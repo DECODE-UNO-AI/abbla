@@ -65,6 +65,9 @@ class Campaign extends Model<Campaign> {
   message5: string;
 
   @Column
+  columnName: string;
+
+  @Column
   contactsCsv: string;
 
   @Column(DataType.STRING)

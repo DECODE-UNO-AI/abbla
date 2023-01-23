@@ -37,7 +37,7 @@ import toastError from "../../errors/toastError";
 import api from "../../services/api";
 import useWhatsApps from "../../hooks/useWhatsApps";
 import SpeedMessageCards from "../SpeedMessageCards";
-import Papa from 'papaparse';
+// import Papa from 'papaparse';
 
 
 const useStyles = makeStyles(theme => ({
@@ -169,6 +169,32 @@ function a11yProps(index) {
   };
 }
 
+function getFirstDate(){
+    const currentDate = new Date();
+    currentDate.setDate(currentDate.getDate() + 1);
+    const dateString = currentDate.toISOString().substring(0,16);
+    return dateString
+}
+
+function getColumns(file, setCsvColumns) {
+    // Most perfomatic but dosen't work with ; delimiter
+    /* Papa.parse(file, {
+        header: true,
+        preview: 1,
+        delimitersToGuess: [";",".", ",", "-", "/", "|", "_", Papa.RECORD_SEP, Papa.UNIT_SEP],
+        complete: (results) => { 
+            setCsvColumns(Object.keys(results.data[0])) 
+        }
+      }); */
+      const reader = new FileReader()
+      reader.onload = (e) => {
+        const csvFile = e.target.result
+        const firstLine = csvFile.slice(0, csvFile.indexOf('\n'))
+        setCsvColumns(firstLine.split(/[;\\.\\,\-\\/\\|_]+/))
+      }
+      reader.readAsText(file)
+}
+
 const CampaignSchema = Yup.object().shape({
 	name: Yup.string()
 		.min(2, i18n.t("campaignModal.errors.tooShort"))
@@ -186,13 +212,6 @@ const CampaignSchema = Yup.object().shape({
     message5: Yup.string().min(5, i18n.t("campaignModal.errors.tooShort")).max(255, i18n.t("campaignModal.errors.tooLong")),
     columnName: Yup.string().required(" "),
 });
-
-const getFirstDate = () =>{
-    const currentDate = new Date();
-    currentDate.setDate(currentDate.getDate() + 1);
-    const dateString = currentDate.toISOString().substring(0,16);
-    return dateString
-}
 
 const CampaignModal = ({ open, onClose, campaignId }) => {
 	const classes = useStyles();
@@ -226,9 +245,22 @@ const CampaignModal = ({ open, onClose, campaignId }) => {
         (async () => {
 			if (!campaignId) return;
 			try {
-				const { data } = await api.get(`/campaign/${campaignId}`);
+				const { data } = await api.get(`/campaigns/${campaignId}`);
+                setSendTime(data.sendTime.split('-'))
+                setDelay(data.delay.split("-")[1])
+                const settedDate = data.inicialDate.substring(0,16)
+                try {
+                    const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/public/${data.contactsCsv}`)
+                    const blobFile = await response.blob()
+                    if (blobFile) {
+                        const file = new File([blobFile], "text.csv", { type: "text/csv"})
+                        getColumns(file, setCsvColumns)
+                    }
+                } catch(err) {
+                    toastError(err)
+                }
 				setCapaignForm(prevState => {
-					return { ...prevState, ...data };
+					return { ...prevState, ...data, inicialDate: settedDate };
 				});
 			} catch (err) {
 				toastError(err);
@@ -254,20 +286,14 @@ const CampaignModal = ({ open, onClose, campaignId }) => {
     }
 
     const handleOnCsvFileChange = (file) => {
+        setCsvColumns([])
         if (!file.target.files[0]) {
             setCsvFile(null)
             setCsvColumns([])
             return
         }
         setCsvFile(file.target.files[0])
-        Papa.parse(file.target.files[0], {
-            header: true,
-            preview: 1,
-            delimitersToGuess: [";", ".", ",", " ", "-", "/", "|", "_"],
-            complete: (results) => { 
-                setCsvColumns(Object.keys(results.data[0])) 
-            }
-          });
+        getColumns(file.target.files[0], setCsvColumns)
 
     }
 
@@ -276,15 +302,47 @@ const CampaignModal = ({ open, onClose, campaignId }) => {
             setMediaFile(null)
             return
         }
+        setMediaFile(file.target.files[0])
     }
 
-    const handleOnSave = async(values) => {
-       const campaignData = ({...values, delay, startNow, sendTime})
+    const handleDownload = async (isCsvFile) => {
+        let response
+        if (isCsvFile) {
+            response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/public/${campaignForm.contactsCsv}`)
+        } else {
+            response = await fetch(`${campaignForm.mediaUrl}`)
+        }
+        const file = await response.blob();
+        const fileUrl = URL.createObjectURL(file);
+        const a = document.createElement("a");
+        a.href = fileUrl;
+        a.download = "undefined";
+        a.click();
+        URL.revokeObjectURL(fileUrl);
+    }
+
+    const handleOnSave = async(values) => {        
+        const campaignData = ({...values, delay, startNow, sendTime})
+        const formData = new FormData();
+        Object.keys(campaignData).forEach((key) => {
+            formData.append(key, campaignData[key])
+        })
+        if (cvsFile) {
+            formData.append("medias", cvsFile)
+        }
+        if (mediaFile) {
+            formData.append("medias", mediaFile)
+        }
         try {
             if (campaignId) {
                 await api.put(`/campaigns/${campaignId}`, campaignData);
             } else {
-                await api.post("/campaigns", campaignData);
+                await api.post("/campaigns", formData, {
+                    headers: {
+                        'Content-Type': 'multipart/form-data',
+                        'Accept': 'application/json',
+                    }
+                });
             }
             toast.success(`${i18n.t("departamentModal.notification.title")}`);
             onClose();
@@ -420,12 +478,27 @@ const CampaignModal = ({ open, onClose, campaignId }) => {
                                             <Typography variant="h6">
                                                 {i18n.t("campaignModal.form.csvMedia")}
                                             </Typography>
-                                            <input 
-                                                style={{ marginTop: 5 }}
-                                                onChange={handleOnCsvFileChange}
-                                                accept=".csv"
-                                                type="file" 
-                                            />
+                                            <Box style={{ display: "flex", flexDirection: "column", alignItems: "start", marginTop: 15}}>
+                                                {
+                                                    !campaignId ? 
+                                                        <Button
+                                                            style={{ marginBottom: 10 }}
+                                                            onClick={() => handleDownload(true)}
+                                                            color="primary"
+                                                            disabled={isSubmitting}
+                                                            variant="contained"
+                                                        >
+                                                            Download
+                                                        </Button>
+                                                    : ""
+                                                }
+                                                <input 
+                                                    style={{ marginTop: 5, cursor: "pointer" }}
+                                                    onChange={handleOnCsvFileChange}
+                                                    accept=".csv"
+                                                    type="file" 
+                                                />
+                                            </Box>
                                         </Box>
                                         <Box style={{ width: "50%"}}>
                                             <Typography variant="h6">
@@ -570,12 +643,31 @@ const CampaignModal = ({ open, onClose, campaignId }) => {
                                 <Box sx={{ width: "100%", marginTop: 10 }} className={classes.box}>
                                     <Typography variant="h6">
                                         {i18n.t("campaignModal.form.messageMedia")}
-                                    </Typography> 
-                                    <input
-                                        style={{ marginTop: 5 }}
-                                        onChange={handleOnMediaFileChange}
-                                        type="file"                                      
+                                    </Typography>
+                                    <Box style={{ display: "flex", alignItems: "center", gap: 10, marginTop: 15}}>
+                                        {
+                                            !campaignId && campaignForm.mediaUrl ? 
+                                                <>
+                                                <Button
+                                                    style={{ marginBottom: 10 }}
+                                                    onClick={() => handleDownload(false)}
+                                                    color="primary"
+                                                    disabled={isSubmitting}
+                                                    variant="contained"
+
+                                                >
+                                                    Download
+                                                </Button>
+                                                <p>Ou</p>
+                                                </>
+                                            : ""
+                                        }
+                                        <input
+                                            style={{ marginTop: 5 }}
+                                            onChange={handleOnMediaFileChange}
+                                            type="file"                                      
                                     />
+                                    </Box>
                                 </Box>
 							</DialogContent>
 							<DialogActions>

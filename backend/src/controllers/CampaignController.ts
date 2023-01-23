@@ -4,16 +4,21 @@ import AppError from "../errors/AppError";
 
 import CreateCampaignService from "../services/CampaignServices/CreateCampaignService";
 import ListCampaignService from "../services/CampaignServices/ListCampaignService";
+import CreateCampaignContactsService from "../services/CampaignContactService/CreateCampaignContactsService";
 // import ListCampaignService from "../services/CampaignServices/ListCampaignService";
 // import DeleteCampaignService from "../services/CampaignServices/DeleteCampaignService";
 import UpdateCampaignService from "../services/CampaignServices/UpdateCampaignService";
+import ShowCampaignService from "../services/CampaignServices/ShowCampaignService";
 // import StartCampaignService from "../services/CampaignServices/StartCampaignService";
 // import CancelCampaignService from "../services/CampaignServices/CancelCampaignService";
 
 interface CampaignData {
   name: string;
-  start: string;
-  end: string;
+  inicialDate: string;
+  startNow?: boolean;
+  columnName: string;
+  sendTime: string;
+  delay?: string;
   message1: string;
   message2?: string;
   message3?: string;
@@ -36,12 +41,12 @@ export const store = async (req: Request, res: Response): Promise<Response> => {
     ...req.body,
     userId: id
   };
-
   console.log(campaign);
-
   const schema = Yup.object().shape({
     name: Yup.string().required(),
-    start: Yup.string().required(),
+    inicialDate: Yup.string().required(),
+    columnName: Yup.string().required(),
+    sendTime: Yup.string().required(),
     message1: Yup.string().required(),
     message2: Yup.string(),
     message3: Yup.string(),
@@ -57,12 +62,17 @@ export const store = async (req: Request, res: Response): Promise<Response> => {
     throw new AppError(error.message);
   }
 
-  // Throw new error if no data was sent
-
   const newCampaign = await CreateCampaignService({
     campaign,
     medias
   });
+
+  // Creating contacts
+  try {
+    await CreateCampaignContactsService(newCampaign);
+  } catch (err) {
+    throw new AppError("Invalid .cvs file");
+  }
 
   return res.status(200).json(newCampaign);
 };
@@ -74,6 +84,16 @@ export const index = async (req: Request, res: Response): Promise<Response> => {
   }
   const campaigns = await ListCampaignService();
   return res.status(200).json(campaigns);
+};
+
+export const show = async (req: Request, res: Response): Promise<Response> => {
+  const { profile } = req.user;
+  const { campaignId } = req.params;
+  if (profile !== "admin") {
+    throw new AppError("ERR_NO_PERMISSION", 403);
+  }
+  const campaign = await ShowCampaignService(campaignId);
+  return res.status(200).json(campaign);
 };
 
 export const update = async (
