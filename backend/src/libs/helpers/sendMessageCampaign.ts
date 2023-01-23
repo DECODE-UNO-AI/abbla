@@ -47,8 +47,7 @@ const sendMessageCampaign = async (campaign: Campaign): Promise<void> => {
   const sendMessage = async (
     contact: CampaignContact,
     index: number
-    // eslint-disable-next-line consistent-return
-  ): Promise<void | string> => {
+  ): Promise<string> => {
     const { status } = await campaign.reload();
     if (status !== "processing") {
       return "break";
@@ -85,6 +84,7 @@ const sendMessageCampaign = async (campaign: Campaign): Promise<void> => {
         await campaign.update({ status: "finished" });
       }
     }, randomDelay * 1000);
+    return "continue";
   };
 
   for (let i = 0; i < penddingContacts.length; i += 1) {
