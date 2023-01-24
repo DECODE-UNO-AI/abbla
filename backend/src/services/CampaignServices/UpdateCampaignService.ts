@@ -1,3 +1,4 @@
+/* eslint-disable no-nested-ternary */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import AppError from "../../errors/AppError";
 import Campaign from "../../models/Campaign";
@@ -55,21 +56,44 @@ const UpdateCampaignService = async ({
     throw new AppError("ERR_INVALID_DATE", 403);
   }
 
+  const delayValue =
+    campaignData.delay === "15"
+      ? "120-240"
+      : campaignData.delay === "30"
+      ? "60-120"
+      : campaignData.delay === "60"
+      ? "30-60"
+      : campaignData.delay === "120"
+      ? "15-30"
+      : campaignData.delay === "240"
+      ? "10-15"
+      : null;
+
   let data: any = {
     ...campaignData,
     mediaUrl: cArquivoName(campaignData.mediaUrl),
-    inicialDate: startDate
+    inicialDate: startDate,
+    columnName: campaignData.columnName.trim(),
+    delay: delayValue,
+    status: "scheduled",
+    sendTime: campaignData.sendTime.replace(",", "-")
   };
 
   const campaignModel = await Campaign.findOne({
     where: { id: campaignId }
   });
 
+  if (!campaignModel) {
+    throw new AppError("ERR_CAMPAIGN_NOT_FOUND", 404);
+  }
+
   if (
-    campaignModel?.status !== "sheduled" &&
-    campaignModel?.status !== "canceled"
+    ["paused, timeout, processing", "finished"].includes(campaignModel.status)
   ) {
-    throw new AppError("ERR_NO_UPDATE_CAMPAIGN_NOT_IN_CANCELED_PENDING", 404);
+    throw new AppError(
+      "ERR_NO_UPDATE_CAMPAIGN_NOT_IN_CANCELED_PROCESSING",
+      404
+    );
   }
 
   if (medias && Array.isArray(medias) && medias.length) {
@@ -92,14 +116,14 @@ const UpdateCampaignService = async ({
     );
     if (contacts) {
       data = {
-        ...campaignData,
+        ...data,
         contacts: contacts?.filename
       };
     }
 
     if (mediaData) {
       data = {
-        ...campaignData,
+        ...data,
         mediaUrl: mediaData?.filename,
         mediaType: mediaData?.mimetype.substr(
           0,
@@ -109,7 +133,7 @@ const UpdateCampaignService = async ({
     }
   } else if (campaignData.mediaUrl === "null") {
     data = {
-      ...campaignData,
+      ...data,
       mediaUrl: "",
       mediaType: ""
     };

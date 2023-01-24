@@ -12,6 +12,7 @@ import ShowCampaignService from "../services/CampaignServices/ShowCampaignServic
 import { finishJob, startJob } from "../libs/campaignQueue";
 import DeleteCampaignService from "../services/CampaignServices/DeleteCampaignService";
 import CancelCampaignService from "../services/CampaignServices/CancelCampaignService";
+import { logger } from "../utils/logger";
 // import StartCampaignService from "../services/CampaignServices/StartCampaignService";
 // import CancelCampaignService from "../services/CampaignServices/CancelCampaignService";
 
@@ -141,7 +142,7 @@ export const update = async (
   });
 
   if (campaignObj.status === "scheduled") {
-    finishJob(campaignId);
+    finishJob(campaignObj.id);
     startJob(campaignObj);
   }
 
@@ -161,6 +162,7 @@ export const remove = async (
     await DeleteCampaignService(campaignId);
     finishJob(campaignId);
   } catch (err) {
+    logger.error(err);
     throw new AppError("ERR_INTERNAL", 500);
   }
   return res.status(200).json({ message: "Campaign deleted" });

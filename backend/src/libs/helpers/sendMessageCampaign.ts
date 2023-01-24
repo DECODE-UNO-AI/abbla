@@ -6,7 +6,7 @@ import { reSheduleJob } from "../campaignQueue";
 
 const sendMessageCampaign = async (campaign: Campaign): Promise<void> => {
   await campaign.update({ status: "processing" });
-
+  console.log("starting job");
   const penddingContacts = await GetCampaignContactsService(
     campaign.id,
     "pending"

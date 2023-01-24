@@ -200,7 +200,6 @@ const CampaignSchema = Yup.object().shape({
 		.min(2, i18n.t("campaignModal.errors.tooShort"))
 		.max(50, i18n.t("campaignModal.errors.tooLong"))
 		.required(" "),
-	sendTime: Yup.array().required(),
     whatsappId: Yup.string().required("Required"),
     message1: Yup.string()
         .min(5, i18n.t("campaignModal.errors.tooShort"))
@@ -246,8 +245,21 @@ const CampaignModal = ({ open, onClose, campaignId }) => {
 			if (!campaignId) return;
 			try {
 				const { data } = await api.get(`/campaigns/${campaignId}`);
-                setSendTime(data.sendTime.split('-'))
-                setDelay(data.delay.split("-")[1])
+                const sendInterval = data.sendTime.split('-').map(n => +n)
+                setSendTime(sendInterval)
+                const delayValue =
+                    data.delay === "120-240"
+                    ? "15"
+                    : data.delay === "60-120"
+                    ? "30"
+                    : data.delay === "30-60"
+                    ? "60"
+                    : data.delay === "15-30"
+                    ? "120"
+                    : data.delay === "10-15"
+                    ? "240"
+                    : null;
+                setDelay(delayValue);
                 const settedDate = data.inicialDate.substring(0,16)
                 try {
                     const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/public/${data.contactsCsv}`)
@@ -260,7 +272,7 @@ const CampaignModal = ({ open, onClose, campaignId }) => {
                     toastError(err)
                 }
 				setCapaignForm(prevState => {
-					return { ...prevState, ...data, inicialDate: settedDate };
+					return { ...prevState, ...data, inicialDate: settedDate};
 				});
 			} catch (err) {
 				toastError(err);
@@ -268,12 +280,13 @@ const CampaignModal = ({ open, onClose, campaignId }) => {
 		})();
 
 		return () => {
-			setCapaignForm({});
+			setCapaignForm(initialState);
             setCsvColumns([]);
             setMediaFile(null);
             setCsvFile(null);
             setStartNow(false)
 		};
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [campaignId])
 
 
@@ -326,7 +339,7 @@ const CampaignModal = ({ open, onClose, campaignId }) => {
     }
 
     const handleOnSave = async(values) => {        
-        const campaignData = ({...values, delay, startNow, sendTime})
+        const campaignData = ({...values, delay: delay, startNow, sendTime})
         const formData = new FormData();
         Object.keys(campaignData).forEach((key) => {
             formData.append(key, campaignData[key])
@@ -339,7 +352,13 @@ const CampaignModal = ({ open, onClose, campaignId }) => {
         }
         try {
             if (campaignId) {
-                await api.put(`/campaigns/${campaignId}`, campaignData);
+                console.log(campaignData)
+                await api.put(`/campaigns/${campaignId}`, formData, {
+                    headers: {
+                        'Content-Type': 'multipart/form-data',
+                        'Accept': 'application/json',
+                    }
+                });
             } else {
                 await api.post("/campaigns", formData, {
                     headers: {
@@ -387,10 +406,10 @@ const CampaignModal = ({ open, onClose, campaignId }) => {
                                         {i18n.t("campaignModal.form.sendTime")}
                                     </Typography>
                                     <div style={{ paddingLeft: 15, paddingRight: 15}}>
-                                        <Field 
-                                            as={Slider}
+                                        <Slider 
                                             getAriaLabel={() => 'Hours'}
                                             name="sendTime"
+                                            id="sendTime"
                                             step={1}
                                             max={24}
                                             onChange={handleOnSendTimeInputChange}
@@ -419,6 +438,7 @@ const CampaignModal = ({ open, onClose, campaignId }) => {
                                         as={TextField}
                                         placeholder={i18n.t("campaignModal.form.name")}
                                         name="name"
+                                        id="name"
                                         error={touched.name && Boolean(errors.name)}
                                         helperText={touched.name && errors.name}
                                         variant="outlined"
@@ -464,6 +484,7 @@ const CampaignModal = ({ open, onClose, campaignId }) => {
                                         <Field
 											as={Select}
 											name="whatsappId"
+                                            id="whatsappId"
                                             error={touched.whatsappId && Boolean(errors.whatsappId)}
                                             helperText={touched.whatsappId && errors.whatsappId}
                                             variant="outlined"
@@ -511,6 +532,7 @@ const CampaignModal = ({ open, onClose, campaignId }) => {
                                             <Field
                                                 as={Select}
                                                 name="columnName"
+                                                id="columnName"
                                                 error={touched.columnName && Boolean(errors.columnName)}
                                                 helperText={touched.columnName && errors.columnName}
                                                 variant="outlined"

@@ -1,5 +1,4 @@
-import React, { useState, useCallback, useContext } from "react";
-//import { toast } from "react-toastify";
+import React, { useState, useCallback, useContext, useEffect, useReducer } from "react";
 import { format, parseISO } from "date-fns";
 
 import { makeStyles } from "@material-ui/core/styles";
@@ -24,7 +23,10 @@ import {
 	SignalCellularConnectedNoInternet0Bar,
 	SignalCellular4Bar,
 	CropFree,
-	//DeleteOutline,
+	DeleteOutline,
+	PauseCircleOutline,
+	PlayArrowOutlined,
+	CancelOutlined
 } from "@material-ui/icons";
 
 import MainContainer from "../../components/MainContainer";
@@ -34,11 +36,9 @@ import Title from "../../components/Title";
 import TableRowSkeleton from "../../components/TableRowSkeleton";
 
 import api from "../../services/api";
-import WhatsAppModal from "../../components/WhatsAppModal";
 import ConfirmationModal from "../../components/ConfirmationModal";
-import QrcodeModal from "../../components/QrcodeModal";
 import { i18n } from "../../translate/i18n";
-import { WhatsAppsContext } from "../../context/WhatsApp/WhatsAppsContext";
+import { toast } from "react-toastify";
 import toastError from "../../errors/toastError";
 import CampaignModal from "../../components/CampaignModal";
 
@@ -70,14 +70,91 @@ const useStyles = makeStyles(theme => ({
 	},
 }));
 
+const reducer = (state, action) => {
+	if (action.type === "LOAD_CAMPAIGNS") {
+		const campaigns = action.payload;
+		const newCampaigns = [];
+		campaigns.forEach((departament) => {
+		  const departamentIndex = state.findIndex((q) => q.id === departament.id);
+		  if (departamentIndex !== -1) {
+			state[departamentIndex] = departament;
+		  } else {
+			newCampaigns.push(departament);
+		  }
+		});
+		return [...state, ...newCampaigns];
+	}
+}
+
 
 const Campaigns = () => {
 	const classes = useStyles();
 	const [modalOpen, setModalOpen] = useState(false)
-	const [selectedCampaignId, setSelectedCampaignId] = useState(null)
+	const [loading, setLoading] = useState(false)
+	const [campaigns, dispatch] = useReducer(reducer, []);
+	const [confirmModalOpen, setConfirmModalOpen] = useState(false)
+	const [selectedCampaign, setSelectedCampaign] = useState(null)
+
+	useEffect(() => {
+		(async () => {
+			setLoading(true);
+			try {
+			  const { data } = await api.get("/campaigns");
+			  dispatch({ type: "LOAD_CAMPAIGNS", payload: data });
+			  setLoading(false);
+			} catch (err) {
+			  toastError(err);
+			  setLoading(false);
+			}
+		  })();
+	}, [])
+
+	const handleEditCampaign = (campaign) => {
+		setSelectedCampaign(campaign);
+		setModalOpen(true);
+	};
+
+	const handleDeleteCampaign = (campaign) => {
+		setSelectedCampaign(campaign)
+        setConfirmModalOpen(true);
+	}
+
+	const handleOnDeleteCampaign = async (campaign) => {
+		try {
+			await api.delete(`/campaigns/${campaign.id}`);
+			toast.success(i18n.t("departaments.notifications.departamentDeleted"));
+		  } catch (err) {
+			toastError(err);
+		  }
+	};
+
+	const handleCloseConfirmationModal = () => {
+		setConfirmModalOpen(false);
+		setSelectedCampaign(null);
+	  };
+
+	const handleOnCloseModal = () => {
+		setModalOpen(false)
+		setSelectedCampaign(null)
+	}
+
 	return (
 		<MainContainer>
-            <CampaignModal open={modalOpen} onClose={() => setModalOpen(false)} campaignId={selectedCampaignId} />
+			<ConfirmationModal
+				title={
+					selectedCampaign &&
+				`${i18n.t("departaments.confirmationModal.deleteTitle")} ${
+					selectedCampaign.name
+				}?`
+				}
+				open={confirmModalOpen}
+				onClose={handleCloseConfirmationModal}
+				onConfirm={() => handleOnDeleteCampaign(selectedCampaign)}
+			>
+				{// i18n.t("departaments.confirmationModal.deleteMessage")
+				}Tem certeza que deseja excluir a campanha? Todos os contatos da campanha e mensagens agendadas serão excluidas.
+			</ConfirmationModal>
+            <CampaignModal open={modalOpen} onClose={handleOnCloseModal} campaignId={selectedCampaign?.id} />
 			<MainHeader>
                 <Title>{i18n.t("campaigns.title")}</Title>
                 <MainHeaderButtonsWrapper>
@@ -91,7 +168,109 @@ const Campaigns = () => {
                 </MainHeaderButtonsWrapper>
             </MainHeader>
             <Paper className={classes.mainPaper} variant="outlined">
-                oi
+			<Table size="small">
+          <TableHead>
+            <TableRow>
+				<TableCell align="left">
+					ID
+				</TableCell>
+				<TableCell align="left">
+					Nome
+				</TableCell>
+				<TableCell align="center">
+					Programação
+				</TableCell>
+				<TableCell align="center">
+					Status
+				</TableCell>
+				<TableCell align="center">
+					Actions
+				</TableCell>
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            <>
+              {campaigns?.map((campaign) => (
+                <TableRow key={campaign.id}>
+					<TableCell align="left">{campaign.id}</TableCell>
+                  <TableCell align="left">{campaign.name}</TableCell>
+                  <TableCell align="center">
+                    <div className={classes.customTableCell}>
+                      <Typography
+                        style={{ width: 200, align: "center" }}
+                        noWrap
+                        variant="body2"
+                      >
+                        {campaign.inicialDate}
+                      </Typography>
+                    </div>
+                  </TableCell>
+                  <TableCell align="center">
+                    {campaign.status}
+                  </TableCell>
+                  <TableCell align="center">
+					{
+					  ["canceled", "paused"].includes(campaign.status) ? 
+						  <IconButton
+							  size="small"
+							  onClick={() => {
+								  handleEditCampaign(campaign);
+							  }}
+						  >
+							  <PlayArrowOutlined color="secondary" />
+						  </IconButton> : ""
+					}
+					{
+						["canceled", "scheduled"].includes(campaign.status) ? 
+							<IconButton
+								size="small"
+								onClick={() => {
+									handleEditCampaign(campaign);
+								}}
+							>
+								<Edit color="secondary" />
+							</IconButton> : ""
+					}
+					{
+						["processing", "timeout"].includes(campaign.status) ?
+							<IconButton
+								size="small"
+								onClick={() => {
+									handleDeleteCampaign(campaign)
+								}}
+							>
+								<PauseCircleOutline color="secondary" />
+							</IconButton> : ""
+					}
+					{
+						["processing", "timeout"].includes(campaign.status) ?
+							<IconButton
+								size="small"
+								onClick={() => {
+									handleDeleteCampaign(campaign)
+								}}
+							>
+								<CancelOutlined color="secondary" />
+							</IconButton> : ""
+					}
+					{
+						["finished", "paused", "scheduled", "timeout", "canceled"].includes(campaign.status) ?
+							<IconButton
+								size="small"
+								onClick={() => {
+									handleDeleteCampaign(campaign)
+								}}
+							>
+								<DeleteOutline color="secondary" />
+							</IconButton> : ""
+					}
+                  </TableCell>
+                </TableRow>
+              ))}
+              {loading && <TableRowSkeleton columns={5} />}
+            </>
+          </TableBody>
+        </Table>
             </Paper>
 		</MainContainer>
 	);
