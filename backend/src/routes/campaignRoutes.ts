@@ -25,6 +25,12 @@ campaignRoutes.put(
 );
 
 campaignRoutes.put(
+  "/campaigns/pause/:campaignId",
+  isAuth,
+  CampaignController.pauseCampaign
+);
+
+campaignRoutes.put(
   "/campaigns/:campaignId",
   isAuth,
   upload.array("medias"),

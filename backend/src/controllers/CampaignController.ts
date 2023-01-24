@@ -5,16 +5,14 @@ import AppError from "../errors/AppError";
 import CreateCampaignService from "../services/CampaignServices/CreateCampaignService";
 import ListCampaignService from "../services/CampaignServices/ListCampaignService";
 import CreateCampaignContactsService from "../services/CampaignContactService/CreateCampaignContactsService";
-// import ListCampaignService from "../services/CampaignServices/ListCampaignService";
-// import DeleteCampaignService from "../services/CampaignServices/DeleteCampaignService";
 import UpdateCampaignService from "../services/CampaignServices/UpdateCampaignService";
 import ShowCampaignService from "../services/CampaignServices/ShowCampaignService";
-import { finishJob, startJob } from "../libs/campaignQueue";
 import DeleteCampaignService from "../services/CampaignServices/DeleteCampaignService";
 import CancelCampaignService from "../services/CampaignServices/CancelCampaignService";
+import PauseCampaignService from "../services/CampaignServices/PauseCampaignService";
+import PlayCampaignService from "../services/CampaignServices/PlayCampaignService";
+import { finishJob, startJob } from "../libs/campaignQueue";
 import { logger } from "../utils/logger";
-// import StartCampaignService from "../services/CampaignServices/StartCampaignService";
-// import CancelCampaignService from "../services/CampaignServices/CancelCampaignService";
 
 interface CampaignData {
   name: string;
@@ -149,6 +147,63 @@ export const update = async (
   return res.status(200).json(campaignObj);
 };
 
+export const cancelCampaign = async (
+  req: Request,
+  res: Response
+): Promise<Response> => {
+  if (req.user.profile !== "admin") {
+    throw new AppError("ERR_NO_PERMISSION", 403);
+  }
+  const { campaignId } = req.params;
+
+  try {
+    await CancelCampaignService(campaignId);
+    finishJob(campaignId);
+  } catch (err) {
+    throw new AppError("ERR_INTERNAL_ERROR", 500);
+  }
+
+  return res.status(200).json({ message: "Campaign canceled" });
+};
+
+export const pauseCampaign = async (
+  req: Request,
+  res: Response
+): Promise<Response> => {
+  if (req.user.profile !== "admin") {
+    throw new AppError("ERR_NO_PERMISSION", 403);
+  }
+  const { campaignId } = req.params;
+
+  try {
+    await PauseCampaignService(campaignId);
+    finishJob(campaignId);
+  } catch (err) {
+    throw new AppError("ERR_INTERNAL_ERROR", 500);
+  }
+
+  return res.status(200).json({ message: "Campaign paused" });
+};
+
+export const playCampaign = async (
+  req: Request,
+  res: Response
+): Promise<Response> => {
+  if (req.user.profile !== "admin") {
+    throw new AppError("ERR_NO_PERMISSION", 403);
+  }
+  const { campaignId } = req.params;
+
+  try {
+    const campaign = await PlayCampaignService(campaignId);
+    startJob(campaign);
+  } catch (err) {
+    throw new AppError("ERR_INTERNAL_ERROR", 500);
+  }
+
+  return res.status(200).json({ message: "Campaign Restarted" });
+};
+
 export const remove = async (
   req: Request,
   res: Response
@@ -188,18 +243,3 @@ export const remove = async (
 
 //   return res.status(200).json({ message: "Campaign started" });
 // };
-
-export const cancelCampaign = async (
-  req: Request,
-  res: Response
-): Promise<Response> => {
-  if (req.user.profile !== "admin") {
-    throw new AppError("ERR_NO_PERMISSION", 403);
-  }
-  const { campaignId } = req.params;
-
-  await CancelCampaignService(campaignId);
-  finishJob(campaignId);
-
-  return res.status(200).json({ message: "Campaign canceled" });
-};

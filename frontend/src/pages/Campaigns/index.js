@@ -131,7 +131,7 @@ const Campaigns = () => {
 	const handleCloseConfirmationModal = () => {
 		setConfirmModalOpen(false);
 		setSelectedCampaign(null);
-	  };
+	};
 
 	const handleOnCloseModal = () => {
 		setModalOpen(false)
