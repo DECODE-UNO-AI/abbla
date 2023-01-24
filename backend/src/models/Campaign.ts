@@ -41,6 +41,7 @@ class Campaign extends Model<Campaign> {
   @Column(
     DataType.ENUM(
       "pending",
+      "paused",
       "scheduled",
       "timeout",
       "processing",

@@ -9,7 +9,9 @@ import CreateCampaignContactsService from "../services/CampaignContactService/Cr
 // import DeleteCampaignService from "../services/CampaignServices/DeleteCampaignService";
 import UpdateCampaignService from "../services/CampaignServices/UpdateCampaignService";
 import ShowCampaignService from "../services/CampaignServices/ShowCampaignService";
-import { alljobs, startJob } from "../libs/campaignQueue";
+import { finishJob, startJob } from "../libs/campaignQueue";
+import DeleteCampaignService from "../services/CampaignServices/DeleteCampaignService";
+import CancelCampaignService from "../services/CampaignServices/CancelCampaignService";
 // import StartCampaignService from "../services/CampaignServices/StartCampaignService";
 // import CancelCampaignService from "../services/CampaignServices/CancelCampaignService";
 
@@ -138,22 +140,31 @@ export const update = async (
     campaignId
   });
 
+  if (campaignObj.status === "scheduled") {
+    finishJob(campaignId);
+    startJob(campaignObj);
+  }
+
   return res.status(200).json(campaignObj);
 };
 
-// export const remove = async (
-//   req: Request,
-//   res: Response
-// ): Promise<Response> => {
-//   const { tenantId } = req.user;
-//   if (req.user.profile !== "admin") {
-//     throw new AppError("ERR_NO_PERMISSION", 403);
-//   }
-//   const { campaignId } = req.params;
+export const remove = async (
+  req: Request,
+  res: Response
+): Promise<Response> => {
+  if (req.user.profile !== "admin") {
+    throw new AppError("ERR_NO_PERMISSION", 403);
+  }
+  const { campaignId } = req.params;
 
-//   await DeleteCampaignService({ id: campaignId, tenantId });
-//   return res.status(200).json({ message: "Campaign deleted" });
-// };
+  try {
+    await DeleteCampaignService(campaignId);
+    finishJob(campaignId);
+  } catch (err) {
+    throw new AppError("ERR_INTERNAL", 500);
+  }
+  return res.status(200).json({ message: "Campaign deleted" });
+};
 
 // export const startCampaign = async (
 //   req: Request,
@@ -176,20 +187,17 @@ export const update = async (
 //   return res.status(200).json({ message: "Campaign started" });
 // };
 
-// export const cancelCampaign = async (
-//   req: Request,
-//   res: Response
-// ): Promise<Response> => {
-//   const { tenantId } = req.user;
-//   if (req.user.profile !== "admin") {
-//     throw new AppError("ERR_NO_PERMISSION", 403);
-//   }
-//   const { campaignId } = req.params;
+export const cancelCampaign = async (
+  req: Request,
+  res: Response
+): Promise<Response> => {
+  if (req.user.profile !== "admin") {
+    throw new AppError("ERR_NO_PERMISSION", 403);
+  }
+  const { campaignId } = req.params;
 
-//   await CancelCampaignService({
-//     campaignId,
-//     tenantId
-//   });
+  await CancelCampaignService(campaignId);
+  finishJob(campaignId);
 
-//   return res.status(200).json({ message: "Campaign canceled" });
-// };
+  return res.status(200).json({ message: "Campaign canceled" });
+};

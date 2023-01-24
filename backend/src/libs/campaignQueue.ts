@@ -13,7 +13,6 @@ export const alljobs: Array<{
 export const startJobs = (): void => {
   getCampaigns().then(jobQueues =>
     jobQueues.forEach(async jobQueue => {
-      console.log(jobQueue.id);
       let startDate: Date | number = new Date(jobQueue.inicialDate);
       if (jobQueue.status === "processing") {
         startDate = Date.now() + 100; // 1000 * 10; // Set a correct delay to start whatsapp connections
@@ -47,12 +46,14 @@ export const startJob = (campaign: Campaign): void => {
 export const finishJob = (jobId: string | number): void => {
   const jobIndex = alljobs.findIndex(job => job.id === jobId);
   const job = alljobs[jobIndex];
-  try {
-    job.job.cancel();
-  } catch (err) {
-    logger.error(err);
+  if (job) {
+    try {
+      job.job.cancel();
+    } catch (err) {
+      logger.error(err);
+    }
+    alljobs.splice(jobIndex, 1);
   }
-  alljobs.splice(jobIndex, 1);
 };
 
 export const reSheduleJob = (campaign: Campaign, date: Date): void => {

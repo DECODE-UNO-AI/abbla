@@ -19,10 +19,22 @@ campaignRoutes.get("/campaigns", isAuth, CampaignController.index);
 campaignRoutes.get("/campaigns/:campaignId", isAuth, CampaignController.show);
 
 campaignRoutes.put(
+  "/campaigns/cancel/:campaignId",
+  isAuth,
+  CampaignController.cancelCampaign
+);
+
+campaignRoutes.put(
   "/campaigns/:campaignId",
   isAuth,
   upload.array("medias"),
   CampaignController.update
+);
+
+campaignRoutes.delete(
+  "/campaigns/:campaignId",
+  isAuth,
+  CampaignController.remove
 );
 
 export default campaignRoutes;

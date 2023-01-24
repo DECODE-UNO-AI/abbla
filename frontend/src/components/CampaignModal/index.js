@@ -190,7 +190,7 @@ function getColumns(file, setCsvColumns) {
       reader.onload = (e) => {
         const csvFile = e.target.result
         const firstLine = csvFile.slice(0, csvFile.indexOf('\n'))
-        setCsvColumns(firstLine.split(/[;\\.\\,\-\\/\\|_]+/))
+        setCsvColumns(firstLine.trim().split(/[;\\.\\,\-\\/\\|_]+/))
       }
       reader.readAsText(file)
 }

@@ -46,9 +46,13 @@ const UpdateCampaignService = async ({
   let startDate;
   if (campaignData.startNow !== "false") {
     startDate = new Date();
-    startDate.setMinutes(startDate.getMinutes() + 2);
+    startDate.setMinutes(startDate.getMinutes() + 1);
   } else {
     startDate = new Date(campaignData.inicialDate);
+  }
+  const currentDate = new Date();
+  if (startDate.getTime() - currentDate.getTime() < 0) {
+    throw new AppError("ERR_INVALID_DATE", 403);
   }
 
   let data: any = {
@@ -62,7 +66,7 @@ const UpdateCampaignService = async ({
   });
 
   if (
-    campaignModel?.status !== "pending" &&
+    campaignModel?.status !== "sheduled" &&
     campaignModel?.status !== "canceled"
   ) {
     throw new AppError("ERR_NO_UPDATE_CAMPAIGN_NOT_IN_CANCELED_PENDING", 404);
