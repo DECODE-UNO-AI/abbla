@@ -168,109 +168,110 @@ const Campaigns = () => {
                 </MainHeaderButtonsWrapper>
             </MainHeader>
             <Paper className={classes.mainPaper} variant="outlined">
-			<Table size="small">
-          <TableHead>
-            <TableRow>
-				<TableCell align="left">
-					ID
-				</TableCell>
-				<TableCell align="left">
-					Nome
-				</TableCell>
-				<TableCell align="center">
-					Programação
-				</TableCell>
-				<TableCell align="center">
-					Status
-				</TableCell>
-				<TableCell align="center">
-					Actions
-				</TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            <>
-              {campaigns?.map((campaign) => (
-                <TableRow key={campaign.id}>
-					<TableCell align="left">{campaign.id}</TableCell>
-                  <TableCell align="left">{campaign.name}</TableCell>
-                  <TableCell align="center">
-                    <div className={classes.customTableCell}>
-                      <Typography
-                        style={{ width: 200, align: "center" }}
-                        noWrap
-                        variant="body2"
-                      >
-                        {campaign.inicialDate}
-                      </Typography>
-                    </div>
-                  </TableCell>
-                  <TableCell align="center">
-                    {campaign.status}
-                  </TableCell>
-                  <TableCell align="center">
-					{
-					  ["canceled", "paused"].includes(campaign.status) ? 
-						  <IconButton
-							  size="small"
-							  onClick={() => {
-								  handleEditCampaign(campaign);
-							  }}
-						  >
-							  <PlayArrowOutlined color="secondary" />
-						  </IconButton> : ""
-					}
-					{
-						["canceled", "scheduled"].includes(campaign.status) ? 
-							<IconButton
-								size="small"
-								onClick={() => {
-									handleEditCampaign(campaign);
-								}}
-							>
-								<Edit color="secondary" />
-							</IconButton> : ""
-					}
-					{
-						["processing", "timeout"].includes(campaign.status) ?
-							<IconButton
-								size="small"
-								onClick={() => {
-									handleDeleteCampaign(campaign)
-								}}
-							>
-								<PauseCircleOutline color="secondary" />
-							</IconButton> : ""
-					}
-					{
-						["processing", "timeout"].includes(campaign.status) ?
-							<IconButton
-								size="small"
-								onClick={() => {
-									handleDeleteCampaign(campaign)
-								}}
-							>
-								<CancelOutlined color="secondary" />
-							</IconButton> : ""
-					}
-					{
-						["finished", "paused", "scheduled", "timeout", "canceled"].includes(campaign.status) ?
-							<IconButton
-								size="small"
-								onClick={() => {
-									handleDeleteCampaign(campaign)
-								}}
-							>
-								<DeleteOutline color="secondary" />
-							</IconButton> : ""
-					}
-                  </TableCell>
-                </TableRow>
-              ))}
-              {loading && <TableRowSkeleton columns={5} />}
-            </>
-          </TableBody>
-        </Table>
+				<Table size="small">
+					<TableHead>
+						<TableRow>
+							<TableCell align="left">
+								ID
+							</TableCell>
+							<TableCell align="left">
+								Nome
+							</TableCell>
+							<TableCell align="left">
+								Programação
+							</TableCell>
+							<TableCell align="center">
+								Status
+							</TableCell>
+							<TableCell align="center">
+								Detalhes
+							</TableCell>
+							<TableCell align="center">
+								Actions
+							</TableCell>
+						</TableRow>
+					</TableHead>
+					<TableBody>
+						<>
+						{campaigns?.map((campaign) => (
+							<TableRow key={campaign.id}>
+								<TableCell align="left">{campaign.id}</TableCell>
+								<TableCell align="left">{campaign.name}</TableCell>
+								<TableCell align="left">{campaign.inicialDate}</TableCell>
+								<TableCell align="center">
+									{campaign.status}
+								</TableCell>
+								<TableCell align="center">
+									<Button
+										variant="contained"
+										color="secondary"
+									>
+										Detalhes
+									</Button>
+								</TableCell>
+								<TableCell align="right">
+									{
+									["canceled", "paused"].includes(campaign.status) ? 
+										<IconButton
+											size="small"
+											onClick={() => {
+												handleEditCampaign(campaign);
+											}}
+										>
+											<PlayArrowOutlined color="secondary" />
+										</IconButton> : ""
+									}
+									{
+										["processing", "timeout", "scheduled"].includes(campaign.status) ?
+											<IconButton
+												size="small"
+												onClick={() => {
+													handleDeleteCampaign(campaign)
+												}}
+											>
+												<PauseCircleOutline color="secondary" />
+											</IconButton> : ""
+									}
+									{
+										["canceled", "scheduled"].includes(campaign.status) ? 
+											<IconButton
+												size="small"
+												onClick={() => {
+													handleEditCampaign(campaign);
+												}}
+											>
+												<Edit color="secondary" />
+											</IconButton> : ""
+									}
+									{
+										["processing", "timeout"].includes(campaign.status) ?
+											<IconButton
+												size="small"
+												onClick={() => {
+													handleDeleteCampaign(campaign)
+												}}
+											>
+												<CancelOutlined color="secondary" />
+											</IconButton> : ""
+									}
+									{
+										["finished", "paused", "scheduled", "timeout", "canceled"].includes(campaign.status) ?
+											<IconButton
+												size="small"
+												onClick={() => {
+													handleDeleteCampaign(campaign)
+												}}
+											>
+												<DeleteOutline color="secondary" />
+											</IconButton> : ""
+									}
+								</TableCell>
+							</TableRow>
+						))}
+						{loading && <TableRowSkeleton columns={5} />}
+						</>
+					</TableBody>
+				</Table>
             </Paper>
 		</MainContainer>
 	);

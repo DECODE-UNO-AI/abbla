@@ -9,12 +9,19 @@ const PlayCampaignService = async (
   if (!campaign) {
     throw new AppError("ERR_CAMPAIGN_NOT_FOUND", 404);
   }
-  if (!["paused", "timeout"].includes(campaign.status)) {
+  if (campaign.status !== "paused") {
     throw new AppError("ERR_CAMPAIGN_CANT_BE_PLAYED", 403);
   }
 
-  const startDate = new Date();
-  startDate.setMinutes(startDate.getMinutes() + 1);
+  let startDate;
+  const currentData = new Date();
+  const scheduledDate = new Date(campaign.inicialDate);
+  const diff = scheduledDate.getTime() - currentData.getTime();
+  if (diff < 0) {
+    startDate = Date.now() + 100; // 1000 * 10; // Set a correct delay to start whatsapp connections
+  } else {
+    startDate = scheduledDate;
+  }
   await campaign.update({
     inicialDate: startDate
   });
