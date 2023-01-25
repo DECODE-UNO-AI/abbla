@@ -1,8 +1,5 @@
-import React, { useState, useCallback, useContext, useEffect, useReducer } from "react";
-import { format, parseISO } from "date-fns";
-
+import React, { useState, useEffect, useReducer } from "react";
 import { makeStyles } from "@material-ui/core/styles";
-import { green } from "@material-ui/core/colors";
 import {
 	Button,
 	TableBody,
@@ -12,17 +9,9 @@ import {
 	Table,
 	TableHead,
 	Paper,
-	Tooltip,
-	Typography,
-	CircularProgress,
 } from "@material-ui/core";
 import {
 	Edit,
-	CheckCircle,
-	SignalCellularConnectedNoInternet2Bar,
-	SignalCellularConnectedNoInternet0Bar,
-	SignalCellular4Bar,
-	CropFree,
 	DeleteOutline,
 	PauseCircleOutline,
 	PlayArrowOutlined,
@@ -33,14 +22,14 @@ import MainContainer from "../../components/MainContainer";
 import MainHeader from "../../components/MainHeader";
 import MainHeaderButtonsWrapper from "../../components/MainHeaderButtonsWrapper";
 import Title from "../../components/Title";
+import CampaignModal from "../../components/CampaignModal";
 import TableRowSkeleton from "../../components/TableRowSkeleton";
+import ConfirmationModal from "../../components/ConfirmationModal";
 
 import api from "../../services/api";
-import ConfirmationModal from "../../components/ConfirmationModal";
 import { i18n } from "../../translate/i18n";
 import { toast } from "react-toastify";
 import toastError from "../../errors/toastError";
-import CampaignModal from "../../components/CampaignModal";
 
 const useStyles = makeStyles(theme => ({
 	mainPaper: {
@@ -49,24 +38,6 @@ const useStyles = makeStyles(theme => ({
 		margin: theme.spacing(1),
 		overflowY: "scroll",
 		...theme.scrollbarStyles,
-	},
-	customTableCell: {
-		display: "flex",
-		alignItems: "center",
-		justifyContent: "center",
-	},
-	tooltip: {
-		backgroundColor: "#f5f5f9",
-		color: "rgba(0, 0, 0, 0.87)",
-		fontSize: theme.typography.pxToRem(14),
-		border: "1px solid #dadde9",
-		maxWidth: 450,
-	},
-	tooltipPopper: {
-		textAlign: "center",
-	},
-	buttonProgress: {
-		color: green[500],
 	},
 }));
 
@@ -119,13 +90,40 @@ const Campaigns = () => {
         setConfirmModalOpen(true);
 	}
 
+	const handlePauseCampaign = async(campaign) => {
+		try {
+			await api.put(`/campaigns/pause/${campaign.id}`);
+			toast.success(i18n.t("campaigns.notifications.campaignPaused"));
+		} catch (err) {
+			toastError(err);
+		}
+	}
+
+	const handlePlayCampaign = async(campaign) => {
+		try {
+			await api.put(`/campaigns/play/${campaign.id}`);
+			toast.success(i18n.t("campaigns.notifications.campaignStarted"));
+		} catch (err) {
+			toastError(err);
+		}
+	}
+
+	const handleCancelCampaign = async(campaign) => {
+		try {
+			await api.put(`/campaigns/cancel/${campaign.id}`);
+			toast.success(i18n.t("campaigns.notifications.campaignCanceled"));
+		} catch (err) {
+			toastError(err);
+		}
+	}
+
 	const handleOnDeleteCampaign = async (campaign) => {
 		try {
 			await api.delete(`/campaigns/${campaign.id}`);
-			toast.success(i18n.t("departaments.notifications.departamentDeleted"));
-		  } catch (err) {
+			toast.success(i18n.t("campaigns.notifications.campaignDeleted"));
+		} catch (err) {
 			toastError(err);
-		  }
+		}
 	};
 
 	const handleCloseConfirmationModal = () => {
@@ -143,7 +141,7 @@ const Campaigns = () => {
 			<ConfirmationModal
 				title={
 					selectedCampaign &&
-				`${i18n.t("departaments.confirmationModal.deleteTitle")} ${
+				`${i18n.t("campaigns.confirmationModal.deleteTitle")} ${
 					selectedCampaign.name
 				}?`
 				}
@@ -151,8 +149,8 @@ const Campaigns = () => {
 				onClose={handleCloseConfirmationModal}
 				onConfirm={() => handleOnDeleteCampaign(selectedCampaign)}
 			>
-				{// i18n.t("departaments.confirmationModal.deleteMessage")
-				}Tem certeza que deseja excluir a campanha? Todos os contatos da campanha e mensagens agendadas serão excluidas.
+				{i18n.t("campaigns.confirmationModal.deleteMessage")}
+				
 			</ConfirmationModal>
             <CampaignModal open={modalOpen} onClose={handleOnCloseModal} campaignId={selectedCampaign?.id} />
 			<MainHeader>
@@ -175,19 +173,19 @@ const Campaigns = () => {
 								ID
 							</TableCell>
 							<TableCell align="left">
-								Nome
+								{i18n.t("campaigns.table.name")}
 							</TableCell>
 							<TableCell align="left">
-								Programação
+								{i18n.t("campaigns.table.inicialDate")}
 							</TableCell>
 							<TableCell align="center">
-								Status
+								{i18n.t("campaigns.table.status")}
 							</TableCell>
 							<TableCell align="center">
-								Detalhes
+								{i18n.t("campaigns.table.details")}
 							</TableCell>
 							<TableCell align="center">
-								Actions
+								{i18n.t("campaigns.table.actions")}
 							</TableCell>
 						</TableRow>
 					</TableHead>
@@ -197,7 +195,7 @@ const Campaigns = () => {
 							<TableRow key={campaign.id}>
 								<TableCell align="left">{campaign.id}</TableCell>
 								<TableCell align="left">{campaign.name}</TableCell>
-								<TableCell align="left">{campaign.inicialDate}</TableCell>
+								<TableCell align="left">{new Date(campaign.inicialDate).toLocaleString()}</TableCell>
 								<TableCell align="center">
 									{campaign.status}
 								</TableCell>
@@ -206,16 +204,16 @@ const Campaigns = () => {
 										variant="contained"
 										color="secondary"
 									>
-										Detalhes
+										{i18n.t("campaigns.table.details")}
 									</Button>
 								</TableCell>
 								<TableCell align="right">
 									{
-									["canceled", "paused"].includes(campaign.status) ? 
+									["paused"].includes(campaign.status) ? 
 										<IconButton
 											size="small"
 											onClick={() => {
-												handleEditCampaign(campaign);
+												handlePlayCampaign(campaign);
 											}}
 										>
 											<PlayArrowOutlined color="secondary" />
@@ -226,14 +224,25 @@ const Campaigns = () => {
 											<IconButton
 												size="small"
 												onClick={() => {
-													handleDeleteCampaign(campaign)
+													handlePauseCampaign(campaign)
 												}}
 											>
 												<PauseCircleOutline color="secondary" />
 											</IconButton> : ""
 									}
 									{
-										["canceled", "scheduled"].includes(campaign.status) ? 
+										["processing", "timeout", "scheduled"].includes(campaign.status) ?
+											<IconButton
+												size="small"
+												onClick={() => {
+													handleCancelCampaign(campaign)
+												}}
+											>
+												<CancelOutlined color="secondary" />
+											</IconButton> : ""
+									}
+									{
+										["scheduled"].includes(campaign.status) ? 
 											<IconButton
 												size="small"
 												onClick={() => {
@@ -241,17 +250,6 @@ const Campaigns = () => {
 												}}
 											>
 												<Edit color="secondary" />
-											</IconButton> : ""
-									}
-									{
-										["processing", "timeout"].includes(campaign.status) ?
-											<IconButton
-												size="small"
-												onClick={() => {
-													handleDeleteCampaign(campaign)
-												}}
-											>
-												<CancelOutlined color="secondary" />
 											</IconButton> : ""
 									}
 									{

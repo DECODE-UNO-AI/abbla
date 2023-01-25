@@ -24,6 +24,9 @@ module.exports = {
         allowNull: false,
         defaultValue: "pending"
       },
+      details: {
+        type: DataTypes.TEXT
+      },
       createdAt: {
         type: DataTypes.DATE,
         allowNull: false

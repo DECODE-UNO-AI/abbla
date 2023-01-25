@@ -1,7 +1,7 @@
 import Campaign from "../../models/Campaign";
 import CampaignContact from "../../models/CampaignContact";
 import GetCampaignContactsService from "../../services/CampaignContactService/GetCampaignContactsService";
-import { logger } from "../../utils/logger";
+// import { logger } from "../../utils/logger";
 import { reSheduleJob } from "../campaignQueue";
 
 const sendMessageCampaign = async (campaign: Campaign): Promise<void> => {
@@ -74,11 +74,20 @@ const sendMessageCampaign = async (campaign: Campaign): Promise<void> => {
     const randomDelay = Math.floor(
       Math.random() * (range[1] - range[0] + 1) + range[0]
     );
-    const randomMessage = messages[Math.floor(Math.random() * messages.length)];
+    let randomMessage = messages[Math.floor(Math.random() * messages.length)];
 
+    // replacing variables
+    Object.keys(contact.details).forEach(key => {
+      randomMessage = randomMessage.replace(
+        `$${key}`,
+        `${contact.details[key]}`
+      );
+    });
+
+    // setting delay
     setTimeout(async () => {
       // Message sending logic
-      console.log(contact.number);
+      console.log(randomMessage);
       // await campaign.update({ lastLineContact: i });
       if (index + 1 === penddingContacts.length) {
         await campaign.update({ status: "finished" });

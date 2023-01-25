@@ -478,13 +478,22 @@ const messages = {
       campaigns: {
         title: "Campanã",
         notifications: {
-          departamentDeleted: "La campaña ha sido eliminada"
+          departamentDeleted: "La campaña ha sido eliminada",
+          campaignPaused: "La campaña ha sido pausada",
+          campaignCanceled: "La campaña ha sido cancelada",
+          campaignStarted: "La campaña ha comenzado",
+          campaignSaved: "La campaña ha sido guardada."
+        },
+        confirmationModal: {
+          deleteTitle: "Eliminar campaña",
+          deleteMessage: "¿Está seguro de que desea eliminar la campaña? Se eliminarán todos los contactos de la campaña y los mensajes programados."
         },
         table: {
-          name: "Name",
-          description: "Description",
-          actions: "Actions",
-          queues: "Queues"
+          name: "Nombre",
+          inicialDate: "Programación Inicial",
+          actions: "Acciones",
+          status: "Status",
+          details: "Detalles"
         },
         buttons: {
           add: "Agregar campanã"

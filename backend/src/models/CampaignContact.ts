@@ -26,6 +26,17 @@ class CampaignContact extends Model<CampaignContact> {
   )
   status: string;
 
+  @Column(DataType.TEXT)
+  // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
+  set details(value) {
+    this.setDataValue("details", JSON.stringify(value));
+  }
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  get details(): any {
+    return JSON.parse(this.getDataValue("details"));
+  }
+
   @Column
   number: string;
 

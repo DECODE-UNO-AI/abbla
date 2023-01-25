@@ -222,24 +222,3 @@ export const remove = async (
   }
   return res.status(200).json({ message: "Campaign deleted" });
 };
-
-// export const startCampaign = async (
-//   req: Request,
-//   res: Response
-// ): Promise<Response> => {
-//   const { tenantId } = req.user;
-//   if (req.user.profile !== "admin") {
-//     throw new AppError("ERR_NO_PERMISSION", 403);
-//   }
-//   const { campaignId } = req.params;
-
-//   await StartCampaignService({
-//     campaignId,
-//     tenantId,
-//     options: {
-//       delay: 2000
-//     }
-//   });
-
-//   return res.status(200).json({ message: "Campaign started" });
-// };

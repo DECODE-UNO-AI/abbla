@@ -31,6 +31,12 @@ campaignRoutes.put(
 );
 
 campaignRoutes.put(
+  "/campaigns/play/:campaignId",
+  isAuth,
+  CampaignController.playCampaign
+);
+
+campaignRoutes.put(
   "/campaigns/:campaignId",
   isAuth,
   upload.array("medias"),

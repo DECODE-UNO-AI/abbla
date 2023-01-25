@@ -15,7 +15,7 @@ export const startJobs = (): void => {
     jobQueues.forEach(async jobQueue => {
       let startDate: Date | number = new Date(jobQueue.inicialDate);
       if (jobQueue.status === "processing") {
-        startDate = Date.now() + 100; // 1000 * 10; // Set a correct delay to start whatsapp connections
+        startDate = Date.now() + 100; // 1000 * 10; // Set a correct delay to restart whatsapp connections
       } else if (
         jobQueue.status === "scheduled" ||
         jobQueue.status === "timeout"
@@ -24,7 +24,7 @@ export const startJobs = (): void => {
         const scheduledDate = new Date(jobQueue.inicialDate);
         const diff = scheduledDate.getTime() - currentData.getTime();
         if (diff < 0) {
-          startDate = Date.now() + 100; // 1000 * 10; // Set a correct delay to start whatsapp connections
+          startDate = Date.now() + 100; // 1000 * 10; // Set a correct delay to restart whatsapp connections
         }
       }
       const job = schedule.scheduleJob(startDate, () => {

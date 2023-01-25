@@ -34,7 +34,8 @@ const CreateCampaignContactsService = async (
       await CampaignContact.create({
         number: contact[campaign.columnName],
         status: "pending",
-        campaignId: campaign.id
+        campaignId: campaign.id,
+        details: contact
       });
     } catch (err) {
       throw new AppError("Invalid .cvs file");

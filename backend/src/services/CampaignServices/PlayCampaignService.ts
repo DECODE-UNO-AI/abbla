@@ -23,8 +23,11 @@ const PlayCampaignService = async (
     startDate = scheduledDate;
   }
   await campaign.update({
+    status: "scheduled",
     inicialDate: startDate
   });
+
+  await campaign.reload();
 
   return campaign;
 };

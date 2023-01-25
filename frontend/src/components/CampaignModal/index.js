@@ -333,7 +333,7 @@ const CampaignModal = ({ open, onClose, campaignId }) => {
         const fileUrl = URL.createObjectURL(file);
         const a = document.createElement("a");
         a.href = fileUrl;
-        a.download = "undefined";
+        a.download = `${campaignId}contacts`;
         a.click();
         URL.revokeObjectURL(fileUrl);
     }
@@ -367,7 +367,7 @@ const CampaignModal = ({ open, onClose, campaignId }) => {
                     }
                 });
             }
-            toast.success(`${i18n.t("departamentModal.notification.title")}`);
+            toast.success(`${i18n.t("campaigns.notifications.campaignSaved")}`);
             onClose();
         } catch (err) {
             toastError(err);

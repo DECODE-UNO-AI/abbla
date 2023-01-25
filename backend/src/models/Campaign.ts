@@ -46,7 +46,8 @@ class Campaign extends Model<Campaign> {
       "timeout",
       "processing",
       "canceled",
-      "finished"
+      "finished",
+      "failed"
     )
   )
   status: string;

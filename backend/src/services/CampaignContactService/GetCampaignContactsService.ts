@@ -6,7 +6,8 @@ const GetCampaignContactsService = async (
   status: string
 ): Promise<CampaignContact[]> => {
   const contacts = await CampaignContact.findAll({
-    where: { campaignId, status }
+    where: { campaignId, status },
+    order: [["id", "ASC"]]
   });
 
   return contacts;
