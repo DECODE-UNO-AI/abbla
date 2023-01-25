@@ -1,8 +1,22 @@
+/* eslint-disable no-await-in-loop */
 import Campaign from "../../models/Campaign";
 import CampaignContact from "../../models/CampaignContact";
 import GetCampaignContactsService from "../../services/CampaignContactService/GetCampaignContactsService";
 // import { logger } from "../../utils/logger";
 import { reSheduleJob } from "../campaignQueue";
+
+const setDelay = async (delay: number) => {
+  await new Promise(resolve => setTimeout(resolve, delay));
+};
+
+const sendMessage = async (
+  contact: CampaignContact,
+  message: string
+): Promise<void> => {
+  // Message sending logic
+  console.log(message);
+  // await campaign.update({ lastLineContact: i });
+};
 
 const sendMessageCampaign = async (campaign: Campaign): Promise<void> => {
   await campaign.update({ status: "processing" });
@@ -44,13 +58,10 @@ const sendMessageCampaign = async (campaign: Campaign): Promise<void> => {
   const range = delay.map(num => parseInt(num, 10));
 
   // interate over contatcs
-  const sendMessage = async (
-    contact: CampaignContact,
-    index: number
-  ): Promise<string> => {
+  for (let i = 0; i < penddingContacts.length; i += 1) {
     const { status } = await campaign.reload();
     if (status !== "processing") {
-      return "break";
+      break;
     }
     // verify if campaign is in time
     const currentDate = new Date();
@@ -67,9 +78,8 @@ const sendMessageCampaign = async (campaign: Campaign): Promise<void> => {
       currentDate.setHours(+sendTime[0]);
       currentDate.setMinutes(0);
       reSheduleJob(campaign, currentDate);
-      return "break";
+      break;
     }
-
     // random delay and message
     const randomDelay = Math.floor(
       Math.random() * (range[1] - range[0] + 1) + range[0]
@@ -77,30 +87,16 @@ const sendMessageCampaign = async (campaign: Campaign): Promise<void> => {
     let randomMessage = messages[Math.floor(Math.random() * messages.length)];
 
     // replacing variables
-    Object.keys(contact.details).forEach(key => {
+    Object.keys(penddingContacts[1].details).forEach(key => {
       randomMessage = randomMessage.replace(
         `$${key}`,
-        `${contact.details[key]}`
+        `${penddingContacts[i].details[key]}`
       );
     });
-
-    // setting delay
-    setTimeout(async () => {
-      // Message sending logic
-      console.log(randomMessage);
-      // await campaign.update({ lastLineContact: i });
-      if (index + 1 === penddingContacts.length) {
-        await campaign.update({ status: "finished" });
-      }
-    }, randomDelay * 1000);
-    return "continue";
-  };
-
-  for (let i = 0; i < penddingContacts.length; i += 1) {
-    // eslint-disable-next-line no-await-in-loop
-    const message = await sendMessage(penddingContacts[i], i);
-    if (message === "break") {
-      break;
+    await setDelay(randomDelay * 1000);
+    await sendMessage(penddingContacts[i], randomMessage);
+    if (i + 1 === penddingContacts.length) {
+      await campaign.update({ status: "finished" });
     }
   }
 };

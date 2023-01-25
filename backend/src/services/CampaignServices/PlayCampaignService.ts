@@ -18,7 +18,7 @@ const PlayCampaignService = async (
   const scheduledDate = new Date(campaign.inicialDate);
   const diff = scheduledDate.getTime() - currentData.getTime();
   if (diff < 0) {
-    startDate = Date.now() + 100; // 1000 * 10; // Set a correct delay to start whatsapp connections
+    startDate = Date.now() + 1000;
   } else {
     startDate = scheduledDate;
   }
@@ -28,7 +28,6 @@ const PlayCampaignService = async (
   });
 
   await campaign.reload();
-
   return campaign;
 };
 
