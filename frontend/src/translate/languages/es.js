@@ -318,6 +318,13 @@ const messages = {
           tab: "Texto",
           columnName: "Columna telefonica"
         },
+        errors: {
+          tooShort: "Muy corto",
+          tooLong: "Demasiado largo",
+          nameRequired: "Se requiere el nombre",
+          message: "El mensaje debe ser llenado",
+          fileError: "talla máxima 10mb"
+        },
         buttons: {
           okAdd: "Agregar",
           okEdit: "Guardar",
@@ -497,6 +504,18 @@ const messages = {
         },
         buttons: {
           add: "Agregar campanã"
+        },
+        toolTips: {
+          title: {
+            scheduled: "Campaña programada",
+            processing: "Campaña en curso",
+            paused: "Campaña en pausa",
+            canceled: "Campaña cancelada",
+            finished: "Campaña finalizada",
+            failed: "Campaña fallida",
+            timeout: "Campaña en pausa debido a la programación",
+
+          }
         }
       },
       queueSelect: {

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 
 import * as Yup from "yup";
 import {
@@ -239,6 +239,8 @@ const CampaignModal = ({ open, onClose, campaignId }) => {
     const [cvsFile, setCsvFile] = useState(null)
     const [csvColumns, setCsvColumns] = useState([])
     const [mediaFile, setMediaFile] = useState(null)
+    const [mediaError, setMediaError] = useState(false)
+    const inputFileRef = useRef();
 
     useEffect(() => {
         (async () => {
@@ -280,6 +282,7 @@ const CampaignModal = ({ open, onClose, campaignId }) => {
 		})();
 
 		return () => {
+            setMediaError(false)
 			setCapaignForm(initialState);
             setCsvColumns([]);
             setMediaFile(null);
@@ -315,11 +318,19 @@ const CampaignModal = ({ open, onClose, campaignId }) => {
     }
 
     const handleOnMediaFileChange = (file) => {
-        if (!file.target.files[0]) {
+        setMediaError(false)
+        const fileMedia = file.target.files[0]
+        if (!fileMedia) {
             setMediaFile(null)
             return
         }
-        setMediaFile(file.target.files[0])
+        if (fileMedia.size > 10 * 1024 * 1024){ // 10mb 
+            setMediaFile(null)
+            inputFileRef.current.value = null;
+            setMediaError(true);
+        }
+            
+        setMediaFile(fileMedia)
     }
 
     const handleDownload = async (isCsvFile) => {
@@ -338,7 +349,8 @@ const CampaignModal = ({ open, onClose, campaignId }) => {
         URL.revokeObjectURL(fileUrl);
     }
 
-    const handleOnSave = async(values) => {        
+    const handleOnSave = async(values) => {
+        setMediaError(false)    
         const campaignData = ({...values, delay: delay, startNow, sendTime})
         const formData = new FormData();
         Object.keys(campaignData).forEach((key) => {
@@ -691,8 +703,10 @@ const CampaignModal = ({ open, onClose, campaignId }) => {
                                         <input
                                             style={{ marginTop: 5 }}
                                             onChange={handleOnMediaFileChange}
+                                            ref={inputFileRef}
                                             type="file"                                      
-                                    />
+                                        />
+                                        {mediaError ? <span style={{ color: "#ff5d32"}}>{i18n.t("campaignModal.errors.fileError")}</span> : ""}
                                     </Box>
                                 </Box>
 							</DialogContent>

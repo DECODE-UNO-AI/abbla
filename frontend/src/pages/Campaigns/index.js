@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useReducer } from "react";
+import { Link } from "react-router-dom";
 import { makeStyles } from "@material-ui/core/styles";
 import {
 	Button,
@@ -9,13 +10,22 @@ import {
 	Table,
 	TableHead,
 	Paper,
+	Tooltip,
+	Typography,
+	CircularProgress, 
 } from "@material-ui/core";
 import {
 	Edit,
 	DeleteOutline,
 	PauseCircleOutline,
+	PauseCircleFilled,
 	PlayArrowOutlined,
-	CancelOutlined
+	CancelOutlined,
+	ScheduleOutlined,
+	CheckCircle,
+	Block,
+	TimerOff,
+	Report
 } from "@material-ui/icons";
 
 import MainContainer from "../../components/MainContainer";
@@ -30,6 +40,27 @@ import api from "../../services/api";
 import { i18n } from "../../translate/i18n";
 import { toast } from "react-toastify";
 import toastError from "../../errors/toastError";
+
+
+const CustomToolTip = ({ title, content, children }) => {
+
+	return (
+		<Tooltip
+			arrow
+			title={
+				<React.Fragment>
+					<Typography gutterBottom color="inherit">
+						{title}
+					</Typography>
+					{content && <Typography>{content}</Typography>}
+				</React.Fragment>
+			}
+		>
+			{children}
+		</Tooltip>
+	);
+};
+
 
 const useStyles = makeStyles(theme => ({
 	mainPaper: {
@@ -197,15 +228,66 @@ const Campaigns = () => {
 								<TableCell align="left">{campaign.name}</TableCell>
 								<TableCell align="left">{new Date(campaign.inicialDate).toLocaleString()}</TableCell>
 								<TableCell align="center">
-									{campaign.status}
+									{
+										campaign.status === "scheduled" ?
+											<CustomToolTip
+											title={i18n.t("campaigns.toolTips.title.scheduled")}
+											>
+												<ScheduleOutlined color="secondary" size={24} />
+											</CustomToolTip> 
+											:
+											campaign.status === "processing" ?
+											<CustomToolTip
+											title={i18n.t("campaigns.toolTips.title.processing")}
+											>
+												<CircularProgress color="secondary" />
+											</CustomToolTip> 
+											:
+											campaign.status === "paused" ?
+											<CustomToolTip
+											title={i18n.t("campaigns.toolTips.title.paused")}
+											>
+												<PauseCircleFilled color="secondary" />
+											</CustomToolTip> 
+											:
+											campaign.status === "canceled" ?
+											<CustomToolTip
+											title={i18n.t("campaigns.toolTips.title.canceled")}
+											>
+												<Block color="secondary" />
+											</CustomToolTip> 
+											:
+											campaign.status === "finished" ?
+											<CustomToolTip
+											title={i18n.t("campaigns.toolTips.title.finished")}
+											>
+												<CheckCircle color="secondary" />
+											</CustomToolTip> 
+											:
+											campaign.status === "failed" ?
+											<CustomToolTip
+											title={i18n.t("campaigns.toolTips.title.failed")}
+											>
+												<Report color="secondary" />
+											</CustomToolTip> :
+											campaign.status === "timeout" ?
+											<CustomToolTip
+											title={i18n.t("campaigns.toolTips.title.timeout")}
+											>
+												<TimerOff color="secondary" />
+											</CustomToolTip> : ""
+											
+									}
 								</TableCell>
 								<TableCell align="center">
-									<Button
-										variant="contained"
-										color="secondary"
-									>
-										{i18n.t("campaigns.table.details")}
-									</Button>
+									<Link to={`campaign/${campaign.id}`} style={{ textDecoration: "none"}}>
+										<Button
+											variant="contained"
+											color="secondary"
+										>
+											{i18n.t("campaigns.table.details")}
+										</Button>
+									</Link>
 								</TableCell>
 								<TableCell align="right">
 									{
@@ -253,7 +335,7 @@ const Campaigns = () => {
 											</IconButton> : ""
 									}
 									{
-										["finished", "paused", "scheduled", "timeout", "canceled"].includes(campaign.status) ?
+										["finished", "paused", "scheduled", "timeout", "canceled", "failed"].includes(campaign.status) ?
 											<IconButton
 												size="small"
 												onClick={() => {

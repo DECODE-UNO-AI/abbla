@@ -18,6 +18,12 @@ campaignRoutes.get("/campaigns", isAuth, CampaignController.index);
 
 campaignRoutes.get("/campaigns/:campaignId", isAuth, CampaignController.show);
 
+campaignRoutes.get(
+  "/campaigns/details/:campaignId",
+  isAuth,
+  CampaignController.showCampaignDetails
+);
+
 campaignRoutes.put(
   "/campaigns/cancel/:campaignId",
   isAuth,

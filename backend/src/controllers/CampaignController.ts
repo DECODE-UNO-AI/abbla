@@ -13,6 +13,7 @@ import PauseCampaignService from "../services/CampaignServices/PauseCampaignServ
 import PlayCampaignService from "../services/CampaignServices/PlayCampaignService";
 import { finishJob, startJob } from "../libs/campaignQueue";
 import { logger } from "../utils/logger";
+import ShowCampaignDetails from "../services/CampaignServices/ShowCampaignDetails";
 
 interface CampaignData {
   name: string;
@@ -94,6 +95,20 @@ export const show = async (req: Request, res: Response): Promise<Response> => {
     throw new AppError("ERR_NO_PERMISSION", 403);
   }
   const campaign = await ShowCampaignService(campaignId);
+  return res.status(200).json(campaign);
+};
+
+export const showCampaignDetails = async (
+  req: Request,
+  res: Response
+): Promise<Response> => {
+  const { profile } = req.user;
+  const { campaignId } = req.params;
+  if (profile !== "admin") {
+    throw new AppError("ERR_NO_PERMISSION", 403);
+  }
+  const campaign = await ShowCampaignDetails(campaignId);
+
   return res.status(200).json(campaign);
 };
 

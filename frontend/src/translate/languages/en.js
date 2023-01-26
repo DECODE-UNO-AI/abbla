@@ -318,6 +318,13 @@ const messages = {
           tab: "Text",
           columnName: "Number column"
         },
+        errors: {
+          tooShort: "Too short",
+          tooLong: "Too long",
+          nameRequired: "Name is required",
+          message: "Message is required",
+          fileError: "Max size 10mb"
+        },
         buttons: {
           okAdd: "Add",
           okEdit: "Save",
@@ -497,6 +504,18 @@ const messages = {
         },
         buttons: {
           add: "Add campaign"
+        },
+        toolTips: {
+          title: {
+            scheduled: "Scheduled",
+            processing: "Processing",
+            paused: "Paused",
+            canceled: "Canceled",
+            finished: "Finished",
+            failed: "Failed",
+            timeout: "Paused due to schedule",
+
+          }
         }
       },
       queueSelect: {

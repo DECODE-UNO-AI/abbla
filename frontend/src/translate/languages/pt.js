@@ -322,7 +322,8 @@ const messages = {
           tooShort: "Muito curto",
           tooLong: "Muito comprido",
           nameRequired: "O nome é obrigatório",
-          message: "A mensagem deve ser preenchida"
+          message: "A mensagem deve ser preenchida",
+          fileError: "Tamanho máximo 10mb"
         },
         buttons: {
           okAdd: "Adicionar",
@@ -507,6 +508,18 @@ const messages = {
         },
         buttons: {
           add: "Adicionar Campanha"
+        },
+        toolTips: {
+          title: {
+            scheduled: "Campanha agendada",
+            processing: "Campanha em andamento",
+            paused: "Campanha pausada",
+            canceled: "Campanha cancelada",
+            finished: "Campanha encerrada",
+            failed: "Campanha falhou",
+            timeout: "Campanha pausada devido ao horário",
+
+          }
         }
       },
       queueSelect: {

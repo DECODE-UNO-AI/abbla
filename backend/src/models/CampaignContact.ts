@@ -9,7 +9,7 @@ import {
   DataType,
   CreatedAt,
   UpdatedAt,
-  Default,
+  Default
 } from "sequelize-typescript";
 import Campaign from "./Campaign";
 
@@ -22,7 +22,7 @@ class CampaignContact extends Model<CampaignContact> {
 
   @Default("pending")
   @Column(
-    DataType.ENUM("pending", "processing", "failed", "canceled", "finished")
+    DataType.ENUM("pending", "processing", "failed", "invalid-number", "sent")
   )
   status: string;
 

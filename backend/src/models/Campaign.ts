@@ -9,8 +9,10 @@ import {
   DataType,
   CreatedAt,
   UpdatedAt,
-  Default
+  Default,
+  HasMany
 } from "sequelize-typescript";
+import CampaignContact from "./CampaignContact";
 import User from "./User";
 import Whatsapp from "./Whatsapp";
 
@@ -105,6 +107,9 @@ class Campaign extends Model<Campaign> {
 
   @BelongsTo(() => Whatsapp)
   whatsapp: Whatsapp;
+
+  @HasMany(() => CampaignContact)
+  campaignContacts: CampaignContact;
 
   @CreatedAt
   createdAt: Date;

@@ -1,9 +1,12 @@
 /* eslint-disable no-await-in-loop */
+import { join } from "path";
+import { MessageMedia } from "whatsapp-web.js";
 import Campaign from "../../models/Campaign";
 import CampaignContact from "../../models/CampaignContact";
 import GetCampaignContactsService from "../../services/CampaignContactService/GetCampaignContactsService";
-// import { logger } from "../../utils/logger";
+import { logger } from "../../utils/logger";
 import { reSheduleJob } from "../campaignQueue";
+import { getWbot, Session } from "../wbot";
 
 const setDelay = async (delay: number) => {
   await new Promise(resolve => setTimeout(resolve, delay));
@@ -11,28 +14,73 @@ const setDelay = async (delay: number) => {
 
 const sendMessage = async (
   contact: CampaignContact,
-  message: string
+  message: string,
+  wbot: Session,
+  mediaFile: MessageMedia | null
 ): Promise<void> => {
+  // Verify if number is valid
+  let number;
+  try {
+    number = await wbot.getNumberId(`${contact.number}@c.us`);
+  } catch (err) {
+    contact.update({
+      status: "failed"
+    });
+    logger.error(err);
+  }
+  if (!number) {
+    contact.update({
+      status: "invalid-number"
+    });
+    return;
+  }
   // Message sending logic
-  console.log(message);
-  // await campaign.update({ lastLineContact: i });
+  try {
+    if (mediaFile) {
+      // eslint-disable-next-line no-underscore-dangle
+      await wbot.sendMessage(number._serialized, mediaFile, {
+        sendAudioAsVoice: true,
+        caption: message
+      });
+    } else {
+      // eslint-disable-next-line prettier/prettier, no-underscore-dangle
+      await wbot.sendMessage(number._serialized , message);
+    }
+    contact.update({
+      status: "sent"
+    });
+  } catch (err) {
+    contact.update({
+      status: "failed"
+    });
+  }
 };
 
 const sendMessageCampaign = async (campaign: Campaign): Promise<void> => {
   await campaign.update({ status: "processing" });
-  console.log("starting job");
   const penddingContacts = await GetCampaignContactsService(
     campaign.id,
     "pending"
   );
 
   // getting wbot
-
-  // const whatsapp = getWbot(+campaign.whatsappId);
-
-  // if (!whatsapp) {
-  //   // failed campaing because no wbot setted
-  // }
+  let whatsapp;
+  try {
+    whatsapp = getWbot(+campaign.whatsappId);
+    const whatsappState = await whatsapp.getState();
+    if (!whatsapp || whatsappState !== "CONNECTED") {
+      await campaign.update({
+        status: "failed"
+      });
+      return;
+    }
+  } catch (err) {
+    logger.error(err);
+    await campaign.update({
+      status: "failed"
+    });
+    return;
+  }
 
   // get messages
   const messages = [campaign.message1];
@@ -86,17 +134,28 @@ const sendMessageCampaign = async (campaign: Campaign): Promise<void> => {
     );
     let randomMessage = messages[Math.floor(Math.random() * messages.length)];
 
+    // getting media
+    let mediaFile: MessageMedia | null = null;
+    if (campaign.mediaUrl) {
+      const fileName = campaign.mediaUrl.split("/")[4];
+      const customPath = join(__dirname, "..", "..", "..", "public", fileName);
+      mediaFile = MessageMedia.fromFilePath(customPath);
+    }
     // replacing variables
-    Object.keys(penddingContacts[1].details).forEach(key => {
+    Object.keys(penddingContacts[i].details).forEach(key => {
       randomMessage = randomMessage.replace(
         `$${key}`,
         `${penddingContacts[i].details[key]}`
       );
     });
     await setDelay(randomDelay * 1000);
-    await sendMessage(penddingContacts[i], randomMessage);
+    await sendMessage(penddingContacts[i], randomMessage, whatsapp, mediaFile);
     if (i + 1 === penddingContacts.length) {
-      await campaign.update({ status: "finished" });
+      try {
+        await campaign.update({ status: "finished" });
+      } catch (err) {
+        logger.error(err);
+      }
     }
   }
 };
