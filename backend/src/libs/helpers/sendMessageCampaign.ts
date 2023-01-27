@@ -6,6 +6,7 @@ import CampaignContact from "../../models/CampaignContact";
 import GetCampaignContactsService from "../../services/CampaignContactService/GetCampaignContactsService";
 import { logger } from "../../utils/logger";
 import { reSheduleJob } from "../campaignQueue";
+import { getIO } from "../socket";
 import { getWbot, Session } from "../wbot";
 
 const setDelay = async (delay: number) => {
@@ -39,9 +40,10 @@ const sendMessage = async (
     if (mediaFile) {
       // eslint-disable-next-line no-underscore-dangle
       await wbot.sendMessage(number._serialized, mediaFile, {
-        sendAudioAsVoice: true,
-        caption: message
+        sendAudioAsVoice: true
       });
+      // eslint-disable-next-line prettier/prettier, no-underscore-dangle
+      await wbot.sendMessage(number._serialized , message);
     } else {
       // eslint-disable-next-line prettier/prettier, no-underscore-dangle
       await wbot.sendMessage(number._serialized , message);
@@ -58,6 +60,12 @@ const sendMessage = async (
 
 const sendMessageCampaign = async (campaign: Campaign): Promise<void> => {
   await campaign.update({ status: "processing" });
+  await campaign.reload();
+  const io = getIO();
+  io.emit("campaigns", {
+    action: "update",
+    campaign
+  });
   const penddingContacts = await GetCampaignContactsService(
     campaign.id,
     "pending"
@@ -72,12 +80,22 @@ const sendMessageCampaign = async (campaign: Campaign): Promise<void> => {
       await campaign.update({
         status: "failed"
       });
+      await campaign.reload();
+      io.emit("campaigns", {
+        action: "update",
+        campaign
+      });
       return;
     }
   } catch (err) {
     logger.error(err);
     await campaign.update({
       status: "failed"
+    });
+    await campaign.reload();
+    io.emit("campaigns", {
+      action: "update",
+      campaign
     });
     return;
   }
@@ -122,6 +140,11 @@ const sendMessageCampaign = async (campaign: Campaign): Promise<void> => {
       await campaign.update({
         status: "timeout"
       });
+      await campaign.reload();
+      io.emit("campaigns", {
+        action: "update",
+        campaign
+      });
       currentDate.setDate(currentDate.getDate() + 1);
       currentDate.setHours(+sendTime[0]);
       currentDate.setMinutes(0);
@@ -153,6 +176,11 @@ const sendMessageCampaign = async (campaign: Campaign): Promise<void> => {
     if (i + 1 === penddingContacts.length) {
       try {
         await campaign.update({ status: "finished" });
+        await campaign.reload();
+        io.emit("campaigns", {
+          action: "update",
+          campaign
+        });
       } catch (err) {
         logger.error(err);
       }

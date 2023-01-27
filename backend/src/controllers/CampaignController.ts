@@ -79,7 +79,7 @@ export const store = async (req: Request, res: Response): Promise<Response> => {
   startJob(newCampaign);
 
   const io = getIO();
-  io.emit("departament", {
+  io.emit("campaigns", {
     action: "create",
     campaign: newCampaign
   });
@@ -166,8 +166,8 @@ export const update = async (
     startJob(campaignObj);
   }
   const io = getIO();
-  io.emit("departament", {
-    action: "create",
+  io.emit("campaigns", {
+    action: "update",
     campaign: campaignObj
   });
   return res.status(200).json(campaignObj);
@@ -183,8 +183,13 @@ export const cancelCampaign = async (
   const { campaignId } = req.params;
 
   try {
-    await CancelCampaignService(campaignId);
+    const campaign = await CancelCampaignService(campaignId);
+    const io = getIO();
     finishJob(campaignId);
+    io.emit("campaigns", {
+      action: "update",
+      campaign
+    });
   } catch (err) {
     throw new AppError("ERR_INTERNAL_ERROR", 500);
   }
@@ -202,8 +207,13 @@ export const pauseCampaign = async (
   const { campaignId } = req.params;
 
   try {
-    await PauseCampaignService(campaignId);
+    const campaign = await PauseCampaignService(campaignId);
+    const io = getIO();
     finishJob(campaignId);
+    io.emit("campaigns", {
+      action: "update",
+      campaign
+    });
   } catch (err) {
     throw new AppError("ERR_INTERNAL_ERROR", 500);
   }
@@ -222,7 +232,12 @@ export const playCampaign = async (
 
   try {
     const campaign = await PlayCampaignService(campaignId);
+    const io = getIO();
     startJob(campaign);
+    io.emit("campaigns", {
+      action: "update",
+      campaign
+    });
   } catch (err) {
     throw new AppError("ERR_INTERNAL_ERROR", 500);
   }
@@ -242,6 +257,11 @@ export const remove = async (
   try {
     await DeleteCampaignService(campaignId);
     finishJob(campaignId);
+    const io = getIO();
+    io.emit("campaigns", {
+      action: "delete",
+      campaignId
+    });
   } catch (err) {
     logger.error(err);
     throw new AppError("ERR_INTERNAL", 500);

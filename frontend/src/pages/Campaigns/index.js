@@ -37,6 +37,7 @@ import TableRowSkeleton from "../../components/TableRowSkeleton";
 import ConfirmationModal from "../../components/ConfirmationModal";
 
 import api from "../../services/api";
+import openSocket from "../../services/socket-io";
 import { i18n } from "../../translate/i18n";
 import { toast } from "react-toastify";
 import toastError from "../../errors/toastError";
@@ -86,6 +87,30 @@ const reducer = (state, action) => {
 		});
 		return [...state, ...newCampaigns];
 	}
+	if (action.type === "UPDATE_CAMPAIGNS") {
+		const campaign = action.payload;
+		const campaignIndex = state.findIndex((u) => u.id === campaign.id);
+		if (campaignIndex !== -1) {
+		  state[campaignIndex] = campaign;
+		  return [...state];
+		} else {
+		  return [campaign, ...state];
+		}
+	  }
+	
+	  if (action.type === "DELETE_CAMPAIGNS") {
+		const campaignId = action.payload;
+		const campaignIndex = state.findIndex((q) => q.id === +campaignId);
+		console.log(state)
+		if (campaignIndex !== -1) {
+		  state.splice(campaignIndex, 1);
+		}
+		return [...state];
+	  }
+	
+	  if (action.type === "RESET") {
+		return [];
+	  }
 }
 
 
@@ -110,6 +135,24 @@ const Campaigns = () => {
 			}
 		  })();
 	}, [])
+
+	useEffect(() => {
+		const socket = openSocket();
+	
+		socket.on("campaigns", (data) => {
+		  if (data.action === "update" || data.action === "create") {
+			dispatch({ type: "UPDATE_CAMPAIGNS", payload: data.campaign });
+		  }
+	
+		  if (data.action === "delete") {
+			dispatch({ type: "DELETE_CAMPAIGNS", payload: data.campaignId });
+		  }
+		});
+	
+		return () => {
+		  socket.disconnect();
+		};
+	  }, []);
 
 	const handleEditCampaign = (campaign) => {
 		setSelectedCampaign(campaign);
