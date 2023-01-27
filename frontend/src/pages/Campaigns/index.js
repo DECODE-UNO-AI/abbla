@@ -101,7 +101,6 @@ const reducer = (state, action) => {
 	  if (action.type === "DELETE_CAMPAIGNS") {
 		const campaignId = action.payload;
 		const campaignIndex = state.findIndex((q) => q.id === +campaignId);
-		console.log(state)
 		if (campaignIndex !== -1) {
 		  state.splice(campaignIndex, 1);
 		}

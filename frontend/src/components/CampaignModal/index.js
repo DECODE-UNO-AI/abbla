@@ -354,7 +354,6 @@ const CampaignModal = ({ open, onClose, campaignId }) => {
     const handleOnSave = async(values) => {
         setMediaError(false)    
         const campaignData = ({...values, delay: delay, startNow, sendTime, mediaBeforeMessage: mediaFirst})
-        console.log(campaignData);
         const formData = new FormData();
         Object.keys(campaignData).forEach((key) => {
             formData.append(key, campaignData[key])
@@ -367,7 +366,6 @@ const CampaignModal = ({ open, onClose, campaignId }) => {
         }
         try {
             if (campaignId) {
-                console.log(campaignData)
                 await api.put(`/campaigns/${campaignId}`, formData, {
                     headers: {
                         'Content-Type': 'multipart/form-data',

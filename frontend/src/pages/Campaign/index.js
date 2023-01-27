@@ -91,7 +91,6 @@ const Campaign = () => {
 			    const { data } = await api.get(`campaigns/details/${campaignId}`);
                 setContacts(data.campaignContacts)
                 setCampaign(data);
-                console.log(data)
 			    setLoading(false);
 			} catch (err) {
 			    toastError(err);
