@@ -694,7 +694,7 @@ const CampaignModal = ({ open, onClose, campaignId }) => {
                                             name="mediaBeforeMessage"
 								        />
                                         <InputLabel>
-                                            Send File before
+                                            {i18n.t("campaignModal.form.sendMediaBefore")}
                                         </InputLabel>
                                     </Box>
                                     <Box style={{ display: "flex", alignItems: "center", gap: 10, marginTop: 15}}>

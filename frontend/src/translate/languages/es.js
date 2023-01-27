@@ -316,7 +316,8 @@ const messages = {
           messages: "Mensaje de texto",
           variables: "Variables disponibles: (usar $nome-da-variável)",
           tab: "Texto",
-          columnName: "Columna telefonica"
+          columnName: "Columna telefonica",
+          sendMediaBefore: "Enviar archivo antesSend media file before",
         },
         errors: {
           tooShort: "Muy corto",
