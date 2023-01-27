@@ -14,6 +14,7 @@ import PlayCampaignService from "../services/CampaignServices/PlayCampaignServic
 import { finishJob, startJob } from "../libs/campaignQueue";
 import { logger } from "../utils/logger";
 import ShowCampaignDetails from "../services/CampaignServices/ShowCampaignDetails";
+import { getIO } from "../libs/socket";
 
 interface CampaignData {
   name: string;
@@ -76,6 +77,12 @@ export const store = async (req: Request, res: Response): Promise<Response> => {
     throw new AppError("Invalid .cvs file");
   }
   startJob(newCampaign);
+
+  const io = getIO();
+  io.emit("departament", {
+    action: "create",
+    campaign: newCampaign
+  });
   return res.status(200).json(newCampaign);
 };
 
@@ -158,7 +165,11 @@ export const update = async (
     finishJob(campaignObj.id);
     startJob(campaignObj);
   }
-
+  const io = getIO();
+  io.emit("departament", {
+    action: "create",
+    campaign: campaignObj
+  });
   return res.status(200).json(campaignObj);
 };
 
