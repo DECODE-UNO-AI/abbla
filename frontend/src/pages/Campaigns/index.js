@@ -11,8 +11,7 @@ import {
 	TableHead,
 	Paper,
 	Tooltip,
-	Typography,
-	CircularProgress, 
+	Typography, 
 } from "@material-ui/core";
 import {
 	Edit,
@@ -25,7 +24,8 @@ import {
 	CheckCircle,
 	Block,
 	TimerOff,
-	Report
+	Report,
+	PlayArrow
 } from "@material-ui/icons";
 
 import MainContainer from "../../components/MainContainer";
@@ -240,7 +240,7 @@ const Campaigns = () => {
 											<CustomToolTip
 											title={i18n.t("campaigns.toolTips.title.processing")}
 											>
-												<CircularProgress color="secondary" />
+												<PlayArrow color="secondary" />
 											</CustomToolTip> 
 											:
 											campaign.status === "paused" ?

@@ -9,7 +9,12 @@ import {
     TableBody, 
     Typography, 
     TextField,
-    Button
+    FormControl,
+    FormLabel,
+    RadioGroup,
+    FormControlLabel,
+    Radio
+
 } from '@material-ui/core';
 import { makeStyles } from "@material-ui/core/styles";
 import { useParams } from 'react-router-dom';
@@ -46,6 +51,23 @@ const useStyles = makeStyles(theme => ({
         display: "flex",
         justifyContent: "space-between",
         alignItems: "center",
+        "@media (max-width: 720px)": {
+            flexDirection: "column"
+        }
+    },
+    preview: {
+        display: "flex",
+        alignItems: "end",
+        "@media (max-width: 720px)": {
+            flexDirection: "column",
+            alignItems: "start",
+            marginTop: 40
+        }
+        
+    },
+    InfoTitle: {
+        fontSize: 20,
+        marginBottom: 10
     }
 }));
 
@@ -58,7 +80,8 @@ const Campaign = () => {
     const [campaign, setCampaign] = useState(null)
     const [contacts, setContacts] = useState([])
     const [search, setSearch] = useState(null)
-    const [loading, setLoading] = useState(false)
+    const [message, setMessage] = useState("message1")
+    const [, setLoading] = useState(false)
 
     useEffect(() => {
         (async () => {
@@ -101,21 +124,31 @@ const Campaign = () => {
             </Box>
             <Box className={classes.mainContent}>
                 <Box>
-                    <Typography>
+                    <Typography className={classes.InfoTitle}>
                         Data programada: {new Date(campaign?.inicialDate).toLocaleString()}
                     </Typography>
-                    <Typography>
+                    <Typography className={classes.InfoTitle}>
                         Intervalo de envios: {campaign?.delay.split("-")[1]} segundos
                     </Typography>
-                    <Typography>
+                    <Typography className={classes.InfoTitle}>
                        Horário de envios: {campaign?.sendTime.split("-")[0]} Horas à {campaign?.sendTime.split("-")[1]} Horas
                     </Typography>
-                    <Typography>
+                    <Typography className={classes.InfoTitle}>
                        Status: {campaign?.status}
                     </Typography>
                 </Box>
-                <Box>
-                    <WhatsAppLayout />
+                <Box className={classes.preview}>
+                    <FormControl component="fieldset" style={{ marginRight: 15 }}>
+                        <FormLabel component="legend">Menssagem</FormLabel>
+                            <RadioGroup aria-label="gender" name="gender1" value={message} onChange={(e) => setMessage(e.target.value)}>
+                                { campaign?.message1 !== '' ? <FormControlLabel value="message1" control={<Radio />} label="Mensagem 1" /> : ""}
+                                { campaign?.message2 !== '' ? <FormControlLabel value="message2" control={<Radio />} label="Mensagem 2" /> : ""}
+                                { campaign?.message3 !== '' ? <FormControlLabel value="message3" control={<Radio />} label="Mensagem 3" /> : ""}
+                                { campaign?.message4 !== '' ? <FormControlLabel value="message4" control={<Radio />} label="Messagem 4" /> : ""}
+                                { campaign?.message5 !== '' ? <FormControlLabel value="message5" control={<Radio />} label="Messagem 5" /> : ""}
+                            </RadioGroup>
+                        </FormControl>
+                    <WhatsAppLayout message={campaign?.[message]} mediaLink={campaign?.mediaUrl} mediaType={campaign?.mediaType}/>
                 </Box>
             </Box>
             <Box className={classes.contactsTable}>

@@ -132,6 +132,19 @@ body {
   margin: 0 12px 0 32px;
 }
 
+.zmdi-battery:before {
+  content: '\f116';
+}
+
+.zmdi {
+    display: inline-block;
+    font: normal normal normal 14px/1 'Material-Design-Iconic-Font';
+    font-size: inherit;
+    text-rendering: auto;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
 .user-bar .actions.attachment {
   margin: 0 0 0 30px;
 }
@@ -164,6 +177,7 @@ body {
   white-space: nowrap;
   width: 110px;
 }
+
 
 .user-bar .status {
   display: block;
@@ -235,10 +249,12 @@ body {
 
 .metadata {
   display: inline-block;
-  float: right;
-  padding: 0 0 0 7px;
+  width: 100%;
+  display: flex;
+  justify-content: end;
+  padding: 0 0 0 0px;
   position: relative;
-  bottom: -4px;
+  bottom: -2px;
 }
 
 .metadata .time {
@@ -307,6 +323,8 @@ body {
 }
 
 .message.sent {
+  display: flex;
+  flex-direction: column;
   background: #e1ffc7;
   border-radius: 5px 0px 5px 5px;
   float: right;
@@ -365,6 +383,29 @@ body {
   width: 48px;
 }
 
+.zmdi-camera:before {
+  content: '\f28c';
+}
+
+.conversation-compose .photo i {
+  display: block;
+  color: #7d8488;
+  font-size: 24px;
+  transform: translate(-50%, -50%);
+  position: relative;
+  top: 50%;
+  left: 50%;
+}
+
+.zmdi {
+  display: inline-block;
+  font: normal normal normal 14px/1 'Material-Design-Iconic-Font';
+  font-size: inherit;
+  text-rendering: auto;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
 .conversation-compose .photo:after {
   border-width: 0px 0 10px 10px;
   border-color: transparent transparent transparent #fff;
@@ -419,7 +460,7 @@ body {
 /* Small Screens */
 
 @media (max-width: 768px) {
-  .marvel-device.nexus5 {
+  /* .marvel-device.nexus5 {
     border-radius: 0;
     flex: none;
     padding: 0;
@@ -427,6 +468,10 @@ body {
     overflow: hidden;
     height: 100%;
     width: 100%;
+  } */
+  
+  .marvel-device.nexus5::before {
+    display: none;
   }
 
   .marvel-device > .screen .chat {
@@ -434,7 +479,7 @@ body {
   }
 
   .marvel-device {
-    visibility: hidden;
+    visibility: visible;
   }
 
   .marvel-device .status-bar {
@@ -448,7 +493,6 @@ body {
     right: 0;
     bottom: 0;
   }
-
   .conversation {
     height: calc(100vh - 55px);
   }
