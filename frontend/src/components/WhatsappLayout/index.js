@@ -5,7 +5,7 @@ import "./styles.css"
 
 const WhatsAppLayout = ({ message, mediaLink, mediaType, mediaBefore }) => {
     return (
-        <div>
+        <div style={{ clear: "both" }}>
             <div class="page">
                 <div class="marvel-device nexus5">
                     <div class="top-bar"></div>

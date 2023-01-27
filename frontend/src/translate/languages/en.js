@@ -483,6 +483,30 @@ const messages = {
           add: "Add departament"
         }
       },
+      campaign: {
+        inicialDate: "Start",
+        delay: "Delay",
+        sendTime: "Submit time",
+        status: {
+          pending: "Pending",
+          canceled: "Canceled",
+          scheduled: "Scheduled",
+          processing: "Processing",
+          timeout: "Paused due to time",
+          paused: "Paused",
+          failed: "Failed",
+          sent: "Sent",
+          "invalid-number": "Invalid number",
+          finished: "Finished"
+        },
+        message: "Messages",
+        table: {
+          number: "Number",
+          status: "Status",
+          messageSent: "Sent Message"
+        },
+        search: "Search"
+      },
       campaigns: {
         title: "Campaigns",
         notifications: {

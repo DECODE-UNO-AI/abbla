@@ -483,6 +483,30 @@ const messages = {
           add: "Agregar departamento"
         }
       },
+      campaign: {
+        inicialDate: "Fecha de inicio",
+        delay: "Delay",
+        sendTime: "Tiempo de envío",
+        status: {
+          pending: "Pendiente",
+          canceled: "Cancelado",
+          scheduled: "Programado",
+          processing: "En proceso",
+          timeout: "En pausa debido al horario",
+          paused: "En pausa",
+          failed: "Ha fallado",
+          sent: "Enviado",
+          "invalid-number": "Número inválido",
+          finished: "Acabado"
+        },
+        message: "Mensajes",
+        table: {
+          number: "Número",
+          status: "Status",
+          messageSent: "Mensage enviada"
+        },
+        search: "Buscar"
+      },
       campaigns: {
         title: "Campanã",
         notifications: {

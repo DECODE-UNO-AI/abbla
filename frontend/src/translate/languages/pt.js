@@ -487,6 +487,30 @@ const messages = {
           deleteMessage: "Você tem certeza? Essa ação não pode ser revertida! Os setores desse departamento continuarão existindo, mas não terão mais nenhum departamento atribuído.",
         },
       },
+      campaign: {
+        inicialDate: "Data de início",
+        delay: "Intervalo de envios",
+        sendTime: "Horário dos envios",
+        status: {
+          pending: "Pendente",
+          canceled: "Cancelada",
+          scheduled: "Agendada",
+          processing: "Em andamento",
+          timeout: "Pausada devido ao horário",
+          paused: "Pausada",
+          failed: "Falhou",
+          sent: "Enviado",
+          "invalid-number": "Número inválido",
+          finished: "Finalizada"
+        },
+        message: "Mensagens",
+        table: {
+          number: "Número",
+          status: "Status",
+          messageSent: "Mensagem enviada"
+        },
+        search: "Pesquisa"
+      },
       campaigns: {
         title: "Campanhas",
         notifications: {
