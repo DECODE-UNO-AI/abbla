@@ -28,13 +28,13 @@ const sendMessage = async (
     number = await wbot.getNumberId(`${contact.number}@c.us`);
   } catch (err) {
     contact.update({
-      status: "failed"
+      status: "failed",
     });
     logger.error(err);
   }
   if (!number) {
     contact.update({
-      status: "invalid-number"
+      status: "invalid-number",
     });
     return;
   }
@@ -56,7 +56,8 @@ const sendMessage = async (
       await wbot.sendMessage(number._serialized , message);
     }
     contact.update({
-      status: "sent"
+      status: "sent",
+      messageSent: message
     });
   } catch (err) {
     contact.update({
