@@ -21,6 +21,7 @@ interface CampaignData {
   inicialDate: string;
   startNow?: string;
   columnName: string;
+  mediaBeforeMessage?: string;
   sendTime: string;
   delay?: string;
   message1: string;

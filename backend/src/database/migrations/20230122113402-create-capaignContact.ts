@@ -24,6 +24,10 @@ module.exports = {
         allowNull: false,
         defaultValue: "pending"
       },
+      messageSent: {
+        type: DataTypes.TEXT,
+        allowNull: true
+      },
       details: {
         type: DataTypes.TEXT
       },

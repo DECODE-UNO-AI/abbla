@@ -21,6 +21,10 @@ module.exports = {
         type: DataTypes.BOOLEAN,
         defaultValue: false
       },
+      mediaBeforeMessage: {
+        type: DataTypes.BOOLEAN,
+        defaultValue: true
+      },
       sendTime: {
         type: DataTypes.STRING,
         allowNull: false

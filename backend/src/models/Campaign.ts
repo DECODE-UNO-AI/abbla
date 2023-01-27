@@ -81,6 +81,9 @@ class Campaign extends Model<Campaign> {
   @Column
   contactsCsv: string;
 
+  @Column
+  mediaBeforeMessage: boolean;
+
   @Column(DataType.STRING)
   get mediaUrl(): string | null {
     const value = this.getDataValue("mediaUrl");

@@ -16,6 +16,7 @@ interface CampaignData {
   name: string;
   inicialDate: string;
   startNow?: string;
+  mediaBeforeMessage?: string;
   columnName: string;
   delay?: string;
   sendTime: string;
@@ -69,10 +70,13 @@ const UpdateCampaignService = async ({
       ? "10-15"
       : null;
 
+  const mediaBeforeOrder = campaignData.mediaBeforeMessage !== "false";
+
   let data: any = {
     ...campaignData,
     mediaUrl: cArquivoName(campaignData.mediaUrl),
     inicialDate: startDate,
+    mediaBeforeMessage: mediaBeforeOrder,
     columnName: campaignData.columnName.trim(),
     delay: delayValue,
     status: "scheduled",

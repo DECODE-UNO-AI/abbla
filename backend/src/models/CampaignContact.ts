@@ -40,6 +40,9 @@ class CampaignContact extends Model<CampaignContact> {
   @Column
   number: string;
 
+  @Column
+  messageSent: string;
+
   @ForeignKey(() => Campaign)
   @Column
   campaignId: number;

@@ -9,6 +9,7 @@ interface CampaignRequest {
   name: string;
   inicialDate: string;
   startNow?: string;
+  mediaBeforeMessage?: string;
   columnName: string;
   delay?: string;
   sendTime: string;
@@ -82,6 +83,9 @@ const CreateCampaignService = async ({
   if (!contacts) {
     throw new AppError("ERR_NO_CONTACTS_FILE", 403);
   }
+
+  const mediaBeforeOrder = campaign.mediaBeforeMessage !== "false";
+
   const data: any = {
     name: campaign.name.trim(),
     inicialDate: startDate,
@@ -95,6 +99,7 @@ const CreateCampaignService = async ({
     message5: campaign.message5,
     userId: campaign.userId,
     delay: delayValue,
+    mediaBeforeMessage: mediaBeforeOrder,
     contactsCsv: contacts?.filename,
     mediaUrl: mediaData?.filename,
     mediaType: mediaData?.mimetype.substr(0, mediaData.mimetype.indexOf("/")),

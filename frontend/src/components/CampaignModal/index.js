@@ -26,7 +26,7 @@ import {
     Tab,
     Tabs,
     AppBar,
-    Box
+    Box,
 } from '@material-ui/core';
 
 
@@ -229,6 +229,7 @@ const CampaignModal = ({ open, onClose, campaignId }) => {
         message4: "",
         message5: "",
         columnName: "",
+        mediaBeforeMessage: "true",
     };
 
     const [campaignForm, setCapaignForm] = useState(initialState)
@@ -240,6 +241,7 @@ const CampaignModal = ({ open, onClose, campaignId }) => {
     const [csvColumns, setCsvColumns] = useState([])
     const [mediaFile, setMediaFile] = useState(null)
     const [mediaError, setMediaError] = useState(false)
+    const [mediaFirst, setMediaFirst] = useState(true)
     const inputFileRef = useRef();
 
     useEffect(() => {
@@ -351,7 +353,8 @@ const CampaignModal = ({ open, onClose, campaignId }) => {
 
     const handleOnSave = async(values) => {
         setMediaError(false)    
-        const campaignData = ({...values, delay: delay, startNow, sendTime})
+        const campaignData = ({...values, delay: delay, startNow, sendTime, mediaBeforeMessage: mediaFirst})
+        console.log(campaignData);
         const formData = new FormData();
         Object.keys(campaignData).forEach((key) => {
             formData.append(key, campaignData[key])
@@ -682,6 +685,18 @@ const CampaignModal = ({ open, onClose, campaignId }) => {
                                     <Typography variant="h6">
                                         {i18n.t("campaignModal.form.messageMedia")}
                                     </Typography>
+                                    <Box style={{ display: "flex", alignItems: "center" }}>
+                                        <Field
+                                            as={Checkbox}
+                                            checked={mediaFirst}
+                                            onChange={(e) => setMediaFirst(e.target.checked)}
+                                            inputProps={{ 'aria-label': 'primary checkbox' }}
+                                            name="mediaBeforeMessage"
+								        />
+                                        <InputLabel>
+                                            Send File before
+                                        </InputLabel>
+                                    </Box>
                                     <Box style={{ display: "flex", alignItems: "center", gap: 10, marginTop: 15}}>
                                         {
                                             campaignId && campaignForm.mediaUrl ? 

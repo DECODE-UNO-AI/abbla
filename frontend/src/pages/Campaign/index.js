@@ -148,7 +148,7 @@ const Campaign = () => {
                                 { campaign?.message5 !== '' ? <FormControlLabel value="message5" control={<Radio />} label="Messagem 5" /> : ""}
                             </RadioGroup>
                         </FormControl>
-                    <WhatsAppLayout message={campaign?.[message]} mediaLink={campaign?.mediaUrl} mediaType={campaign?.mediaType}/>
+                    <WhatsAppLayout message={campaign?.[message]} mediaLink={campaign?.mediaUrl} mediaType={campaign?.mediaType} mediaBefore={campaign?.mediaBeforeMessage}/>
                 </Box>
             </Box>
             <Box className={classes.contactsTable}>

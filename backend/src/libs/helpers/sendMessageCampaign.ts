@@ -1,3 +1,5 @@
+/* eslint-disable no-underscore-dangle */
+/* eslint-disable prettier/prettier */
 /* eslint-disable no-await-in-loop */
 import { join } from "path";
 import { MessageMedia } from "whatsapp-web.js";
@@ -17,7 +19,8 @@ const sendMessage = async (
   contact: CampaignContact,
   message: string,
   wbot: Session,
-  mediaFile: MessageMedia | null
+  mediaFile: MessageMedia | null,
+  mediaBeforeMessage: boolean
 ): Promise<void> => {
   // Verify if number is valid
   let number;
@@ -38,14 +41,18 @@ const sendMessage = async (
   // Message sending logic
   try {
     if (mediaFile) {
-      // eslint-disable-next-line no-underscore-dangle
-      await wbot.sendMessage(number._serialized, mediaFile, {
-        sendAudioAsVoice: true
-      });
-      // eslint-disable-next-line prettier/prettier, no-underscore-dangle
-      await wbot.sendMessage(number._serialized , message);
+      if (mediaBeforeMessage) {
+        await wbot.sendMessage(number._serialized, mediaFile, {
+          sendAudioAsVoice: true
+        });
+        await wbot.sendMessage(number._serialized , message);
+      } else {
+        await wbot.sendMessage(number._serialized , message);
+        await wbot.sendMessage(number._serialized, mediaFile, {
+          sendAudioAsVoice: true
+        });
+      }
     } else {
-      // eslint-disable-next-line prettier/prettier, no-underscore-dangle
       await wbot.sendMessage(number._serialized , message);
     }
     contact.update({
@@ -172,7 +179,7 @@ const sendMessageCampaign = async (campaign: Campaign): Promise<void> => {
       );
     });
     await setDelay(randomDelay * 1000);
-    await sendMessage(penddingContacts[i], randomMessage, whatsapp, mediaFile);
+    await sendMessage(penddingContacts[i], randomMessage, whatsapp, mediaFile, campaign.mediaBeforeMessage);
     if (i + 1 === penddingContacts.length) {
       try {
         await campaign.update({ status: "finished" });
