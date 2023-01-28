@@ -145,18 +145,23 @@ const sendMessageCampaign = async (campaign: Campaign): Promise<void> => {
         currentDate.getHours() < +sendTime[1]
       )
     ) {
+      if (currentDate.getHours() < +sendTime[0]) {
+        currentDate.setHours(+sendTime[0]);
+        currentDate.setMinutes(0);
+      } else {
+        currentDate.setHours(currentDate.getHours() + 24);
+        currentDate.setHours(+sendTime[0])
+        currentDate.setMinutes(0);
+      }
+      reSheduleJob(campaign, currentDate);
       await campaign.update({
-        status: "timeout"
+        status: "timeout",
       });
       await campaign.reload();
       io.emit("campaigns", {
         action: "update",
         campaign
       });
-      currentDate.setDate(currentDate.getDate() + 1);
-      currentDate.setHours(+sendTime[0]);
-      currentDate.setMinutes(0);
-      reSheduleJob(campaign, currentDate);
       break;
     }
     // random delay and message

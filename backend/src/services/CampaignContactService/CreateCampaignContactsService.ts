@@ -1,3 +1,4 @@
+/* eslint-disable no-await-in-loop */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { resolve } from "path";
 import csv from "csvtojson";
@@ -29,18 +30,22 @@ const CreateCampaignContactsService = async (
     logger.error("Invalid .csv file");
     return;
   }
-  csvArray.forEach(async contact => {
-    try {
-      await CampaignContact.create({
-        number: contact[campaign.columnName],
-        status: "pending",
-        campaignId: campaign.id,
-        details: contact
-      });
-    } catch (err) {
-      throw new AppError("Invalid .cvs file");
-    }
-  });
+
+  for (let i = 0; i < csvArray.length; i += 1) {
+    const contact = csvArray[i];
+    await (async () => {
+      try {
+        await CampaignContact.create({
+          number: contact[campaign.columnName],
+          status: "pending",
+          campaignId: campaign.id,
+          details: contact
+        });
+      } catch (err) {
+        throw new AppError("Invalid contact in .cvs file");
+      }
+    })();
+  }
 };
 
 export default CreateCampaignContactsService;
