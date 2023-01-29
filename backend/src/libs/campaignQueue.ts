@@ -44,7 +44,7 @@ export const startJob = (campaign: Campaign): void => {
 };
 
 export const finishJob = (jobId: string | number): void => {
-  const jobIndex = alljobs.findIndex(job => job.id === jobId);
+  const jobIndex = alljobs.findIndex(job => job.id === +jobId);
   const job = alljobs[jobIndex];
   if (job) {
     try {
@@ -57,9 +57,9 @@ export const finishJob = (jobId: string | number): void => {
 };
 
 export const reSheduleJob = (campaign: Campaign, date: Date): void => {
+  finishJob(campaign.id);
   const job = schedule.scheduleJob(date, () => {
     sendMessageCampaign(campaign);
   });
-  finishJob(campaign.id);
   alljobs.push({ id: campaign.id, job });
 };

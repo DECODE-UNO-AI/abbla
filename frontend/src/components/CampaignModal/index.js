@@ -404,9 +404,9 @@ const CampaignModal = ({ open, onClose, campaignId }) => {
 					initialValues={campaignForm}
 					enableReinitialize={true}
 					validationSchema={CampaignSchema}
-					onSubmit={(values, actions) => {
-						setTimeout(() => {
-							handleOnSave(values);
+					onSubmit={async (values, actions) => {
+						setTimeout(async () => {
+							await handleOnSave(values); // testar se agora o botão não fica mais clicável
 							actions.setSubmitting(false);
 						}, 400);
 					}}
