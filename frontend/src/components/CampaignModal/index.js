@@ -242,6 +242,7 @@ const CampaignModal = ({ open, onClose, campaignId }) => {
     const [mediaFile, setMediaFile] = useState(null)
     const [mediaError, setMediaError] = useState(false)
     const [mediaFirst, setMediaFirst] = useState(true)
+    const [submittingForm, setSubmittingForm] = useState(false)
     const inputFileRef = useRef();
 
     useEffect(() => {
@@ -352,7 +353,8 @@ const CampaignModal = ({ open, onClose, campaignId }) => {
     }
 
     const handleOnSave = async(values) => {
-        setMediaError(false)    
+        setSubmittingForm(true)
+        setMediaError(false)
         const campaignData = ({...values, delay: delay, startNow, sendTime, mediaBeforeMessage: mediaFirst})
         const formData = new FormData();
         Object.keys(campaignData).forEach((key) => {
@@ -382,7 +384,9 @@ const CampaignModal = ({ open, onClose, campaignId }) => {
             }
             toast.success(`${i18n.t("campaigns.notifications.campaignSaved")}`);
             onClose();
+            setSubmittingForm(false)
         } catch (err) {
+            setSubmittingForm(false)
             toastError(err);
         }
     }
@@ -406,7 +410,7 @@ const CampaignModal = ({ open, onClose, campaignId }) => {
 					validationSchema={CampaignSchema}
 					onSubmit={async (values, actions) => {
 						setTimeout(async () => {
-							await handleOnSave(values); // testar se agora o botão não fica mais clicável
+							await handleOnSave(values);
 							actions.setSubmitting(false);
 						}, 400);
 					}}
@@ -727,7 +731,7 @@ const CampaignModal = ({ open, onClose, campaignId }) => {
 								<Button
 									onClick={onClose}
 									color="secondary"
-									disabled={isSubmitting}
+									disabled={submittingForm}
 									variant="outlined"
 								>
 									{i18n.t("campaignModal.buttons.cancel")}
@@ -735,7 +739,7 @@ const CampaignModal = ({ open, onClose, campaignId }) => {
 								<Button
 									type="submit"
 									color="primary"
-									disabled={isSubmitting}
+									disabled={submittingForm}
 									variant="contained"
 									className={classes.btnWrapper}
 								>
