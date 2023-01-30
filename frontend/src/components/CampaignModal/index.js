@@ -203,12 +203,12 @@ const CampaignSchema = Yup.object().shape({
     whatsappId: Yup.string().required("Required"),
     message1: Yup.string()
         .min(5, i18n.t("campaignModal.errors.tooShort"))
-        .max(255, i18n.t("campaignModal.errors.tooLong"))
+        .max(4096, i18n.t("campaignModal.errors.tooLong"))
         .required(i18n.t("campaignModal.errors.message")),
-    message2: Yup.string().min(5, i18n.t("campaignModal.errors.tooShort")).max(255, i18n.t("campaignModal.errors.tooLong")),
-    message3: Yup.string().min(5, i18n.t("campaignModal.errors.tooShort")).max(255, i18n.t("campaignModal.errors.tooLong")),
-    message4: Yup.string().min(5, i18n.t("campaignModal.errors.tooShort")).max(255, i18n.t("campaignModal.errors.tooLong")),
-    message5: Yup.string().min(5, i18n.t("campaignModal.errors.tooShort")).max(255, i18n.t("campaignModal.errors.tooLong")),
+    message2: Yup.string().min(5, i18n.t("campaignModal.errors.tooShort")).max(4096, i18n.t("campaignModal.errors.tooLong")),
+    message3: Yup.string().min(5, i18n.t("campaignModal.errors.tooShort")).max(4096, i18n.t("campaignModal.errors.tooLong")),
+    message4: Yup.string().min(5, i18n.t("campaignModal.errors.tooShort")).max(4096, i18n.t("campaignModal.errors.tooLong")),
+    message5: Yup.string().min(5, i18n.t("campaignModal.errors.tooShort")).max(4096, i18n.t("campaignModal.errors.tooLong")),
     columnName: Yup.string().required(" "),
 });
 
