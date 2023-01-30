@@ -20,14 +20,13 @@ Sentry.init({ dsn: process.env.SENTRY_DSN });
 
 const app = express();
 
-// app.use(
-//   cors({
-//     credentials: true,
-//     origin: process.env.FRONTEND_URL
-//   })
-// );
+app.use(
+  cors({
+    credentials: true,
+    origin: process.env.FRONTEND_URL
+  })
+);
 
-app.use(cors());
 app.use(cookieParser());
 app.use(express.json());
 app.use(Sentry.Handlers.requestHandler());

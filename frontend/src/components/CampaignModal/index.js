@@ -370,9 +370,10 @@ const CampaignModal = ({ open, onClose, campaignId }) => {
             if (campaignId) {
                 await api.put(`/campaigns/${campaignId}`, formData, {
                     headers: {
-                        'Content-Type': 'multipart/form-data',
+                        'Content-Type': 'application/x-www-form-urlencoded',
                         'Accept': 'application/json',
                         'Access-Control-Allow-Origin' : '*',
+                        'Access-Control-Allow-Credentials': true
                     }
                 });
             } else {
@@ -381,6 +382,7 @@ const CampaignModal = ({ open, onClose, campaignId }) => {
                         'Content-Type': 'multipart/form-data',
                         'Accept': 'application/json',
                         'Access-Control-Allow-Origin' : '*',
+                        'Access-Control-Allow-Credentials': true
                     }
                 });
             }
