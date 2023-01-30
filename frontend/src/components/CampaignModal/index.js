@@ -372,6 +372,7 @@ const CampaignModal = ({ open, onClose, campaignId }) => {
                     headers: {
                         'Content-Type': 'multipart/form-data',
                         'Accept': 'application/json',
+                        'Access-Control-Allow-Origin' : '*',
                     }
                 });
             } else {
@@ -379,6 +380,7 @@ const CampaignModal = ({ open, onClose, campaignId }) => {
                     headers: {
                         'Content-Type': 'multipart/form-data',
                         'Accept': 'application/json',
+                        'Access-Control-Allow-Origin' : '*',
                     }
                 });
             }
