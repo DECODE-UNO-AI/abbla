@@ -20,10 +20,18 @@ Sentry.init({ dsn: process.env.SENTRY_DSN });
 
 const app = express();
 
+// app.use(
+//   cors({
+//     credentials: true,
+//     origin: process.env.FRONTEND_URL
+//   })
+// );
+
 app.use(
   cors({
     credentials: true,
-    origin: process.env.FRONTEND_URL
+    origin: true,
+    exposedHeaders: ["Access-Control-Allow-Origin"]
   })
 );
 
