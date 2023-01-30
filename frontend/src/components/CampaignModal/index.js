@@ -377,7 +377,7 @@ const CampaignModal = ({ open, onClose, campaignId }) => {
             } else {
                 await api.post("/campaigns", formData, {
                     headers: {
-                        'Content-Type': 'multipart/form-data',
+                        'Content-Type': 'x-www-form-urlencoded',
                         'Accept': 'application/json',
                     }
                 });
