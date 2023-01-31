@@ -179,6 +179,10 @@ export const testCampaign = async (
   req: Request,
   res: Response
 ): Promise<Response> => {
+  const { profile } = req.user;
+  if (profile !== "admin") {
+    throw new AppError("ERR_NO_PERMISSION", 403);
+  }
   const schema = Yup.object().shape({
     number: Yup.string().required(),
     message1: Yup.string().required(),

@@ -118,7 +118,8 @@ const useStyles = makeStyles(theme => ({
     numberTestContainer: {
         width: "100%",
         display: "flex",
-        alignItems: "center"
+        alignItems: "center",
+        marginTop: 10
     },
     buttonProgress: {
 		color: green[500],
