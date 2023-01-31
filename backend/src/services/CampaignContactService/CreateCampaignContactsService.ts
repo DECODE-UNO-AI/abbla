@@ -27,7 +27,7 @@ const CreateCampaignContactsService = async (
   try {
     csvArray = await csvFileToArray(csvPathFile);
   } catch (err) {
-    logger.error("Invalid .csv file");
+    logger.error("ERR_NO_CONTACTS_FILE");
     return;
   }
 
@@ -42,7 +42,7 @@ const CreateCampaignContactsService = async (
           details: contact
         });
       } catch (err) {
-        throw new AppError("Invalid contact in .cvs file");
+        throw new AppError("ERR_NO_CONTACTS_FILE");
       }
     })();
   }

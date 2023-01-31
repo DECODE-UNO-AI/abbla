@@ -317,7 +317,10 @@ const messages = {
           variables: "Variables disponibles: (usar $nome-da-variável)",
           tab: "Texto",
           columnName: "Columna telefonica",
-          sendMediaBefore: "Enviar archivo antesSend media file before",
+          sendMediaBefore: "Enviar archivo antes",
+          testNumberPlaceholder: "Número con DDD (solo dígitos, sin puntuación)",
+          testMessage: "Mensaje de prueba",
+          testButton: "Mandar"
         },
         errors: {
           tooShort: "Muy corto",
@@ -514,7 +517,9 @@ const messages = {
           campaignPaused: "La campaña ha sido pausada",
           campaignCanceled: "La campaña ha sido cancelada",
           campaignStarted: "La campaña ha comenzado",
-          campaignSaved: "La campaña ha sido guardada."
+          campaignSaved: "La campaña ha sido guardada.",
+          campaignTested: "Mensaje de prueba enviado",
+          campaignTestFailed: "Se debe completar el número, el mensaje, el Whatsapp Bot"
         },
         confirmationModal: {
           deleteTitle: "Eliminar campaña",
@@ -762,6 +767,7 @@ const messages = {
         },
       },
       backendErrors: {
+        ERR_NUMBER_NOT_FOUND: "Número de WhatsApp no ​​encontrado.",
         ERR_NO_OTHER_WHATSAPP: "Debe haber al menos un WhatsApp predeterminado.",
         ERR_NO_DEF_WAPP_FOUND: "No se encontró WhatsApp predeterminado. Verifique la página de conexiones.",
         ERR_WAPP_NOT_INITIALIZED: "Esta sesión de WhatsApp no ​​fue inicializada. Por favor revisa la página de conexiones.",
@@ -789,6 +795,9 @@ const messages = {
         ERR_USER_CREATION_COUNT: "Límite de asistentes alcanzado, comuníquese con soporte para cambiar",
         ERR_CONNECTION_CREATION_COUNT: "Límite de conexión alcanzado, comuníquese con soporte para cambiar.",
         ERR_NO_TAG_FOUND: "Etiqueta no encontrada.",
+        INTERNAL_ERROR: "Error interno, inténtalo de nuevo más tarde!",
+        ERR_INVALID_DATE: "Fecha inválida.",
+        ERR_NO_CONTACTS_FILE: "Archivo de contactos no válido."
       },
     },
   },

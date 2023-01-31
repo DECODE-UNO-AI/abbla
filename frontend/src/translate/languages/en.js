@@ -318,6 +318,9 @@ const messages = {
           tab: "Text",
           columnName: "Number column",
           sendMediaBefore: "Send media file before",
+          testNumberPlaceholder: "Number with DDD (digits only, without punctuation)",
+          testMessage: "Test Message",
+          testButton: "Test"
         },
         errors: {
           tooShort: "Too short",
@@ -514,7 +517,9 @@ const messages = {
           campaignPaused: "The campaing has been paused",
           campaignCanceled: "The campaing has been canceled",
           campaignStarted: "The campaing has been started",
-          campaignSaved: "The campaing has been saved"
+          campaignSaved: "The campaing has been saved",
+          campaignTested: "Test message sent",
+          campaignTestFailed: "Whatsapp Bot, Texto 1 and Number must be filled"
         },
         confirmationModal: {
           deleteTitle: "Delete campaign",
@@ -762,6 +767,7 @@ const messages = {
         },
       },
       backendErrors: {
+        ERR_NUMBER_NOT_FOUND: "WhatsApp number not found.",
         ERR_NO_OTHER_WHATSAPP: "There must be at least one default WhatsApp.",
         ERR_NO_DEF_WAPP_FOUND: "No default WhatsApp found. Check connections page.",
         ERR_WAPP_NOT_INITIALIZED: "This WhatsApp session was not initialized. Please check the connections page.",
@@ -790,6 +796,9 @@ const messages = {
         ERR_CONNECTION_CREATION_COUNT: "Connection limit reached, contact support to change.",
         ERR_NO_TAG_FOUND: "Tag not found.",
         ERR_OUT_OF_HOURS: "Out of Office Hours!",
+        INTERNAL_ERROR: "Internal error, try later!",
+        ERR_INVALID_DATE: "Invalid date.",
+        ERR_NO_CONTACTS_FILE: "Invalid contacts file."
       },
     },
   },

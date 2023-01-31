@@ -318,6 +318,9 @@ const messages = {
           variables: "Variáveis disponíveis: (utilize $nome-da-variável)",
           columnName: "Coluna de telefones",
           sendMediaBefore: "Enviar mídia antes",
+          testNumberPlaceholder: "Numéro com DDD (apenas dígitos, sem pontuação)",
+          testMessage: "Testar Mensagem",
+          testButton: "Testar"
         },
         errors: {
           tooShort: "Muito curto",
@@ -518,7 +521,9 @@ const messages = {
           campaignPaused: "A campanha foi pausada",
           campaignCanceled: "A campanha foi cancelada",
           campaignStarted: "A campanha foi iniciada",
-          campaignSaved: "A campanha foi salva"
+          campaignSaved: "A campanha foi salva",
+          campaignTested: "Mensagem teste enviada",
+          campaignTestFailed: "Whatsapp Bot, Texto 1 e Número devem ser preenchidos"
         },
         confirmationModal: {
           deleteTitle: "Excluir campanha",
@@ -766,6 +771,7 @@ const messages = {
         },
       },
       backendErrors: {
+        ERR_NUMBER_NOT_FOUND: "Número não encontrado no WhatsApp.",
         ERR_NO_OTHER_WHATSAPP: "Deve haver pelo menos um WhatsApp padrão.",
         ERR_NO_DEF_WAPP_FOUND: "Nenhum WhatsApp padrão encontrado. Verifique a página de conexões.",
         ERR_WAPP_NOT_INITIALIZED: "Esta sessão do WhatsApp não foi inicializada. Verifique a página de conexões.",
@@ -794,6 +800,9 @@ const messages = {
         ERR_CONNECTION_CREATION_COUNT: "Limite de conexões atingido, para alterar entre em contato com o suporte.",
         ERR_NO_TAG_FOUND: "Tag não encontrada.",
         ERR_OUT_OF_HOURS: "Fora do Horário de Expediente!",
+        INTERNAL_ERROR: "Erro interno, tente mais tarde!",
+        ERR_INVALID_DATE: "Data inválida.",
+        ERR_NO_CONTACTS_FILE: "Arquivo de contato inválido."
       },
     },
   },

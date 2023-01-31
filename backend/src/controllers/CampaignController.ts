@@ -15,6 +15,7 @@ import { finishJob, startJob } from "../libs/campaignQueue";
 import { logger } from "../utils/logger";
 import ShowCampaignDetails from "../services/CampaignServices/ShowCampaignDetails";
 import { getIO } from "../libs/socket";
+import TestCampaignService from "../services/CampaignServices/TestCampaignService";
 
 interface CampaignData {
   name: string;
@@ -75,7 +76,7 @@ export const store = async (req: Request, res: Response): Promise<Response> => {
   try {
     await CreateCampaignContactsService(newCampaign);
   } catch (err) {
-    throw new AppError("Invalid .cvs file");
+    throw new AppError("ERR_NO_CONTACTS_FILE");
   }
   startJob(newCampaign);
 
@@ -172,6 +173,36 @@ export const update = async (
     campaign: campaignObj
   });
   return res.status(200).json(campaignObj);
+};
+
+export const testCampaign = async (
+  req: Request,
+  res: Response
+): Promise<Response> => {
+  const schema = Yup.object().shape({
+    number: Yup.string().required(),
+    message1: Yup.string().required(),
+    whatsappId: Yup.string().required(),
+    mediaBeforeMessage: Yup.string().required()
+  });
+
+  const campaignData: {
+    mediaBeforeMessage?: string;
+    message1: string;
+    number: string;
+    whatsappId: string;
+  } = req.body;
+  const mediaFile = req.file || null;
+
+  try {
+    await schema.validate(campaignData);
+  } catch (error) {
+    throw new AppError(error.message);
+  }
+
+  await TestCampaignService({ campaignData, mediaFile });
+
+  return res.status(200).json({ message: "message sent" });
 };
 
 export const cancelCampaign = async (

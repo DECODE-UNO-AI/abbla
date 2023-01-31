@@ -28,6 +28,7 @@ import {
     AppBar,
     Box,
 } from '@material-ui/core';
+import { green } from "@material-ui/core/colors";
 
 
 import { i18n } from "../../translate/i18n";
@@ -109,7 +110,24 @@ const useStyles = makeStyles(theme => ({
         alignItems: "center",
         flexWrap: "wrap",
         gap: 2
-    }
+    },
+    testContainer: {
+        width: "100%",
+        marginTop: 20
+    },
+    numberTestContainer: {
+        width: "100%",
+        display: "flex",
+        alignItems: "center"
+    },
+    buttonProgress: {
+		color: green[500],
+		position: "absolute",
+		top: "50%",
+		left: "50%",
+		marginTop: -12,
+		marginLeft: -12,
+	},
 }));
 
 const marks = [
@@ -243,6 +261,7 @@ const CampaignModal = ({ open, onClose, campaignId }) => {
     const [mediaError, setMediaError] = useState(false)
     const [mediaFirst, setMediaFirst] = useState(true)
     const [submittingForm, setSubmittingForm] = useState(false)
+    const [testNumber, setTestNumber] = useState("")
     const inputFileRef = useRef();
 
     useEffect(() => {
@@ -352,6 +371,38 @@ const CampaignModal = ({ open, onClose, campaignId }) => {
         URL.revokeObjectURL(fileUrl);
     }
 
+    const handleOnTest = async (values) => {
+        setSubmittingForm(true)
+        const { whatsappId, message1 } = values
+        if (!whatsappId || !message1 || !testNumber ) {
+            toast.error(`${i18n.t("campaigns.notifications.campaignTestFailed")}`);
+            setSubmittingForm(false)
+            return
+        }
+        const data = { whatsappId, message1, mediaBeforeMessage: mediaFirst, number: testNumber }
+        const formData = new FormData()
+        Object.keys(data).forEach((key) => {
+            formData.append(key, data[key])
+        })
+        if (mediaFile) {
+            formData.append("media", mediaFile)
+        }
+
+        try {
+            await api.post(`/campaigns/test`, formData, {
+                headers: {
+                    'Content-Type': 'multipart/form-data',
+                    'Accept': 'application/json',
+                }
+            });
+            toast.success(`${i18n.t("campaigns.notifications.campaignTested")}`);
+            setSubmittingForm(false)
+        } catch (err) {
+            setSubmittingForm(false)
+            toastError(err)
+        }
+    }
+
     const handleOnSave = async(values) => {
         setSubmittingForm(true)
         setMediaError(false)
@@ -416,6 +467,7 @@ const CampaignModal = ({ open, onClose, campaignId }) => {
 					}}
 				>
 					{({ touched, errors, isSubmitting, values }) => (
+                        
 						<Form>
 							<DialogContent dividers style={{ widht: 800, display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center"}}>
                                 <Box sx={{ width: "100%" }}  className={classes.box}>
@@ -725,6 +777,37 @@ const CampaignModal = ({ open, onClose, campaignId }) => {
                                         />
                                         {mediaError ? <span style={{ color: "#ff5d32"}}>{i18n.t("campaignModal.errors.fileError")}</span> : ""}
                                     </Box>
+                                    <Box className={classes.testContainer}>
+                                        <Typography variant="h6">
+                                            {i18n.t("campaignModal.form.testMessage")}
+                                        </Typography>
+                                        <Box className={classes.numberTestContainer}>
+                                            <TextField
+                                                className={classes.inputTest}
+                                                placeholder={i18n.t("campaignModal.form.testNumberPlaceholder")}
+                                                inputProps={{ 'aria-label': 'message test' }}
+                                                variant="outlined"
+                                                size="small"
+                                                style={{ width: "100%" }}
+                                                onChange={(e) => setTestNumber(e.target.value)}
+                                            />
+                                            <Button
+                                                color="primary"
+                                                disabled={submittingForm}
+                                                variant="contained"
+                                                onClick={() => handleOnTest(values)}
+                                                style={{ marginLeft: 20 }}
+                                                >
+                                                {i18n.t("campaignModal.form.testButton")}
+                                                {submittingForm && (
+                                                    <CircularProgress
+                                                        size={20}
+                                                        className={classes.buttonProgress}
+                                                    />
+                                                )}
+                                        </Button>
+                                        </Box>
+                                    </Box>
                                 </Box>
 							</DialogContent>
 							<DialogActions>
@@ -741,12 +824,11 @@ const CampaignModal = ({ open, onClose, campaignId }) => {
 									color="primary"
 									disabled={submittingForm}
 									variant="contained"
-									className={classes.btnWrapper}
 								>
 									{campaignId
 										? `${i18n.t("campaignModal.buttons.okEdit")}`
 										: `${i18n.t("campaignModal.buttons.okAdd")}`}
-									{isSubmitting && (
+									{submittingForm && (
 										<CircularProgress
 											size={24}
 											className={classes.buttonProgress}

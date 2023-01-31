@@ -14,6 +14,13 @@ campaignRoutes.post(
   CampaignController.store
 );
 
+campaignRoutes.post(
+  "/campaigns/test",
+  isAuth,
+  multer({ storage: multer.memoryStorage() }).single("media"),
+  CampaignController.testCampaign
+);
+
 campaignRoutes.get("/campaigns", isAuth, CampaignController.index);
 
 campaignRoutes.get("/campaigns/:campaignId", isAuth, CampaignController.show);
