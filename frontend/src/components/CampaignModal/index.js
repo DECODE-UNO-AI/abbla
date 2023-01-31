@@ -263,6 +263,7 @@ const CampaignModal = ({ open, onClose, campaignId }) => {
     const [mediaFirst, setMediaFirst] = useState(true)
     const [submittingForm, setSubmittingForm] = useState(false)
     const [testNumber, setTestNumber] = useState("")
+    const [isRepeatModel, setIsRepeatModel] = useState(false)
     const inputFileRef = useRef();
 
     useEffect(() => {
@@ -285,6 +286,7 @@ const CampaignModal = ({ open, onClose, campaignId }) => {
                     ? "240"
                     : null;
                 setDelay(delayValue);
+                console.log(data)
                 const settedDate = data.inicialDate.substring(0,16)
                 try {
                     const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/public/${data.contactsCsv}`)
@@ -296,7 +298,11 @@ const CampaignModal = ({ open, onClose, campaignId }) => {
                 } catch(err) {
                     toastError(err)
                 }
+                setIsRepeatModel(["finished", "archived", "canceled"].includes(data.status))
 				setCapaignForm(prevState => {
+                    if (["finished", "archived", "canceled"].includes(data.status)){
+                        return { ...prevState, ...data, inicialDate: getFirstDate()};
+                    }
 					return { ...prevState, ...data, inicialDate: settedDate};
 				});
 			} catch (err) {
@@ -308,9 +314,12 @@ const CampaignModal = ({ open, onClose, campaignId }) => {
             setMediaError(false)
 			setCapaignForm(initialState);
             setCsvColumns([]);
+            setSendTime(initialState.sendTime)
+            setDelay("15")
             setMediaFile(null);
             setCsvFile(null);
-            setStartNow(false)
+            setStartNow(false);
+            setIsRepeatModel(false);
 		};
     // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [campaignId])
@@ -380,7 +389,7 @@ const CampaignModal = ({ open, onClose, campaignId }) => {
             setSubmittingForm(false)
             return
         }
-        const data = { whatsappId, message1, mediaBeforeMessage: mediaFirst, number: testNumber }
+        const data = { whatsappId, message1, mediaBeforeMessage: mediaFirst, number: testNumber, mediaUrl: campaignForm.mediaUrl }
         const formData = new FormData()
         Object.keys(data).forEach((key) => {
             formData.append(key, data[key])
@@ -408,6 +417,7 @@ const CampaignModal = ({ open, onClose, campaignId }) => {
         setSubmittingForm(true)
         setMediaError(false)
         const campaignData = ({...values, delay: delay, startNow, sendTime, mediaBeforeMessage: mediaFirst})
+        console.log(campaignData)
         const formData = new FormData();
         Object.keys(campaignData).forEach((key) => {
             formData.append(key, campaignData[key])
@@ -419,8 +429,15 @@ const CampaignModal = ({ open, onClose, campaignId }) => {
             formData.append("medias", mediaFile)
         }
         try {
-            if (campaignId) {
+            if (campaignId && !isRepeatModel) {
                 await api.put(`/campaigns/${campaignId}`, formData, {
+                    headers: {
+                        'Content-Type': 'multipart/form-data',
+                        'Accept': 'application/json',
+                    }
+                });
+            } else if (isRepeatModel) {
+                await api.post(`/campaigns/repeat/${campaignId}`, formData, {
                     headers: {
                         'Content-Type': 'multipart/form-data',
                         'Accept': 'application/json',
@@ -443,18 +460,31 @@ const CampaignModal = ({ open, onClose, campaignId }) => {
         }
     }
 
+    const handleOnModalClose = () => {
+        setMediaError(false)
+		setCapaignForm(initialState);
+        setCsvColumns([]);
+        setMediaFile(null);
+        setCsvFile(null);
+        setStartNow(false);
+        setIsRepeatModel(false);
+        onClose()
+    }
+
 	return (
 
 			<Dialog
 				open={open}
-				onClose={onClose}
+				onClose={handleOnModalClose}
 				className={classes.dialog}
 				scroll="paper"
 			>
 				<DialogTitle id="form-dialog-title">
-					{campaignId
-						? `${i18n.t("campaignModal.title.edit")}`
-						: `${i18n.t("campaignModal.title.add")}`}
+					{!campaignId && !isRepeatModel
+						? `${i18n.t("campaignModal.title.add")}`
+						: campaignId && isRepeatModel ?
+                        `${i18n.t("campaignModal.title.repeat")}` : `${i18n.t("campaignModal.title.edit")}`
+                    }
 				</DialogTitle>
 				<Formik
 					initialValues={campaignForm}
@@ -844,4 +874,4 @@ const CampaignModal = ({ open, onClose, campaignId }) => {
 	);
 };
 
-export default CampaignModal;
+export default React.memo(CampaignModal);

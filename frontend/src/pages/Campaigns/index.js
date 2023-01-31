@@ -15,7 +15,8 @@ import {
 } from "@material-ui/core";
 import {
 	Edit,
-	DeleteOutline,
+	FolderOutlined,
+	RepeatOneOutlined,
 	PauseCircleOutline,
 	PauseCircleFilled,
 	PlayArrowOutlined,
@@ -158,7 +159,7 @@ const Campaigns = () => {
 		setModalOpen(true);
 	};
 
-	const handleDeleteCampaign = (campaign) => {
+	const handleArchiveCampaign = (campaign) => {
 		setSelectedCampaign(campaign)
         setConfirmModalOpen(true);
 	}
@@ -190,9 +191,9 @@ const Campaigns = () => {
 		}
 	}
 
-	const handleOnDeleteCampaign = async (campaign) => {
+	const handleOnArchiveCampaign = async (campaign) => {
 		try {
-			await api.delete(`/campaigns/${campaign.id}`);
+			await api.put(`/campaigns/archive/${campaign.id}`);
 			toast.success(i18n.t("campaigns.notifications.campaignDeleted"));
 		} catch (err) {
 			toastError(err);
@@ -220,7 +221,7 @@ const Campaigns = () => {
 				}
 				open={confirmModalOpen}
 				onClose={handleCloseConfirmationModal}
-				onConfirm={() => handleOnDeleteCampaign(selectedCampaign)}
+				onConfirm={() => handleOnArchiveCampaign(selectedCampaign)}
 			>
 				{i18n.t("campaigns.confirmationModal.deleteMessage")}
 				
@@ -377,14 +378,25 @@ const Campaigns = () => {
 											</IconButton> : ""
 									}
 									{
-										["finished", "paused", "scheduled", "timeout", "canceled", "failed"].includes(campaign.status) ?
+										["finished", "archived", "failed", "canceled"].includes(campaign.status) ?
 											<IconButton
 												size="small"
 												onClick={() => {
-													handleDeleteCampaign(campaign)
+													handleEditCampaign(campaign)
 												}}
 											>
-												<DeleteOutline color="secondary" />
+												<RepeatOneOutlined color="secondary" />
+											</IconButton> : ""
+									}
+									{
+										["finished", "canceled", "failed"].includes(campaign.status) ?
+											<IconButton
+												size="small"
+												onClick={() => {
+													handleArchiveCampaign(campaign)
+												}}
+											>
+												<FolderOutlined color="secondary" />
 											</IconButton> : ""
 									}
 								</TableCell>

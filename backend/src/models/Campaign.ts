@@ -49,7 +49,8 @@ class Campaign extends Model<Campaign> {
       "processing",
       "canceled",
       "finished",
-      "failed"
+      "failed",
+      "archived"
     )
   )
   status: string;

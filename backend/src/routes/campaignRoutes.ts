@@ -21,6 +21,13 @@ campaignRoutes.post(
   CampaignController.testCampaign
 );
 
+campaignRoutes.post(
+  "/campaigns/repeat/:campaignId",
+  isAuth,
+  upload.array("medias"),
+  CampaignController.repeatCampaign
+);
+
 campaignRoutes.get("/campaigns", isAuth, CampaignController.index);
 
 campaignRoutes.get("/campaigns/:campaignId", isAuth, CampaignController.show);
@@ -47,6 +54,12 @@ campaignRoutes.put(
   "/campaigns/play/:campaignId",
   isAuth,
   CampaignController.playCampaign
+);
+
+campaignRoutes.put(
+  "/campaigns/archive/:campaignId",
+  isAuth,
+  CampaignController.archiveCampaign
 );
 
 campaignRoutes.put(

@@ -16,6 +16,8 @@ import { logger } from "../utils/logger";
 import ShowCampaignDetails from "../services/CampaignServices/ShowCampaignDetails";
 import { getIO } from "../libs/socket";
 import TestCampaignService from "../services/CampaignServices/TestCampaignService";
+import ArchiveCampaignService from "../services/CampaignServices/ArchiveCampaignService";
+import RepeatCampaignService from "../services/CampaignServices/RepeatCampaignService";
 
 interface CampaignData {
   name: string;
@@ -191,6 +193,7 @@ export const testCampaign = async (
   });
 
   const campaignData: {
+    mediaUrl?: string;
     mediaBeforeMessage?: string;
     message1: string;
     number: string;
@@ -285,7 +288,7 @@ export const remove = async (
   req: Request,
   res: Response
 ): Promise<Response> => {
-  if (req.user.profile !== "admin") {
+  if (req.user.profile !== "super-admin") {
     throw new AppError("ERR_NO_PERMISSION", 403);
   }
   const { campaignId } = req.params;
@@ -303,4 +306,71 @@ export const remove = async (
     throw new AppError("ERR_INTERNAL", 500);
   }
   return res.status(200).json({ message: "Campaign deleted" });
+};
+
+export const archiveCampaign = async (
+  req: Request,
+  res: Response
+): Promise<Response> => {
+  if (req.user.profile !== "admin") {
+    throw new AppError("ERR_NO_PERMISSION", 403);
+  }
+  const { campaignId } = req.params;
+
+  try {
+    const campaign = await ArchiveCampaignService(campaignId);
+    const io = getIO();
+    io.emit("campaigns", {
+      action: "update",
+      campaign
+    });
+  } catch (err) {
+    throw new AppError("ERR_INTERNAL_ERROR", 500);
+  }
+
+  return res.status(200).json({ message: "Campaign archived" });
+};
+
+export const repeatCampaign = async (
+  req: Request,
+  res: Response
+): Promise<Response> => {
+  const { id, profile } = req.user;
+  const medias = req.files as Express.Multer.File[];
+  const { campaignId } = req.params;
+  if (profile !== "admin") {
+    throw new AppError("ERR_NO_PERMISSION", 403);
+  }
+  const campaignData: CampaignData = {
+    ...req.body,
+    userId: id
+  };
+
+  const schema = Yup.object().shape({
+    name: Yup.string().required(),
+    inicialDate: Yup.string().required(),
+    columnName: Yup.string().required(),
+    sendTime: Yup.string().required(),
+    message1: Yup.string().required(),
+    message2: Yup.string(),
+    message3: Yup.string(),
+    message4: Yup.string(),
+    message5: Yup.string(),
+    userId: Yup.string().required(),
+    whatsappId: Yup.string().required()
+  });
+
+  try {
+    await schema.validate(campaignData);
+  } catch (error) {
+    throw new AppError(error.message);
+  }
+
+  const campaign = await RepeatCampaignService({
+    campaignData,
+    medias,
+    campaignId
+  });
+
+  return
 };
