@@ -302,7 +302,8 @@ const messages = {
       campaignModal: {
         title: {
           add: "Adicionar Campanha",
-          edit: "Editar Campanha"
+          edit: "Editar Campanha",
+          preview: "Pré-visualização"
         },
         form: {
           name: "Nome da campanha",
@@ -320,7 +321,8 @@ const messages = {
           sendMediaBefore: "Enviar mídia antes",
           testNumberPlaceholder: "Numéro com DDD (apenas dígitos, sem pontuação)",
           testMessage: "Testar Mensagem",
-          testButton: "Testar"
+          testButton: "Testar",
+          previewMessage: "Pré-visualizar mensagem",
         },
         errors: {
           tooShort: "Muito curto",
@@ -333,8 +335,11 @@ const messages = {
           okAdd: "Adicionar",
           okEdit: "Salvar",
           cancel: "Cancelar",
+          preview: "Visualizar",
+          close: "Fechar"
         },
         success: "Campanha salva com sucesso.",
+        message: "Mensagem",
       },
       chat: {
         noTicketMessage: "Selecione um ticket para começar a conversar.",
@@ -526,8 +531,8 @@ const messages = {
           campaignTestFailed: "Whatsapp Bot, Texto 1 e Número devem ser preenchidos"
         },
         confirmationModal: {
-          deleteTitle: "Excluir campanha",
-          deleteMessage: "Tem certeza que deseja excluir a campanha? Todos os contatos da campanha e mensagens agendadas serão excluidas."
+          archiveTitle: "Arquivar a campanha",
+          archiveMessage: "Tem certeza que arquivar a campanha? Essa ação não pode ser desfeita."
         },
         table: {
           name: "Nome",
@@ -548,7 +553,7 @@ const messages = {
             finished: "Campanha encerrada",
             failed: "Campanha falhou",
             timeout: "Campanha pausada devido ao horário",
-
+            archived: "Campanha arquivada"
           }
         }
       },

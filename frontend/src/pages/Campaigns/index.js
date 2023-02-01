@@ -16,6 +16,7 @@ import {
 import {
 	Edit,
 	FolderOutlined,
+	Folder,
 	RepeatOneOutlined,
 	PauseCircleOutline,
 	PauseCircleFilled,
@@ -215,7 +216,7 @@ const Campaigns = () => {
 			<ConfirmationModal
 				title={
 					selectedCampaign &&
-				`${i18n.t("campaigns.confirmationModal.deleteTitle")} ${
+				`${i18n.t("campaigns.confirmationModal.archiveTitle")} ${
 					selectedCampaign.name
 				}?`
 				}
@@ -223,7 +224,7 @@ const Campaigns = () => {
 				onClose={handleCloseConfirmationModal}
 				onConfirm={() => handleOnArchiveCampaign(selectedCampaign)}
 			>
-				{i18n.t("campaigns.confirmationModal.deleteMessage")}
+				{i18n.t("campaigns.confirmationModal.archiveMessage")}
 				
 			</ConfirmationModal>
             <CampaignModal open={modalOpen} onClose={handleOnCloseModal} campaignId={selectedCampaign?.id} />
@@ -284,6 +285,13 @@ const Campaigns = () => {
 											title={i18n.t("campaigns.toolTips.title.processing")}
 											>
 												<PlayArrow color="secondary" />
+											</CustomToolTip> 
+											:
+											campaign.status === "archived" ?
+											<CustomToolTip
+											title={i18n.t("campaigns.toolTips.title.archived")}
+											>
+												<Folder color="secondary" />
 											</CustomToolTip> 
 											:
 											campaign.status === "paused" ?

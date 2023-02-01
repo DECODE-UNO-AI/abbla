@@ -302,7 +302,8 @@ const messages = {
       campaignModal: {
         title: {
           add: "Add Campaign",
-          edit: "Edit Campaign"
+          edit: "Edit Campaign",
+          preview: "Message preview"
         },
         form: {
           name: "Campaign name",
@@ -320,7 +321,8 @@ const messages = {
           sendMediaBefore: "Send media file before",
           testNumberPlaceholder: "Number with DDD (digits only, without punctuation)",
           testMessage: "Test Message",
-          testButton: "Test"
+          testButton: "Test",
+          previewMessage: "Message preview",
         },
         errors: {
           tooShort: "Too short",
@@ -333,6 +335,8 @@ const messages = {
           okAdd: "Add",
           okEdit: "Save",
           cancel: "Cancel",
+          preview: "Preview",
+          close: "Close"
         },
         success: "Capaign saved successfully.",
       },
@@ -522,8 +526,8 @@ const messages = {
           campaignTestFailed: "Whatsapp Bot, Texto 1 and Number must be filled"
         },
         confirmationModal: {
-          deleteTitle: "Delete campaign",
-          deleteMessage: "Are you sure you want to delete the campaign? All campaign contacts and scheduled messages will be deleted."
+          archiveTitle: "Archive campaign",
+          archiveMessage: "Are you sure to archive the campaign? This action cannot be undone."
         },
         table: {
           name: "Name",
@@ -544,7 +548,7 @@ const messages = {
             finished: "Finished",
             failed: "Failed",
             timeout: "Paused due to schedule",
-
+            archived: "Archived"
           }
         }
       },

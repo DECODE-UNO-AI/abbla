@@ -302,7 +302,8 @@ const messages = {
       campaignModal: {
         title: {
           add: "Agregar campaña",
-          edit: "Editar campaña"
+          edit: "Editar campaña",
+          preview: "Ver mensaje"
         },
         form: {
           name: "Nombre de campaña",
@@ -320,7 +321,8 @@ const messages = {
           sendMediaBefore: "Enviar archivo antes",
           testNumberPlaceholder: "Número con DDD (solo dígitos, sin puntuación)",
           testMessage: "Mensaje de prueba",
-          testButton: "Mandar"
+          testButton: "Mandar",
+          previewMessage: "Mensaje de vista previa",
         },
         errors: {
           tooShort: "Muy corto",
@@ -333,6 +335,8 @@ const messages = {
           okAdd: "Agregar",
           okEdit: "Guardar",
           cancel: "Cancelar",
+          preview: "Ver mensaje",
+          close: "Volver"
         },
         success: "Campaña guardá con éxito.",
       },
@@ -522,8 +526,8 @@ const messages = {
           campaignTestFailed: "Se debe completar el número, el mensaje, el Whatsapp Bot"
         },
         confirmationModal: {
-          deleteTitle: "Eliminar campaña",
-          deleteMessage: "¿Está seguro de que desea eliminar la campaña? Se eliminarán todos los contactos de la campaña y los mensajes programados."
+          archiveTitle: "Archivar la campaña",
+          archiveMessage: "¿Estás seguro de archivar la campaña? Esta acción no se puede deshacer."
         },
         table: {
           name: "Nombre",
@@ -544,7 +548,7 @@ const messages = {
             finished: "Campaña finalizada",
             failed: "Campaña fallida",
             timeout: "Campaña en pausa debido a la programación",
-
+            archived: "Campaña archivada"
           }
         }
       },

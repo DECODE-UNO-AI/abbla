@@ -27,6 +27,10 @@ import {
     Tabs,
     AppBar,
     Box,
+    FormControl,
+    RadioGroup,
+    FormControlLabel,
+    Radio
 } from '@material-ui/core';
 import { green } from "@material-ui/core/colors";
 
@@ -38,6 +42,7 @@ import toastError from "../../errors/toastError";
 import api from "../../services/api";
 import useWhatsApps from "../../hooks/useWhatsApps";
 import SpeedMessageCards from "../SpeedMessageCards";
+import WhatsAppLayout from "../WhatsappLayout";
 // import Papa from 'papaparse';
 
 
@@ -121,6 +126,12 @@ const useStyles = makeStyles(theme => ({
         alignItems: "center",
         marginTop: 10
     },
+    previewBox: {
+        width: "100%",
+        display: "flex",
+        alignItems: "center",
+        marginTop: 10
+    },
     buttonProgress: {
 		color: green[500],
 		position: "absolute",
@@ -129,6 +140,15 @@ const useStyles = makeStyles(theme => ({
 		marginTop: -12,
 		marginLeft: -12,
 	},
+    previewContainer: {
+        height: "100%", 
+        minHeight: "400px", 
+        margin: 25,
+        "@media (max-width: 720px)": {
+            margin: 0,
+            marginTop: 20
+        }
+    }
 }));
 
 const marks = [
@@ -264,6 +284,8 @@ const CampaignModal = ({ open, onClose, campaignId }) => {
     const [submittingForm, setSubmittingForm] = useState(false)
     const [testNumber, setTestNumber] = useState("")
     const [isRepeatModel, setIsRepeatModel] = useState(false)
+    const [openPreview, setOpenPreview] = useState(false)
+    const [selectedPreviewMessage, setSelectedPreviewMessage] = useState("message1")
     const inputFileRef = useRef();
 
     useEffect(() => {
@@ -804,10 +826,93 @@ const CampaignModal = ({ open, onClose, campaignId }) => {
                                             style={{ marginTop: 5 }}
                                             onChange={handleOnMediaFileChange}
                                             ref={inputFileRef}
-                                            type="file"                                      
+                                            type="file"
+                                            // accept=".mp3,.mp4,.mkv"                       
                                         />
                                         {mediaError ? <span style={{ color: "#ff5d32"}}>{i18n.t("campaignModal.errors.fileError")}</span> : ""}
                                     </Box>
+                                    <Box className={classes.testContainer}>
+                                        <Typography variant="h6">
+                                            {i18n.t("campaignModal.form.previewMessage")}
+                                        </Typography>
+                                        <Box className={classes.previewBox}>
+                                            <FormControl component="fieldset" style={{ marginBottom: 5 }}>
+                                                <RadioGroup 
+                                                    row aria-label="message" 
+                                                    name="message" 
+                                                    value={selectedPreviewMessage} 
+                                                    onChange={(e) => setSelectedPreviewMessage(e.target.value)}
+                                                >
+                                                    { values?.message1 !== '' ? 
+                                                        <FormControlLabel 
+                                                            value="message1" 
+                                                            defaultChecked control={<Radio />} 
+                                                            label={`${i18n.t("campaignModal.message")} 1`} 
+                                                        /> : ""}
+                                                    { values?.message2 !== '' ? 
+                                                        <FormControlLabel 
+                                                            value="message2" 
+                                                            control={<Radio />} 
+                                                            label={`${i18n.t("campaignModal.message")} 2`} 
+                                                        /> : ""}
+                                                    { values?.message3 !== '' ? 
+                                                        <FormControlLabel 
+                                                            value="message3" 
+                                                            control={<Radio />} 
+                                                            label={`${i18n.t("campaignModal.message")} 3`} 
+                                                        /> : ""}
+                                                    { values?.message4 !== '' ? 
+                                                        <FormControlLabel 
+                                                            value="message4" 
+                                                            control={<Radio />} 
+                                                            label={`${i18n.t("campaignModal.message")} 4`} 
+                                                        /> : ""}
+                                                    { values?.message5 !== '' ? 
+                                                        <FormControlLabel 
+                                                            value="message5" 
+                                                            control={<Radio />} 
+                                                            label={`${i18n.t("campaignModal.message")} 5`} 
+                                                        /> : ""}
+                                                </RadioGroup>
+                                            </FormControl>
+                                        </Box>
+                                        <Button
+                                            onClick={()=>{setOpenPreview(true)}}
+                                            variant="outlined"
+                                        >
+                                            {i18n.t("campaignModal.buttons.preview")}
+                                        </Button>
+                                    </Box>
+                                    <Dialog
+                                        open={openPreview}
+                                        onClose={() => {setOpenPreview(false)}}
+                                        className={classes.dialog}
+                                        scroll="paper"
+                                    >   
+                                        <DialogTitle id="form-dialog-title">
+                                            {i18n.t("campaignModal.title.preview")+":"}
+                                        </DialogTitle>
+                                        <DialogContent style={{ padding: 0, minHeight: "400px"}}>
+                                            <Box className={classes.previewContainer}>
+                                                <WhatsAppLayout 
+                                                    message={values[selectedPreviewMessage]} 
+                                                    mediaLink={campaignForm.mediaUrl}
+                                                    mediaType={mediaFile ? mediaFile.type : campaignForm.mediaType} 
+                                                    media={mediaFile}
+                                                    mediaBefore={mediaFirst} 
+                                                    style={{ height: 20 }}
+                                                />
+                                            </Box>
+                                        </DialogContent>
+                                        <DialogActions>
+                                            <Button
+                                                onClick={()=>{setOpenPreview(false)}}
+                                                variant="outlined"
+                                            >
+                                                {i18n.t("campaignModal.buttons.close")}
+                                            </Button>
+                                        </DialogActions>
+                                    </Dialog>
                                     <Box className={classes.testContainer}>
                                         <Typography variant="h6">
                                             {i18n.t("campaignModal.form.testMessage")}

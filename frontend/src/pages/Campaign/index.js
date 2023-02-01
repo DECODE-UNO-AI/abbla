@@ -9,14 +9,6 @@ import {
     TableBody, 
     Typography, 
     TextField,
-    FormControl,
-    FormLabel,
-    RadioGroup,
-    FormControlLabel,
-    Radio,
-    Drawer,
-    Button
-
 } from '@material-ui/core';
 import { makeStyles } from "@material-ui/core/styles";
 import { useParams } from 'react-router-dom';
@@ -24,7 +16,6 @@ import Title from "../../components/Title";
 import toastError from '../../errors/toastError';
 import api from '../../services/api';
 import { i18n } from "../../translate/i18n";
-import WhatsAppLayout from '../../components/WhatsappLayout';
 
 const useStyles = makeStyles(theme => ({
 	mainPaper: {
@@ -80,9 +71,7 @@ const Campaign = () => {
     const [campaign, setCampaign] = useState(null)
     const [contacts, setContacts] = useState([])
     const [search, setSearch] = useState(null)
-    const [message, setMessage] = useState("message1")
     const [, setLoading] = useState(false)
-    const [previewOpen, setPreviewOpen] = useState(false)
 
     useEffect(() => {
         (async () => {
@@ -98,14 +87,6 @@ const Campaign = () => {
 			}
 		  })();
     }, [campaignId])
-
-    const toggleDrawer = (open) => (event) => {
-        if (event.type === 'keydown' && (event.key === 'Tab' || event.key === 'Shift')) {
-          return;
-        }
-    
-        setPreviewOpen(open);
-      };
 
     const filterContacts = search ? contacts.filter((contact) => contact.number.includes(search)) : contacts;
 
@@ -146,27 +127,6 @@ const Campaign = () => {
                     </Typography>
                     
                 </Box>
-                <Box className={classes.preview}>
-                    <FormControl component="fieldset" style={{ margin: 40 }}>
-                        <FormLabel component="legend">{i18n.t("campaign.message")}</FormLabel>
-                            <RadioGroup aria-label="gender" name="gender1" value={message} onChange={(e) => setMessage(e.target.value)}>
-                                { campaign?.message1 !== '' ? <FormControlLabel value="message1" control={<Radio />} label={`${i18n.t("campaign.message")} 1`} /> : ""}
-                                { campaign?.message2 !== '' ? <FormControlLabel value="message2" control={<Radio />} label={`${i18n.t("campaign.message")} 2`} /> : ""}
-                                { campaign?.message3 !== '' ? <FormControlLabel value="message3" control={<Radio />} label={`${i18n.t("campaign.message")} 3`} /> : ""}
-                                { campaign?.message4 !== '' ? <FormControlLabel value="message4" control={<Radio />} label={`${i18n.t("campaign.message")} 4`} /> : ""}
-                                { campaign?.message5 !== '' ? <FormControlLabel value="message5" control={<Radio />} label={`${i18n.t("campaign.message")} 5`} /> : ""}
-                            </RadioGroup>
-                    </FormControl>
-                    <Typography className={classes.InfoTitle}>
-                       <Button onClick={toggleDrawer(true)}>preview</Button>
-                    </Typography>
-                </Box>
-                <Drawer anchor='right' open={previewOpen} className={classes.drawer} onClose={toggleDrawer(false)}>
-                        <Button onClick={toggleDrawer(false)} style={{ marginBottom: 20}}>Close</Button>
-                    
-                        <WhatsAppLayout message={campaign?.[message]} mediaLink={campaign?.mediaUrl} mediaType={campaign?.mediaType} mediaBefore={campaign?.mediaBeforeMessage}/>
-                   
-                </Drawer>
             </Box>
             <Box className={classes.contactsTable}>
                 <TextField 
