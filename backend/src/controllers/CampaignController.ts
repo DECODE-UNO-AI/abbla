@@ -371,6 +371,11 @@ export const repeatCampaign = async (
     medias,
     campaignId
   });
-
-  return
+  startJob(campaign);
+  const io = getIO();
+  io.emit("campaigns", {
+    action: "update",
+    campaign
+  });
+  return res.status(200).json(campaign);
 };

@@ -76,7 +76,6 @@ const TestCampaignService = async ({
       await whatsapp.sendMessage(whatsNumber._serialized, message1);
     }
   } catch (err) {
-    console.log(err);
     throw new AppError("INTERNAL_ERROR", 500);
   }
 };

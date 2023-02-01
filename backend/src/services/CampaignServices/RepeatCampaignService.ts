@@ -3,8 +3,8 @@
 import AppError from "../../errors/AppError";
 import Campaign from "../../models/Campaign";
 import { logger } from "../../utils/logger";
+import CloneCampaignContactsService from "../CampaignContactService/CloneCampaignContactsService";
 import CreateCampaignContactsService from "../CampaignContactService/CreateCampaignContactsService";
-import DeleteCampaignContactService from "../CampaignContactService/DeleteCampaignContactService";
 
 const cArquivoName = (url: string | undefined) => {
   if (!url) return "";
@@ -44,7 +44,6 @@ const RepeatCampaignService = async ({
 }: Request): Promise<Campaign> => {
   let mediaData: Express.Multer.File | undefined;
   let contacts: Express.Multer.File | undefined;
-
   let startDate;
   if (campaignData.startNow !== "false") {
     startDate = new Date();
@@ -82,7 +81,6 @@ const RepeatCampaignService = async ({
     status: "scheduled",
     sendTime: campaignData.sendTime.replace(",", "-")
   };
-
   if (medias && Array.isArray(medias) && medias.length) {
     await Promise.all(
       medias.map(async (media: Express.Multer.File) => {
@@ -104,10 +102,9 @@ const RepeatCampaignService = async ({
     if (contacts) {
       data = {
         ...data,
-        contacts: contacts?.filename
+        contactsCsv: contacts.filename
       };
     }
-
     if (mediaData) {
       data = {
         ...data,
@@ -125,18 +122,35 @@ const RepeatCampaignService = async ({
       mediaType: ""
     };
   }
-
-  if (!campaignModel) {
-    throw new AppError("ERR_NO_CAMPAIGN_FOUND", 404);
+  let campaignModel;
+  try {
+    campaignModel = await Campaign.create({
+      name: data.name.trim(),
+      inicialDate: startDate,
+      sendTime: data.sendTime.replace(",", "-"),
+      columnName: data.columnName.trim(),
+      status: "scheduled",
+      message1: data.message1,
+      message2: data.message2,
+      message3: data.message3,
+      message4: data.message4,
+      message5: data.message5,
+      userId: data.userId,
+      delay: delayValue,
+      mediaBeforeMessage: mediaBeforeOrder,
+      contactsCsv: data.contactsCsv,
+      mediaUrl: data.mediaUrl,
+      mediaType: data.mediaType,
+      whatsappId: data.whatsappId
+    });
+  } catch (err) {
+    logger.error(err);
+    throw new AppError("INTERNAL_ERR", 500);
   }
-
-  await campaignModel.update(data);
-
-  await campaignModel.reload();
-
   if (contacts) {
-    await DeleteCampaignContactService(campaignModel);
     await CreateCampaignContactsService(campaignModel);
+  } else {
+    await CloneCampaignContactsService(campaignModel, campaignId);
   }
 
   return campaignModel;

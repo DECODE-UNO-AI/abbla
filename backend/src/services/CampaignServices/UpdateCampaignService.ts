@@ -121,7 +121,7 @@ const UpdateCampaignService = async ({
     if (contacts) {
       data = {
         ...data,
-        contacts: contacts?.filename
+        contactsCsv: contacts.filename
       };
     }
 

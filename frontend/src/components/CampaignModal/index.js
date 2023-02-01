@@ -286,7 +286,6 @@ const CampaignModal = ({ open, onClose, campaignId }) => {
                     ? "240"
                     : null;
                 setDelay(delayValue);
-                console.log(data)
                 const settedDate = data.inicialDate.substring(0,16)
                 try {
                     const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/public/${data.contactsCsv}`)
@@ -417,7 +416,6 @@ const CampaignModal = ({ open, onClose, campaignId }) => {
         setSubmittingForm(true)
         setMediaError(false)
         const campaignData = ({...values, delay: delay, startNow, sendTime, mediaBeforeMessage: mediaFirst})
-        console.log(campaignData)
         const formData = new FormData();
         Object.keys(campaignData).forEach((key) => {
             formData.append(key, campaignData[key])
@@ -463,7 +461,9 @@ const CampaignModal = ({ open, onClose, campaignId }) => {
     const handleOnModalClose = () => {
         setMediaError(false)
 		setCapaignForm(initialState);
+        setSendTime(initialState.sendTime)
         setCsvColumns([]);
+        setDelay("15")
         setMediaFile(null);
         setCsvFile(null);
         setStartNow(false);

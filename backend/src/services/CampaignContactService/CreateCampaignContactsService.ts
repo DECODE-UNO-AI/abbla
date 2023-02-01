@@ -34,6 +34,9 @@ const CreateCampaignContactsService = async (
   for (let i = 0; i < csvArray.length; i += 1) {
     const contact = csvArray[i];
     let contactNumber: string = contact[campaign.columnName] || null;
+    if (!contactNumber) {
+      break;
+    }
     if (!contactNumber.startsWith("55")) {
       contactNumber = `55${contactNumber}`;
     }
