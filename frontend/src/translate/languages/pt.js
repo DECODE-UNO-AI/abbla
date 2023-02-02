@@ -324,6 +324,13 @@ const messages = {
           testButton: "Testar",
           previewMessage: "Pré-visualizar mensagem",
         },
+        confirmationModal: {
+          title: "Iniciar Campanha",
+          confirmLabel: "Li e concordo com as informações acima",
+          confirmMessage: {
+            title: "Informações importantes",
+          }
+        },
         errors: {
           tooShort: "Muito curto",
           tooLong: "Muito comprido",

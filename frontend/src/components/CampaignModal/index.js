@@ -45,6 +45,7 @@ import api from "../../services/api";
 import useWhatsApps from "../../hooks/useWhatsApps";
 import SpeedMessageCards from "../SpeedMessageCards";
 import WhatsAppLayout from "../WhatsappLayout";
+import ConfirmationModal from "../ConfirmationModal";
 // import Papa from 'papaparse';
 
 
@@ -287,6 +288,7 @@ const CampaignModal = ({ open, onClose, campaignId, visualize = false }) => {
     const [testNumber, setTestNumber] = useState("")
     const [isRepeatModel, setIsRepeatModel] = useState(false)
     const [openPreview, setOpenPreview] = useState(false)
+    const [confirmationModalOpen, setConfirmationModalOpen] = useState(false)
     const [selectedPreviewMessage, setSelectedPreviewMessage] = useState("message1")
     const inputFileRef = useRef();
 
@@ -516,12 +518,46 @@ const CampaignModal = ({ open, onClose, campaignId, visualize = false }) => {
 					validationSchema={CampaignSchema}
 					onSubmit={async (values, actions) => {
 						setTimeout(async () => {
-							await handleOnSave(values);
+							setConfirmationModalOpen(true);
 							actions.setSubmitting(false);
 						}, 400);
 					}}
 				>
 					{({ touched, errors, isSubmitting, values }) => (
+                        <>
+                            <ConfirmationModal
+                            open={confirmationModalOpen}
+                            title={i18n.t("campaignModal.confirmationModal.title")}
+                            confirmLabel={i18n.t("campaignModal.confirmationModal.confirmLabel")}
+                            onClose={setConfirmationModalOpen}
+                            onConfirm={() => handleOnSave(values)}
+                            haveConfirmationSelect
+                        >
+                            <>
+                                <Typography style={{ fontWeight: "bold"}}>
+                                    {i18n.t("campaignModal.confirmationModal.confirmMessage.title")}
+                                </Typography>
+                                <ul>
+                                    <li>
+                                        Após o início dos envios, a mensagem <span style={{ fontWeight: "bold"}}>não pode ser alterada</span>
+                                    </li>
+                                    <li>
+                                        O WhatsApp pode <spam style={{ fontWeight: "bold", color: "red" }}>banir</spam> o seu número caso as mensagens sejam denunciadas como 
+                                        <spam style={{ fontWeight: "bold", color: "red" }}> SPAM</spam>
+                                    </li>
+                                    <li>
+                                        Não nós responsabilizamos caso seu número seja banido
+                                    </li>
+                                    <li>
+                                        Ao iniciar a campanha, você concorda com os <span> </span>
+                                        <a target="_blank" rel="noopener noreferrer" href="https://www.whatsapp.com/legal/terms-of-service">
+                                            termos de uso do WhatsApp
+                                        </a>
+                                    </li>
+                                </ul>
+                            </>
+                        
+                        </ConfirmationModal>
                         
 						<Form>
 							<DialogContent dividers style={{ widht: 800, display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center"}}>
@@ -1014,6 +1050,7 @@ const CampaignModal = ({ open, onClose, campaignId, visualize = false }) => {
                                 }
 							</DialogActions>
 						</Form>
+                        </>
 					)}
 				</Formik>
 			</Dialog>
