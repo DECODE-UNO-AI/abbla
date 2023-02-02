@@ -16,7 +16,6 @@ const CancelCampaignService = async (
     status: "canceled"
   });
 
-  console.log("aqui");
   await campaign.reload();
 
   return campaign;
