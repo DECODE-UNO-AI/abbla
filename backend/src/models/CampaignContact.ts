@@ -22,9 +22,19 @@ class CampaignContact extends Model<CampaignContact> {
 
   @Default("pending")
   @Column(
-    DataType.ENUM("pending", "processing", "failed", "invalid-number", "sent")
+    DataType.ENUM(
+      "pending",
+      "processing",
+      "failed",
+      "invalid-number",
+      "sent",
+      "canceled"
+    )
   )
   status: string;
+
+  @Column
+  number: string;
 
   @Column(DataType.TEXT)
   // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
@@ -36,9 +46,6 @@ class CampaignContact extends Model<CampaignContact> {
   get details(): any {
     return JSON.parse(this.getDataValue("details"));
   }
-
-  @Column
-  number: string;
 
   @Column
   messageSent: string;

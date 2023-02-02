@@ -1,4 +1,5 @@
 import AppError from "../../errors/AppError";
+import { finishJob } from "../../libs/campaignQueue";
 import Campaign from "../../models/Campaign";
 
 const CancelCampaignService = async (
@@ -9,11 +10,13 @@ const CancelCampaignService = async (
   if (!campaign) {
     throw new AppError("ERR_CAMPAIGN_NOT_FOUND", 404);
   }
+  finishJob(campaignId);
 
   await campaign.update({
     status: "canceled"
   });
 
+  console.log("aqui");
   await campaign.reload();
 
   return campaign;

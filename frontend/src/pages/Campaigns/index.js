@@ -269,16 +269,16 @@ const Campaigns = () => {
 							<TableCell align="left">
 								ID
 							</TableCell>
-							<TableCell align="left">
+							<TableCell align="center">
 								{i18n.t("campaigns.table.name")}
 							</TableCell>
-							<TableCell align="left">
+							<TableCell align="center">
 								{i18n.t("campaigns.table.connection")}
 							</TableCell>
-							<TableCell align="left">
+							<TableCell align="center">
 								{i18n.t("campaigns.table.createdAt")}
 							</TableCell>
-							<TableCell align="left">
+							<TableCell align="center">
 								{i18n.t("campaigns.table.inicialDate")}
 							</TableCell>
 							<TableCell align="center">
@@ -313,7 +313,7 @@ const Campaigns = () => {
 							<TableRow key={campaign.id}>
 								<TableCell align="center">{campaign.id}</TableCell>
 								<TableCell align="left">{campaign.name}</TableCell>
-								<TableCell align="left">{getWhatsAppName(whatsApps, campaign.whatsappId)}</TableCell>
+								<TableCell align="center">{getWhatsAppName(whatsApps, campaign.whatsappId)}</TableCell>
 								<TableCell align="left">{new Date(campaign.createdAt).toLocaleString()}</TableCell>
 								<TableCell align="left">{new Date(campaign.inicialDate).toLocaleString()}</TableCell>
 								<TableCell align="center">{campaign.delay.split("-")[1]} seg</TableCell>

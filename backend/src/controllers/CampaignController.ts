@@ -226,7 +226,6 @@ export const cancelCampaign = async (
   try {
     const campaign = await CancelCampaignService(campaignId);
     const io = getIO();
-    finishJob(campaignId);
     io.emit("campaigns", {
       action: "update",
       campaign
