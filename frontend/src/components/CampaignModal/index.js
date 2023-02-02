@@ -253,7 +253,7 @@ const CampaignSchema = Yup.object().shape({
     columnName: Yup.string().required(" "),
 });
 
-const CampaignModal = ({ open, onClose, campaignId }) => {
+const CampaignModal = ({ open, onClose, campaignId, visualize = false }) => {
 	const classes = useStyles();
     const { whatsApps } = useWhatsApps()
 
@@ -530,7 +530,8 @@ const CampaignModal = ({ open, onClose, campaignId }) => {
                                         {i18n.t("campaignModal.form.sendTime")}
                                     </Typography>
                                     <div style={{ paddingLeft: 15, paddingRight: 15}}>
-                                        <Slider 
+                                        <Slider
+                                            disabled={visualize}
                                             getAriaLabel={() => 'Hours'}
                                             name="sendTime"
                                             id="sendTime"
@@ -551,7 +552,7 @@ const CampaignModal = ({ open, onClose, campaignId }) => {
                                         {i18n.t("campaignModal.form.delay")}
                                     </Typography> 
                                     <Box>
-                                        <SpeedMessageCards delay={delay} setDelay={setDelay}/>
+                                        <SpeedMessageCards delay={delay} setDelay={visualize ? ()=>{} : setDelay}/>
                                     </Box> 
                                 </Box>
                                 <Box sx={{ width: "100%" }} className={classes.box}>
@@ -563,6 +564,7 @@ const CampaignModal = ({ open, onClose, campaignId }) => {
                                         placeholder={i18n.t("campaignModal.form.name")}
                                         name="name"
                                         id="name"
+                                        disabled={visualize}
                                         error={touched.name && Boolean(errors.name)}
                                         helperText={touched.name && errors.name}
                                         variant="outlined"
@@ -583,7 +585,7 @@ const CampaignModal = ({ open, onClose, campaignId }) => {
                                                 name="inicialDate"
                                                 type="datetime-local"
                                                 variant="outlined"
-                                                disabled={startNow}
+                                                disabled={startNow || visualize}
                                                 className={classes.dateInput}
                                                 InputLabelProps={{
                                                     shrink: true,
@@ -592,6 +594,7 @@ const CampaignModal = ({ open, onClose, campaignId }) => {
                                             <Box style={{ display: "flex", alignItems: "center" }}>
                                                 <Checkbox
                                                   checked={startNow}
+                                                  disabled={visualize}
                                                   name="startNow"
                                                   onChange={handleOnChecked}
                                                   color={"primary"}
@@ -609,6 +612,7 @@ const CampaignModal = ({ open, onClose, campaignId }) => {
 											as={Select}
 											name="whatsappId"
                                             id="whatsappId"
+                                            disabled={visualize}
                                             error={touched.whatsappId && Boolean(errors.whatsappId)}
                                             helperText={touched.whatsappId && errors.whatsappId}
                                             variant="outlined"
@@ -641,12 +645,14 @@ const CampaignModal = ({ open, onClose, campaignId }) => {
                                                         </Button>
                                                     : ""
                                                 }
-                                                <input 
-                                                    style={{ marginTop: 5, cursor: "pointer" }}
-                                                    onChange={handleOnCsvFileChange}
-                                                    accept=".csv"
-                                                    type="file" 
-                                                />
+                                                { !visualize && (
+                                                    <input 
+                                                        style={{ marginTop: 5, cursor: "pointer" }}
+                                                        onChange={handleOnCsvFileChange}
+                                                        accept=".csv"
+                                                        type="file" 
+                                                    />
+                                                )}
                                             </Box>
                                         </Box>
                                         <Box style={{ width: "50%"}}>
@@ -657,6 +663,7 @@ const CampaignModal = ({ open, onClose, campaignId }) => {
                                                 as={Select}
                                                 name="columnName"
                                                 id="columnName"
+                                                disabled={visualize}
                                                 error={touched.columnName && Boolean(errors.columnName)}
                                                 helperText={touched.columnName && errors.columnName}
                                                 variant="outlined"
@@ -696,6 +703,7 @@ const CampaignModal = ({ open, onClose, campaignId }) => {
                                         <Box>
                                         <Field
                                             as={TextField}
+                                            disabled={visualize}
 									        style={{ width: "100%", padding: 0}}
                                             labelId="message1-label"
                                             id="message1"
@@ -713,6 +721,7 @@ const CampaignModal = ({ open, onClose, campaignId }) => {
                                     <TabPanel value={tabValue} index={1} className={classes.messageTab} variant={"div"}>
                                         <Field
                                             as={TextField}
+                                            disabled={visualize}
 									        style={{ width: "100%", padding: 0}}
                                             labelId="message2-label"
                                             id="message2"
@@ -729,6 +738,7 @@ const CampaignModal = ({ open, onClose, campaignId }) => {
                                     <TabPanel value={tabValue} index={2} className={classes.messageTab} variant={"div"}>
                                         <Field
                                             as={TextField}
+                                            disabled={visualize}
 									        style={{ width: "100%", padding: 0}}
                                             labelId="message3-label"
                                             id="message3"
@@ -745,6 +755,7 @@ const CampaignModal = ({ open, onClose, campaignId }) => {
                                     <TabPanel value={tabValue} index={3} className={classes.messageTab} variant={"div"}>
                                         <Field
                                             as={TextField}
+                                            disabled={visualize}
 									        style={{ width: "100%", padding: 0}}
                                             labelId="message4-label"
                                             id="message4"
@@ -761,6 +772,7 @@ const CampaignModal = ({ open, onClose, campaignId }) => {
                                     <TabPanel value={tabValue} index={4} className={classes.messageTab} variant={"div"}>
                                         <Field
                                             as={TextField}
+                                            disabled={visualize}
 									        style={{ width: "100%", padding: 0}}
                                             labelId="message5-label"
                                             id="message5"
@@ -798,6 +810,7 @@ const CampaignModal = ({ open, onClose, campaignId }) => {
                                         <Field
                                             as={Checkbox}
                                             checked={mediaFirst}
+                                            disabled={visualize}
                                             onChange={(e) => setMediaFirst(e.target.checked)}
                                             inputProps={{ 'aria-label': 'primary checkbox' }}
                                             name="mediaBeforeMessage"
@@ -820,17 +833,22 @@ const CampaignModal = ({ open, onClose, campaignId }) => {
                                                 >
                                                     Download
                                                 </Button>
-                                                <p>Ou</p>
+                                                { !visualize && (
+                                                    <p>Ou</p>
+                                                )}
                                                 </>
                                             : ""
                                         }
-                                        <input
-                                            style={{ marginTop: 5 }}
-                                            onChange={handleOnMediaFileChange}
-                                            ref={inputFileRef}
-                                            type="file"
-                                            // accept=".mp3,.mp4,.mkv"                       
-                                        />
+                                        { !visualize && (
+                                            <input
+                                                style={{ marginTop: 5 }}
+                                                onChange={handleOnMediaFileChange}
+                                                ref={inputFileRef}
+                                                type="file"
+                                                // accept=".mp3,.mp4,.mkv"                       
+                                            />
+                                        )}
+                                        
                                         {mediaError ? <span style={{ color: "#ff5d32"}}>{i18n.t("campaignModal.errors.fileError")}</span> : ""}
                                     </Box>
                                     <Box className={classes.testContainer}>
@@ -949,35 +967,51 @@ const CampaignModal = ({ open, onClose, campaignId }) => {
                                 </Box>
 							</DialogContent>
 							<DialogActions>
-								<Button
-									onClick={onClose}
-									color="secondary"
-									disabled={submittingForm}
-									variant="outlined"
-								>
-									{i18n.t("campaignModal.buttons.cancel")}
-								</Button>
-								<Button
-									type="submit"
-									color="primary"
-									disabled={submittingForm}
-									variant="contained"
-								>
-									{
-                                        !campaignId && !isRepeatModel
-                                            ? <span style={{ display: "flex", alignItems: "center"}}>{i18n.t("campaignModal.buttons.okAdd")}<NearMeIcon style={{ marginLeft: 5}} /></span>
-                                            : campaignId && isRepeatModel ?
-                                            <span style={{ display: "flex", alignItems: "center"}}>{i18n.t("campaignModal.buttons.okAdd")}<NearMeIcon style={{ marginLeft: 5}} /></span> 
-                                            : <span style={{ display: "flex", alignItems: "center"}}>{i18n.t("campaignModal.buttons.okEdit")}<SaveIcon style={{ marginLeft: 5}} /></span>
-                                        
-                                    }
-									{submittingForm && (
-										<CircularProgress
-											size={24}
-											className={classes.buttonProgress}
-										/>
-									)}
-								</Button>
+                                {
+                                    visualize ? 
+                                    <>
+                                        <Button
+                                            type="submit"
+                                            color="primary"
+                                            onClick={onClose}
+                                            variant="contained"
+                                        >
+                                            {i18n.t("campaignModal.buttons.close")}
+                                        </Button>
+                                    </> 
+                                    :
+                                    <>
+                                        <Button
+                                            onClick={onClose}
+                                            color="secondary"
+                                            disabled={submittingForm}
+                                            variant="outlined"
+                                        >
+                                            {i18n.t("campaignModal.buttons.cancel")}
+                                        </Button>
+                                        <Button
+                                            type="submit"
+                                            color="primary"
+                                            disabled={submittingForm}
+                                            variant="contained"
+                                        >
+                                            {
+                                                !campaignId && !isRepeatModel
+                                                    ? <span style={{ display: "flex", alignItems: "center"}}>{i18n.t("campaignModal.buttons.okAdd")}<NearMeIcon style={{ marginLeft: 5}} /></span>
+                                                    : campaignId && isRepeatModel ?
+                                                    <span style={{ display: "flex", alignItems: "center"}}>{i18n.t("campaignModal.buttons.okAdd")}<NearMeIcon style={{ marginLeft: 5}} /></span> 
+                                                    : <span style={{ display: "flex", alignItems: "center"}}>{i18n.t("campaignModal.buttons.okEdit")}<SaveIcon style={{ marginLeft: 5}} /></span>
+                                                
+                                            }
+                                            {submittingForm && (
+                                                <CircularProgress
+                                                    size={24}
+                                                    className={classes.buttonProgress}
+                                                />
+                                            )}
+                                        </Button>
+                                    </>
+                                }
 							</DialogActions>
 						</Form>
 					)}

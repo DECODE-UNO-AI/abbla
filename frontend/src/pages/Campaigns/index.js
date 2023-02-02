@@ -27,7 +27,8 @@ import {
 	Block,
 	TimerOff,
 	Report,
-	PlayArrow
+	PlayArrow,
+	RemoveRedEye
 } from "@material-ui/icons";
 
 import MainContainer from "../../components/MainContainer";
@@ -122,6 +123,7 @@ const Campaigns = () => {
 	const [campaigns, dispatch] = useReducer(reducer, []);
 	const [confirmModalOpen, setConfirmModalOpen] = useState(false)
 	const [selectedCampaign, setSelectedCampaign] = useState(null)
+	const [visualizeModal, setVisualizeModal] = useState(false)
 
 	useEffect(() => {
 		(async () => {
@@ -156,9 +158,16 @@ const Campaigns = () => {
 	  }, []);
 
 	const handleEditCampaign = (campaign) => {
+		setVisualizeModal(false)
 		setSelectedCampaign(campaign);
 		setModalOpen(true);
-	};
+	}
+
+	const handleOnVisualize = (campaign) => {
+		setVisualizeModal(true)
+		setSelectedCampaign(campaign);
+		setModalOpen(true);
+	}
 
 	const handleArchiveCampaign = (campaign) => {
 		setSelectedCampaign(campaign)
@@ -227,7 +236,7 @@ const Campaigns = () => {
 				{i18n.t("campaigns.confirmationModal.archiveMessage")}
 				
 			</ConfirmationModal>
-            <CampaignModal open={modalOpen} onClose={handleOnCloseModal} campaignId={selectedCampaign?.id} />
+            <CampaignModal open={modalOpen} onClose={handleOnCloseModal} campaignId={selectedCampaign?.id} visualize={visualizeModal} />
 			<MainHeader>
                 <Title>{i18n.t("campaigns.title")}</Title>
                 <MainHeaderButtonsWrapper>
@@ -394,6 +403,17 @@ const Campaigns = () => {
 												}}
 											>
 												<RepeatOneOutlined color="secondary" />
+											</IconButton> : ""
+									}
+									{
+										["finished", "canceled", "failed", "processing", "timeout", "paused"].includes(campaign.status) ?
+											<IconButton
+												size="small"
+												onClick={() => {
+													handleOnVisualize(campaign)
+												}}
+											>
+												<RemoveRedEye color="secondary" />
 											</IconButton> : ""
 									}
 									{
