@@ -414,7 +414,7 @@ const CampaignModal = ({ open, onClose, campaignId, visualize = false }) => {
             setSubmittingForm(false)
             return
         }
-        const data = { whatsappId, message1, mediaBeforeMessage: mediaFirst, number: testNumber, mediaUrl: campaignForm.mediaUrl }
+        const data = { whatsappId, message1, mediaBeforeMessage: mediaFirst, number: testNumber, mediaUrl: campaignForm.mediaUrl || null }
         const formData = new FormData()
         Object.keys(data).forEach((key) => {
             formData.append(key, data[key])
