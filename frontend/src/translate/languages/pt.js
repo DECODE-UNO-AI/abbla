@@ -332,7 +332,7 @@ const messages = {
           fileError: "Tamanho máximo 10mb"
         },
         buttons: {
-          okAdd: "Adicionar",
+          okAdd: "Iniciar campanha",
           okEdit: "Salvar",
           cancel: "Cancelar",
           preview: "Visualizar",

@@ -32,6 +32,8 @@ import {
     FormControlLabel,
     Radio
 } from '@material-ui/core';
+import NearMeIcon from '@material-ui/icons/NearMe';
+import SaveIcon from '@material-ui/icons/Save';
 import { green } from "@material-ui/core/colors";
 
 
@@ -961,9 +963,14 @@ const CampaignModal = ({ open, onClose, campaignId }) => {
 									disabled={submittingForm}
 									variant="contained"
 								>
-									{campaignId
-										? `${i18n.t("campaignModal.buttons.okEdit")}`
-										: `${i18n.t("campaignModal.buttons.okAdd")}`}
+									{
+                                        !campaignId && !isRepeatModel
+                                            ? <span style={{ display: "flex", alignItems: "center"}}>{i18n.t("campaignModal.buttons.okAdd")}<NearMeIcon style={{ marginLeft: 5}} /></span>
+                                            : campaignId && isRepeatModel ?
+                                            <span style={{ display: "flex", alignItems: "center"}}>{i18n.t("campaignModal.buttons.okAdd")}<NearMeIcon style={{ marginLeft: 5}} /></span> 
+                                            : <span style={{ display: "flex", alignItems: "center"}}>{i18n.t("campaignModal.buttons.okEdit")}<SaveIcon style={{ marginLeft: 5}} /></span>
+                                        
+                                    }
 									{submittingForm && (
 										<CircularProgress
 											size={24}
