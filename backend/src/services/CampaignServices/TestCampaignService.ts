@@ -20,7 +20,6 @@ const TestCampaignService = async ({
   mediaFile
 }: CampaignData): Promise<void> => {
   const { message1, mediaBeforeMessage, number } = campaignData;
-
   const whatsapp = getWbot(+campaignData.whatsappId);
 
   const whatsappState = await whatsapp.getState();
@@ -35,6 +34,9 @@ const TestCampaignService = async ({
   }
   try {
     whatsNumber = await whatsapp.getNumberId(`${contactNumber}@c.us`);
+    if (!whatsNumber) {
+      throw new AppError("ERR_NUMBER_NOT_FOUND", 404);
+    }
   } catch (err) {
     throw new AppError("ERR_NUMBER_NOT_FOUND", 404);
   }
@@ -49,7 +51,8 @@ const TestCampaignService = async ({
       mediaFile.mimetype,
       mediaFile.buffer.toString("base64")
     );
-  } else if (campaignData.mediaUrl) {
+  } else if (campaignData.mediaUrl && campaignData.mediaUrl !== "null") {
+    // hotfix
     const fileName = campaignData.mediaUrl.split("/")[4];
     const customPath = join(__dirname, "..", "..", "..", "public", fileName);
     file = MessageMedia.fromFilePath(customPath);
@@ -57,14 +60,20 @@ const TestCampaignService = async ({
   try {
     if (file) {
       if (mediaBeforeMessage) {
-        await whatsapp.sendMessage(whatsNumber._serialized, "Mensagem teste");
+        await whatsapp.sendMessage(
+          whatsNumber._serialized,
+          "######## ATENÇÃO ########\n######### ABBLA #########\n\nA seguir será apresentada a mensagem de teste da sua campanha\n\n####### CAMPANHA #######"
+        );
         await whatsapp.sendMessage(whatsNumber._serialized, file, {
           sendAudioAsVoice: true,
           sendMediaAsDocument: false
         });
         await whatsapp.sendMessage(whatsNumber._serialized, message1);
       } else {
-        await whatsapp.sendMessage(whatsNumber._serialized, "Mensagem teste");
+        await whatsapp.sendMessage(
+          whatsNumber._serialized,
+          "######## ATENÇÃO ########\n######### ABBLA #########\n\nA seguir será apresentada a mensagem de teste da sua campanha\n\n####### CAMPANHA #######"
+        );
         await whatsapp.sendMessage(whatsNumber._serialized, message1);
         await whatsapp.sendMessage(whatsNumber._serialized, file, {
           sendAudioAsVoice: true,
@@ -72,7 +81,10 @@ const TestCampaignService = async ({
         });
       }
     } else {
-      await whatsapp.sendMessage(whatsNumber._serialized, "Mensagem teste");
+      await whatsapp.sendMessage(
+        whatsNumber._serialized,
+        "######## ATENÇÃO ########\n######### ABBLA #########\nA seguir será apresentada a mensagem de teste da sua campanha\n####### CAMPANHA #######"
+      );
       await whatsapp.sendMessage(whatsNumber._serialized, message1);
     }
   } catch (err) {
