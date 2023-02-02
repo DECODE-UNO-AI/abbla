@@ -1,3 +1,5 @@
+/* eslint-disable no-continue */
+/* eslint-disable no-loop-func */
 /* eslint-disable no-await-in-loop */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { resolve } from "path";
@@ -30,12 +32,12 @@ const CreateCampaignContactsService = async (
     logger.error("ERR_NO_CONTACTS_FILE");
     return;
   }
-
+  let numberAllContacts = 0;
   for (let i = 0; i < csvArray.length; i += 1) {
     const contact = csvArray[i];
     let contactNumber: string = contact[campaign.columnName] || null;
     if (!contactNumber) {
-      break;
+      continue;
     }
     if (!contactNumber.startsWith("55")) {
       contactNumber = `55${contactNumber}`;
@@ -48,11 +50,13 @@ const CreateCampaignContactsService = async (
           campaignId: campaign.id,
           details: contact
         });
+        numberAllContacts += 1;
       } catch (err) {
         throw new AppError("ERR_NO_CONTACTS_FILE");
       }
     })();
   }
+  await campaign.update({ contactsNumber: numberAllContacts });
 };
 
 export default CreateCampaignContactsService;

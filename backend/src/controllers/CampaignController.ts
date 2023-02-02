@@ -80,6 +80,7 @@ export const store = async (req: Request, res: Response): Promise<Response> => {
   } catch (err) {
     throw new AppError("ERR_NO_CONTACTS_FILE");
   }
+  await newCampaign.reload();
   startJob(newCampaign);
 
   const io = getIO();
@@ -164,6 +165,7 @@ export const update = async (
     medias,
     campaignId
   });
+  await campaignObj.reload();
 
   if (campaignObj.status === "scheduled") {
     finishJob(campaignObj.id);
@@ -371,6 +373,7 @@ export const repeatCampaign = async (
     medias,
     campaignId
   });
+  await campaign.reload();
   startJob(campaign);
   const io = getIO();
   io.emit("campaigns", {

@@ -1,3 +1,5 @@
+/* eslint-disable no-loop-func */
+/* eslint-disable no-continue */
 /* eslint-disable no-await-in-loop */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import AppError from "../../errors/AppError";
@@ -16,9 +18,13 @@ const CloneCampaignContactsService = async (
     throw new AppError("INTERNAL_ERR", 500);
   }
 
+  let numberAllContacts = 0;
   for (let i = 0; i < contacts.length; i += 1) {
     const contact = contacts[i];
     let contactNumber: string = contact.details[campaignModel.columnName];
+    if (!contactNumber) {
+      continue;
+    }
     if (!contactNumber.startsWith("55")) {
       contactNumber = `55${contactNumber}`;
     }
@@ -31,11 +37,13 @@ const CloneCampaignContactsService = async (
           campaignId: campaignModel.id,
           details: contact.details
         });
+        numberAllContacts += 1;
       } catch (err) {
         throw new AppError("INTERNAL_ERR", 500);
       }
     })();
   }
+  await campaignModel.update({ contactsNumber: numberAllContacts });
 };
 
 export default CloneCampaignContactsService;

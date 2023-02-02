@@ -37,7 +37,15 @@ class Campaign extends Model<Campaign> {
 
   @Default(0)
   @Column
-  lastLineContact: number;
+  contactsNumber: number;
+
+  @Default(0)
+  @Column
+  contactsSent: number;
+
+  @Default(0)
+  @Column
+  contactsFailed: number;
 
   @Default("pending")
   @Column(

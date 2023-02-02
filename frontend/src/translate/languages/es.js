@@ -303,7 +303,8 @@ const messages = {
         title: {
           add: "Agregar campaña",
           edit: "Editar campaña",
-          preview: "Ver mensaje"
+          preview: "Ver mensaje",
+          repeat: "Repetir campaña"
         },
         form: {
           name: "Nombre de campaña",
@@ -534,7 +535,14 @@ const messages = {
           inicialDate: "Programación Inicial",
           actions: "Acciones",
           status: "Status",
-          details: "Detalles"
+          details: "Detalles",
+          connection: "Conexión",
+          createdAt: "Creación",
+          delay: "Delay",
+          total: "Total",
+          sent: "Enviado",
+          failed: "Errores",
+          canceled: "Cancelado"
         },
         buttons: {
           add: "Agregar campanã"

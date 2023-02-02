@@ -518,7 +518,11 @@ const CampaignModal = ({ open, onClose, campaignId, visualize = false }) => {
 					validationSchema={CampaignSchema}
 					onSubmit={async (values, actions) => {
 						setTimeout(async () => {
-							setConfirmationModalOpen(true);
+                            if (campaignId && !isRepeatModel) {
+                                handleOnSave(values)
+                            } else {
+                                setConfirmationModalOpen(true);
+                            }
 							actions.setSubmitting(false);
 						}, 400);
 					}}

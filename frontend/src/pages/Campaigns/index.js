@@ -44,6 +44,7 @@ import openSocket from "../../services/socket-io";
 import { i18n } from "../../translate/i18n";
 import { toast } from "react-toastify";
 import toastError from "../../errors/toastError";
+import useWhatsApps from "../../hooks/useWhatsApps";
 
 
 const CustomToolTip = ({ title, content, children }) => {
@@ -115,6 +116,13 @@ const reducer = (state, action) => {
 	  }
 }
 
+const getWhatsAppName = (whatsapps, id) => {
+	const whatsIndex = whatsapps.findIndex((w) => w.id === id)
+	if(whatsIndex === -1){
+		return "-"
+	}
+	return whatsapps[whatsIndex].name
+}
 
 const Campaigns = () => {
 	const classes = useStyles();
@@ -124,6 +132,8 @@ const Campaigns = () => {
 	const [confirmModalOpen, setConfirmModalOpen] = useState(false)
 	const [selectedCampaign, setSelectedCampaign] = useState(null)
 	const [visualizeModal, setVisualizeModal] = useState(false)
+
+	const { whatsApps } = useWhatsApps()
 
 	useEffect(() => {
 		(async () => {
@@ -243,7 +253,10 @@ const Campaigns = () => {
                 <Button
                     variant="contained"
                     color="primary"
-                    onClick={() => setModalOpen(true)}
+                    onClick={() => { 
+						setVisualizeModal(false)
+						setModalOpen(true)
+					}}
                 >
                     {i18n.t("campaigns.buttons.add")}
                 </Button>
@@ -260,7 +273,28 @@ const Campaigns = () => {
 								{i18n.t("campaigns.table.name")}
 							</TableCell>
 							<TableCell align="left">
+								{i18n.t("campaigns.table.connection")}
+							</TableCell>
+							<TableCell align="left">
+								{i18n.t("campaigns.table.createdAt")}
+							</TableCell>
+							<TableCell align="left">
 								{i18n.t("campaigns.table.inicialDate")}
+							</TableCell>
+							<TableCell align="center">
+								{i18n.t("campaigns.table.delay")}
+							</TableCell>
+							<TableCell align="center">
+								{i18n.t("campaigns.table.total")}
+							</TableCell>
+							<TableCell align="center">
+								{i18n.t("campaigns.table.sent")}
+							</TableCell>
+							<TableCell align="center">
+								{i18n.t("campaigns.table.failed")}
+							</TableCell>
+							<TableCell align="center">
+								{i18n.t("campaigns.table.canceled")}
 							</TableCell>
 							<TableCell align="center">
 								{i18n.t("campaigns.table.status")}
@@ -277,9 +311,31 @@ const Campaigns = () => {
 						<>
 						{campaigns?.map((campaign) => (
 							<TableRow key={campaign.id}>
-								<TableCell align="left">{campaign.id}</TableCell>
+								<TableCell align="center">{campaign.id}</TableCell>
 								<TableCell align="left">{campaign.name}</TableCell>
+								<TableCell align="left">{getWhatsAppName(whatsApps, campaign.whatsappId)}</TableCell>
+								<TableCell align="left">{new Date(campaign.createdAt).toLocaleString()}</TableCell>
 								<TableCell align="left">{new Date(campaign.inicialDate).toLocaleString()}</TableCell>
+								<TableCell align="center">{campaign.delay.split("-")[1]} seg</TableCell>
+								<TableCell align="center">
+									<span style={{ fontWeight: "bold", color: "#45a249"}}>
+										{campaign.contactsSent + campaign.contactsFailed}/{campaign.contactsNumber}
+									</span>
+								</TableCell>
+								<TableCell align="center"><span style={{ fontWeight: "bold", color: "#6961fd"}}>{campaign.contactsSent}</span></TableCell>
+								<TableCell align="center"><span style={{ fontWeight: "bold", color: "#ff0038"}}>{campaign.contactsFailed}</span></TableCell>
+								<TableCell align="center">
+									{
+										["canceled", "failed"].includes(campaign.status) ?
+										<span style={{ fontWeight: "bold", color: "#979797"}}>
+											{ campaign.contactsNumber - campaign.contactsSent + campaign.contactsFailed}
+										</span>
+										:
+										<span style={{ fontWeight: "bold", color: "#979797"}}>
+											0
+										</span>
+									}
+								</TableCell>
 								<TableCell align="center">
 									{
 										campaign.status === "scheduled" ?
