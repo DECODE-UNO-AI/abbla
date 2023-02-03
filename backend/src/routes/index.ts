@@ -30,6 +30,8 @@ routes.use(quickAnswerRoutes);
 routes.use("/api/messages", apiRoutes);
 routes.use(tagRoutes);
 routes.use(departamentRoutes);
-routes.use(campaignRoutes);
+if (process.env.CAMPAIGN_FUNCTION === "true") {
+  routes.use(campaignRoutes);
+}
 
 export default routes;

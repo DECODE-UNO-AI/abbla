@@ -36,8 +36,15 @@ const Routes = () => {
             <LoggedInLayout>
               <Route exact path="/" component={Dashboard} isPrivate />
               <Route exact path="/tickets/:ticketId?" component={Tickets} isPrivate />
-              <Route exact path="/campaigns" component={Campaigns} isPrivate />
-              <Route exact path="/campaign/:campaignId" component={Campaign} isPrivate />
+              {
+                process.env.REACT_APP_CAMPAIGN_FUNCTION === "true"  && 
+                (
+                  <>
+                  <Route exact path="/campaigns" component={Campaigns} isPrivate />
+                  <Route exact path="/campaign/:campaignId" component={Campaign} isPrivate />
+                  </>
+                )
+              }
               <Route exact path="/connections" component={Connections} isPrivate />
               <Route exact path="/contacts" component={Contacts} isPrivate />
               <Route exact path="/users" component={Users} isPrivate />
