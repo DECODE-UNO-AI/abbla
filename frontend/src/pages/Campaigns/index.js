@@ -11,7 +11,11 @@ import {
 	TableHead,
 	Paper,
 	Tooltip,
-	Typography, 
+	Typography,
+	TextField,
+	InputAdornment,
+	Box,
+	Badge,
 } from "@material-ui/core";
 import {
 	Edit,
@@ -28,8 +32,11 @@ import {
 	TimerOff,
 	Report,
 	PlayArrow,
-	RemoveRedEye
+	RemoveRedEye,
+	Search,
+	Tune
 } from "@material-ui/icons";
+import { Cascader } from 'antd';
 
 import MainContainer from "../../components/MainContainer";
 import MainHeader from "../../components/MainHeader";
@@ -75,6 +82,21 @@ const useStyles = makeStyles(theme => ({
 		overflowY: "scroll",
 		...theme.scrollbarStyles,
 	},
+	filterInconContainer: {
+		display: "flex",
+		alignItems: "center",
+		justifyContent: "center",
+		padding: 5,
+		marginLeft: 25,
+		cursor: "pointer"
+	},
+	searchFilterContainer: {
+		width: "100%", 
+		display: "flex",
+		alignItems: "center",
+		justifyContent: "flex-end",
+		marginBottom: 20
+	}
 }));
 
 const reducer = (state, action) => {
@@ -132,14 +154,40 @@ const Campaigns = () => {
 	const [confirmModalOpen, setConfirmModalOpen] = useState(false)
 	const [selectedCampaign, setSelectedCampaign] = useState(null)
 	const [visualizeModal, setVisualizeModal] = useState(false)
+	const [filterOptions, setFilterOptions] = useState([])
+	const [searchParam, setSearchParam] = useState("")
 
 	const { whatsApps } = useWhatsApps()
 
 	useEffect(() => {
+		dispatch({ type: "RESET" });
+	  }, [filterOptions, searchParam]);
+
+	useEffect(() => {
 		(async () => {
 			setLoading(true);
+			let filterData = {};
+			if (filterOptions.length > 0) {
+				filterData = filterOptions.reduce((acc, item) => {
+					if (item.length > 1) {
+					const key = item[0];
+					const value = item[1];
+					if (acc[key]) {
+						acc[key].push(value);
+					} else {
+						acc[key] = [value];
+					}
+					} else {
+						const key = item[0]
+						acc[key] = []
+					}
+					return acc;
+				}, {});
+			}
 			try {
-			  const { data } = await api.get("/campaigns");
+			  const { data } = await api.get("/campaigns", {
+				params: { searchParam, filterOptions: filterData }
+			  });
 			  dispatch({ type: "LOAD_CAMPAIGNS", payload: data });
 			  setLoading(false);
 			} catch (err) {
@@ -147,7 +195,7 @@ const Campaigns = () => {
 			  setLoading(false);
 			}
 		  })();
-	}, [])
+	}, [searchParam, filterOptions])
 
 	useEffect(() => {
 		const socket = openSocket();
@@ -166,6 +214,51 @@ const Campaigns = () => {
 		  socket.disconnect();
 		};
 	  }, []);
+
+	  const cascaderOptions = [
+		{
+		  label: 'Status',
+		  value: 'status',
+		  children: [
+				{
+					label: `Processando`,
+					value: "processing",
+				},
+				{
+					label: `Agendado`,
+					value: "scheduled",
+				},
+				{
+					label: `Finalizado`,
+					value: "finished",
+				},
+				{
+					label: `Cancelado`,
+					value: "canceled",
+				},
+				{
+					label: `Arquivado`,
+					value: "archived",
+				},
+				{
+					label: `Pausado`,
+					value: "paused",
+				},
+				{
+					label: `Falhou`,
+					value: "failed",
+				},	
+			],
+		},
+		{
+		  label: 'Conexão',
+		  value: 'conn',
+		  children: whatsApps.map(w => {
+			return { label: w.name, value: w.id}
+		  })
+			
+		},
+	]
 
 	const handleEditCampaign = (campaign) => {
 		setVisualizeModal(false)
@@ -250,19 +343,53 @@ const Campaigns = () => {
 			<MainHeader>
                 <Title>{i18n.t("campaigns.title")}</Title>
                 <MainHeaderButtonsWrapper>
-                <Button
-                    variant="contained"
-                    color="primary"
-                    onClick={() => { 
-						setVisualizeModal(false)
-						setModalOpen(true)
-					}}
-                >
-                    {i18n.t("campaigns.buttons.add")}
-                </Button>
+					
+					<Button
+						variant="contained"
+						color="primary"
+						onClick={() => { 
+							setVisualizeModal(false)
+							setModalOpen(true)
+						}}
+					>
+						{i18n.t("campaigns.buttons.add")}
+					</Button>
                 </MainHeaderButtonsWrapper>
             </MainHeader>
             <Paper className={classes.mainPaper} variant="outlined">
+				<Box className={classes.searchFilterContainer}>
+					<TextField
+						placeholder={i18n.t("contacts.searchPlaceholder")}
+						type="search"
+						value={searchParam}
+						onChange={(e) => setSearchParam(e.target.value)}
+						InputProps={{
+						startAdornment: (
+							<InputAdornment position="start">
+								<Search color="primary" />
+							</InputAdornment>
+						),
+						}}
+					/>
+					<Cascader
+						style={{
+							// width: '100%',
+							marginBottom: 20
+						}}
+						options={cascaderOptions}
+						onChange={(e)=> setFilterOptions(e)}
+						multiple
+						maxTagCount="responsive"
+						placeholder="Filtros"
+						children={
+							<Badge badgeContent={filterOptions.length} color="secondary">
+								<Paper className={classes.filterInconContainer}>
+									<Tune className={classes.icon}/>
+								</Paper>
+							</Badge>
+						}
+					/>
+				</Box>
 				<Table size="small">
 					<TableHead>
 						<TableRow>

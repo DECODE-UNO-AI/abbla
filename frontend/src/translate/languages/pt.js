@@ -517,7 +517,8 @@ const messages = {
           failed: "Falhou",
           sent: "Enviado",
           "invalid-number": "Número inválido",
-          finished: "Finalizada"
+          finished: "Finalizada",
+          archived: "Arquivada"
         },
         message: "Mensagens",
         table: {

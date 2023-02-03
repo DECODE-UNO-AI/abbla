@@ -38,6 +38,11 @@ interface CampaignData {
   whatsappId: string;
 }
 
+type IndexQuery = {
+  searchParam: string;
+  filterOptions: string;
+};
+
 export const store = async (req: Request, res: Response): Promise<Response> => {
   const { id, profile } = req.user;
   const medias = req.files as Express.Multer.File[];
@@ -96,7 +101,12 @@ export const index = async (req: Request, res: Response): Promise<Response> => {
   if (profile !== "admin") {
     throw new AppError("ERR_NO_PERMISSION", 403);
   }
-  const campaigns = await ListCampaignService();
+  const { searchParam, filterOptions } = req.query as IndexQuery;
+  const filterData: {
+    status?: string[];
+    conn?: number[];
+  } = JSON.parse(filterOptions);
+  const campaigns = await ListCampaignService(searchParam, filterData);
   return res.status(200).json(campaigns);
 };
 
