@@ -514,7 +514,12 @@ const messages = {
           status: "Status",
           messageSent: "Sent Message"
         },
-        search: "Search"
+        search: "Search",
+        card: {
+          total: "TOTAL",
+          sent: "SENT",
+          failed: "FAILED"
+        },
       },
       campaigns: {
         title: "Campaigns",

@@ -51,9 +51,11 @@ const sendMessage = async (
         await wbot.sendMessage(number._serialized, mediaFile, {
           sendAudioAsVoice: true
         });
+        await setDelay(1000);
         await wbot.sendMessage(number._serialized , message);
       } else {
         await wbot.sendMessage(number._serialized , message);
+        await setDelay(1000);
         await wbot.sendMessage(number._serialized, mediaFile, {
           sendAudioAsVoice: true
         });

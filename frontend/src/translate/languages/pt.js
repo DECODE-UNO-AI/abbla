@@ -524,9 +524,15 @@ const messages = {
         table: {
           number: "Número",
           status: "Status",
+          sentDate: "Data de envio",
           messageSent: "Mensagem enviada"
         },
-        search: "Pesquisa"
+        search: "Pesquisa",
+        card: {
+          total: "TOTAL",
+          sent: "EVIADOS",
+          failed: "FALHAS"
+        },
       },
       campaigns: {
         title: "Campanhas",

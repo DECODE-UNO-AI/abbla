@@ -6,25 +6,36 @@ import {
     TableHead, 
     TableRow, 
     TableCell, 
-    TableBody, 
-    Typography, 
+    TableBody,  
     TextField,
 } from '@material-ui/core';
+import EmailIcon from '@material-ui/icons/Email';
+import NearMeIcon from '@material-ui/icons/NearMe';
+import CloseIcon from '@material-ui/icons/Close';
 import { makeStyles } from "@material-ui/core/styles";
 import { useParams } from 'react-router-dom';
+import CampaignNumberCard from '../../components/CampaignNumberCard';
 import Title from "../../components/Title";
 import toastError from '../../errors/toastError';
 import api from '../../services/api';
 import { i18n } from "../../translate/i18n";
 
 const useStyles = makeStyles(theme => ({
+    infoPaper: {
+        flex: 1,
+        padding: 10,
+		margin: theme.spacing(1),
+        marginBottom: 20,
+		overflowY: "scroll",
+		...theme.scrollbarStyles,
+    },
 	mainPaper: {
 		flex: 1,
 		padding: theme.spacing(2),
 		margin: theme.spacing(1),
 		overflowY: "scroll",
 		...theme.scrollbarStyles,
-        minHeight: "93vh"
+        minHeight: "80vh"
 	},
     Header: {
         width: "100%",
@@ -33,7 +44,7 @@ const useStyles = makeStyles(theme => ({
         padding: 10,
     },
     contactsTable: {
-        marginTop: 40,
+        marginTop: 10,
         width: "100%",
         display: "flex",
         flexDirection: "column",
@@ -56,9 +67,13 @@ const useStyles = makeStyles(theme => ({
     InfoTitle: {
         fontSize: 20,
         marginBottom: 10
-    }, 
-    drawer: {
-        "& > div > div": { display: "flex", alignItems: "center", flexDirection: "column", padding: 10, minHeight: "100%", justifyContent: "center"}
+    },
+    cards: {
+        width: "100%",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "space-between",
+        gap: 40
     }
 }));
 
@@ -107,37 +122,39 @@ const Campaign = () => {
     // }
     
     return(
-        <Paper className={classes.mainPaper}>
+        <>
+        <Box className={classes.infoPaper}>
             <Box className={classes.Header}>
                 <Title>#{campaign?.id} {campaign?.name}</Title>
             </Box>
-            <Box className={classes.mainContent}>
-                <Box>
-                    <Typography className={classes.InfoTitle}>
-                    {i18n.t("campaign.inicialDate")}: {new Date(campaign?.inicialDate).toLocaleString()}
-                    </Typography>
-                    <Typography className={classes.InfoTitle}>
-                    {i18n.t("campaign.delay")}: {campaign?.delay.split("-")[1]} segundos
-                    </Typography>
-                    <Typography className={classes.InfoTitle}>
-                    {i18n.t("campaign.sendTime")}: {campaign?.sendTime.split("-")[0]} Horas à {campaign?.sendTime.split("-")[1]} Horas
-                    </Typography>
-                    <Typography className={classes.InfoTitle}>
-                       Status: {campaign?.status ? i18n.t(`campaign.status.${campaign.status}`) : ""}
-                    </Typography>
-                    
-                </Box>
+            <Box className={classes.cards}>
+                <CampaignNumberCard color="#16a9fe" title={i18n.t("campaign.card.total")} number={campaign?.contactsNumber || 0}>
+                    <EmailIcon style={{ color: "#16a9fe" }}/>
+                </CampaignNumberCard>
+                <CampaignNumberCard color="#3ac47d" title={i18n.t("campaign.card.sent")} number={campaign?.contactsSent || 0}>
+                    <NearMeIcon style={{ color: "#3ac47d" }}/>
+                </CampaignNumberCard>
+                <CampaignNumberCard color="#d92550" title={i18n.t("campaign.card.failed")} number={campaign?.contactsFailed || 0}>
+                    <CloseIcon style={{ color: "#d92550" }}/>
+                </CampaignNumberCard>
             </Box>
+        </Box>
+        <Paper className={classes.mainPaper}>
             <Box className={classes.contactsTable}>
-                <TextField 
-                    size='small'
-                    variant="outlined"
-                    id="search"
-                    label={i18n.t("campaign.search")}
-                    onChange={(e) => setSearch(e.target.value)} 
-                    style={{ maxWidth: 200, marginBottom: 20 }} 
-                    type="search"
-                />
+                <Box>
+                    <TextField 
+                        size='small'
+                        variant="outlined"
+                        id="search"
+                        label={i18n.t("campaign.search")}
+                        onChange={(e) => setSearch(e.target.value)} 
+                        style={{ maxWidth: 200, marginBottom: 20 }} 
+                        type="search"
+                    />
+                    {/* <Box>
+                        {i18n.t(`campaigns.toolTips.title.${campaign?.status}`)}
+                    </Box> */}
+                </Box>
                 <Table size='small'>
                     <TableHead>
                         <TableRow>
@@ -145,6 +162,9 @@ const Campaign = () => {
                                 {i18n.t("campaign.table.number")}
                             </TableCell>
                             <TableCell align="left">
+                                {i18n.t("campaign.table.sentDate")}
+                            </TableCell>
+                            <TableCell align="center">
                                 {i18n.t("campaign.table.status")}
                             </TableCell>
                             <TableCell align="left">
@@ -160,11 +180,30 @@ const Campaign = () => {
                                         {contact.number}
                                     </TableCell>
                                     <TableCell align='left'>
-                                        {contact.status ? i18n.t(`campaign.status.${contact.status}`) : ""}
+                                        {contact.status === "sent" ? new Date(contact.updatedAt).toLocaleString() : "-"}
+                                    </TableCell>
+                                    <TableCell align='center'>
+                                        <Box style={{ width: "100%", display: "flex", justifyContent: "center"}}>
+                                            <Box style={
+                                                    {   
+                                                        width: 140,
+                                                        borderRadius: 4,
+                                                        textAlign: "center",
+                                                        color: "#FFF",
+                                                        padding: 10, 
+                                                        backgroundColor: contact.status === "sent" ? "#16a9fe"
+                                                                        : contact.status === "invalid-number" ? "#d92550"
+                                                                        : contact.status === "pending" ? "#ffc235" : ""
+                                                    }
+                                                }
+                                            >
+                                                {contact.status ? i18n.t(`campaign.status.${contact.status}`) : ""}
+                                            </Box>
+                                        </Box>
                                     </TableCell>
                                     <TableCell align='left'>
                                         <p style={{maxWidth: "40ch", overflow: "hidden", "textOverflow": "ellipsis", whiteSpace: "nowrap"}}>
-                                            {contact.messageSent}
+                                            {contact.messageSent || "-"}
                                         </p>
                                     </TableCell>
                                 </TableRow>
@@ -175,6 +214,7 @@ const Campaign = () => {
                 </Table>
             </Box>
         </Paper>
+        </>
     )
 }
 
