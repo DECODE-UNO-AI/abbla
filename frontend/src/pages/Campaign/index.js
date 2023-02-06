@@ -183,9 +183,6 @@ const Campaign = () => {
                         style={{ maxWidth: 200, marginBottom: 20 }} 
                         type="search"
                     />
-                    {/* <Box>
-                        {i18n.t(`campaigns.toolTips.title.${campaign?.status}`)}
-                    </Box> */}
                 </Box>
                 <Table size='small'>
                     <TableHead>
