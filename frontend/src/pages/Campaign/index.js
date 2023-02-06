@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState, useReducer } from 'react'
 import { 
     Paper,
     Box, 
@@ -18,6 +18,7 @@ import CampaignNumberCard from '../../components/CampaignNumberCard';
 import Title from "../../components/Title";
 import toastError from '../../errors/toastError';
 import api from '../../services/api';
+import openSocket from "../../services/socket-io";
 import { i18n } from "../../translate/i18n";
 
 const useStyles = makeStyles(theme => ({
@@ -77,6 +78,36 @@ const useStyles = makeStyles(theme => ({
     }
 }));
 
+const reducer = (state, action) => {
+	if (action.type === "LOAD_CONTACTS") {
+		const contacts = action.payload;
+		const newContacts = [];
+		contacts.forEach((contact) => {
+		  const departamentIndex = state.findIndex((q) => q.id === contact.id);
+		  if (departamentIndex !== -1) {
+			state[departamentIndex] = contact;
+		  } else {
+			newContacts.push(contact);
+		  }
+		});
+		return [...state, ...newContacts];
+	}
+	if (action.type === "UPDATE_CONTACTS") {
+		const contact = action.payload;
+		const contactIndex = state.findIndex((u) => u.id === contact.id);
+		if (contactIndex !== -1) {
+		  state[contactIndex] = contact;
+		  return [...state];
+		} else {
+		  return [contact, ...state];
+		}
+	  }
+	
+	  if (action.type === "RESET") {
+		return [];
+	  }
+}
+
 
 const Campaign = () => {
     
@@ -84,7 +115,7 @@ const Campaign = () => {
 
     const { campaignId } = useParams();
     const [campaign, setCampaign] = useState(null)
-    const [contacts, setContacts] = useState([])
+    const [contacts, dispatch] = useReducer(reducer, []);
     const [search, setSearch] = useState(null)
     const [, setLoading] = useState(false)
 
@@ -93,7 +124,7 @@ const Campaign = () => {
 			setLoading(true);
 			try {
 			    const { data } = await api.get(`campaigns/details/${campaignId}`);
-                setContacts(data.campaignContacts)
+                dispatch({type: "LOAD_CONTACTS", payload: data.campaignContacts})
                 setCampaign(data);
 			    setLoading(false);
 			} catch (err) {
@@ -101,25 +132,26 @@ const Campaign = () => {
 			    setLoading(false);
 			}
 		  })();
+
+          return dispatch({type: "RESET"})
     }, [campaignId])
 
-    const filterContacts = search ? contacts.filter((contact) => contact.number.includes(search)) : contacts;
+    useEffect(() => {
+        const socket = openSocket();
+	
+		socket.on(`campaign-${campaign?.id}`, (data) => {
+		  if (data.action === "update") {
+            setCampaign(data.campaign)
+			dispatch({ type: "UPDATE_CONTACTS", payload: data.contact });
+		  }
+		});
+	
+		return () => {
+		  socket.disconnect();
+		};
+    }, [campaign])
 
-    // const handleDownload = async (isCsvFile) => {
-    //     let response
-    //     if (isCsvFile) {
-    //         response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/public/${campaign?.contactsCsv}`)
-    //     } else {
-    //         response = await fetch(`${campaign?.mediaUrl}`)
-    //     }
-    //     const file = await response.blob();
-    //     const fileUrl = URL.createObjectURL(file);
-    //     const a = document.createElement("a");
-    //     a.href = fileUrl;
-    //     a.download = `${campaignId}contacts`;
-    //     a.click();
-    //     URL.revokeObjectURL(fileUrl);
-    // }
+    const filterContacts = search ? contacts.filter((contact) => contact.number.includes(search)) : contacts;
     
     return(
         <>
@@ -174,7 +206,7 @@ const Campaign = () => {
                     </TableHead>
                     <TableBody>
                         {
-                            filterContacts.map((contact) => 
+                            filterContacts?.map((contact) => 
                                 <TableRow key={contact.id}>
                                     <TableCell align='left'>
                                         {contact.number}

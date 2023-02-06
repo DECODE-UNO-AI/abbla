@@ -33,13 +33,19 @@ const sendMessage = async (
     logger.error(err);
   }
   if (!number) {
-    contact.update({
+    await contact.update({
       status: "invalid-number",
     });
+    await contact.reload()
     await campaign.increment("contactsFailed", { by: 1 })
     await campaign.reload()
     io.emit("campaigns", {
       action: "update",
+      campaign
+    });
+    io.emit(`campaign-${campaign.id}`, {
+      action: "update",
+      contact,
       campaign
     });
     return;
@@ -67,20 +73,32 @@ const sendMessage = async (
       status: "sent",
       messageSent: message
     });
+    await contact.reload()
     await campaign.increment("contactsSent", { by: 1 })
     await campaign.reload()
     io.emit("campaigns", {
       action: "update",
       campaign
     });
+    io.emit(`campaign-${campaign.id}`, {
+      action: "update",
+      contact,
+      campaign
+    });
   } catch (err) {
     await contact.update({
       status: "failed"
     });
+    await contact.reload()
     await campaign.increment("contactsFailed", { by: 1 })
     await campaign.reload()
     io.emit("campaigns", {
       action: "update",
+      campaign
+    });
+    io.emit(`campaign-${campaign.id}`, {
+      action: "update",
+      contact,
       campaign
     });
   }
