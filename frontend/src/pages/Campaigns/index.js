@@ -613,7 +613,7 @@ const Campaigns = () => {
 								</TableCell>
 							</TableRow>
 						))}
-						{loading && <TableRowSkeleton columns={5} />}
+						{loading && <TableRowSkeleton columns={13} />}
 						</>
 					</TableBody>
 				</Table>

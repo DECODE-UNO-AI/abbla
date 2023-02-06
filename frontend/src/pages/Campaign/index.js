@@ -1,4 +1,5 @@
 import React, { useEffect, useState, useReducer } from 'react'
+import { useParams } from 'react-router-dom';
 import { 
     Paper,
     Box, 
@@ -9,12 +10,12 @@ import {
     TableBody,  
     TextField,
 } from '@material-ui/core';
+import { makeStyles } from "@material-ui/core/styles";
 import EmailIcon from '@material-ui/icons/Email';
 import NearMeIcon from '@material-ui/icons/NearMe';
 import CloseIcon from '@material-ui/icons/Close';
-import { makeStyles } from "@material-ui/core/styles";
-import { useParams } from 'react-router-dom';
 import CampaignNumberCard from '../../components/CampaignNumberCard';
+import TableRowSkeleton from "../../components/TableRowSkeleton";
 import Title from "../../components/Title";
 import toastError from '../../errors/toastError';
 import api from '../../services/api';
@@ -117,7 +118,7 @@ const Campaign = () => {
     const [campaign, setCampaign] = useState(null)
     const [contacts, dispatch] = useReducer(reducer, []);
     const [search, setSearch] = useState(null)
-    const [, setLoading] = useState(false)
+    const [isLoading, setLoading] = useState(false)
 
     useEffect(() => {
         (async () => {
@@ -222,7 +223,7 @@ const Campaign = () => {
                                                         padding: 10, 
                                                         backgroundColor: contact.status === "sent" ? "#16a9fe"
                                                                         : contact.status === "invalid-number" ? "#d92550"
-                                                                        : contact.status === "pending" ? "#ffc235" : ""
+                                                                        : contact.status === "pending" ? "#ffc235" : "#f1f1f1"
                                                     }
                                                 }
                                             >
@@ -239,6 +240,7 @@ const Campaign = () => {
                             
                             )
                         }
+                        {isLoading && <TableRowSkeleton columns={4} />}
                     </TableBody>
                 </Table>
             </Box>
