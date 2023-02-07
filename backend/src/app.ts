@@ -11,8 +11,10 @@ import uploadConfig from "./config/upload";
 import AppError from "./errors/AppError";
 import routes from "./routes";
 import { logger } from "./utils/logger";
+import { startJobs } from "./libs/campaignQueue";
 
-require('events').EventEmitter.defaultMaxListeners = Infinity;
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+require("events").EventEmitter.defaultMaxListeners = Infinity;
 
 Sentry.init({ dsn: process.env.SENTRY_DSN });
 
@@ -24,6 +26,7 @@ app.use(
     origin: process.env.FRONTEND_URL
   })
 );
+
 app.use(cookieParser());
 app.use(express.json());
 app.use(Sentry.Handlers.requestHandler());
@@ -31,6 +34,9 @@ app.use("/public", express.static(uploadConfig.directory));
 app.use(routes);
 
 app.use(Sentry.Handlers.errorHandler());
+
+// starting a campaigns
+startJobs();
 
 app.use(async (err: Error, req: Request, res: Response, _: NextFunction) => {
   if (err instanceof AppError) {

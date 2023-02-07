@@ -299,6 +299,48 @@ const messages = {
         },
         success: "Attendant saved successfully.",
       },
+      campaignModal: {
+        title: {
+          add: "Add Campaign",
+          edit: "Edit Campaign",
+          preview: "Message preview",
+          repeat: "Repeat Campaign"
+        },
+        form: {
+          name: "Campaign name",
+          sendTime: "Campaign schedule",
+          delay: "Sending delay",
+          start: "Start",
+          startCheck: "Starts now",
+          whatsappId: "Whatsapp Bot",
+          messageMedia: "Message attachment",
+          csvMedia: "Contacts file .csv",
+          messages: "Message text",
+          variables: "Available variables: (use $nome-da-variável)",
+          tab: "Text",
+          columnName: "Number column",
+          sendMediaBefore: "Send media file before",
+          testNumberPlaceholder: "Number with DDD (digits only, without punctuation)",
+          testMessage: "Test Message",
+          testButton: "Test",
+          previewMessage: "Message preview",
+        },
+        errors: {
+          tooShort: "Too short",
+          tooLong: "Too long",
+          nameRequired: "Name is required",
+          message: "Message is required",
+          fileError: "Max size 10mb"
+        },
+        buttons: {
+          okAdd: "Add",
+          okEdit: "Save",
+          cancel: "Cancel",
+          preview: "Preview",
+          close: "Close"
+        },
+        success: "Capaign saved successfully.",
+      },
       chat: {
         noTicketMessage: "Select a ticket to start chatting.",
       },
@@ -400,7 +442,8 @@ const messages = {
           apititle: "API",
           apikey: "API Key",
           token: "Token",
-          departaments: "Departaments"
+          departaments: "Departaments",
+          campaigns: "Campaigns"
         },
         appBar: {
           user: {
@@ -446,6 +489,81 @@ const messages = {
         },
         buttons: {
           add: "Add departament"
+        }
+      },
+      campaign: {
+        inicialDate: "Start",
+        delay: "Delay",
+        sendTime: "Submit time",
+        status: {
+          pending: "Pending",
+          canceled: "Canceled",
+          scheduled: "Scheduled",
+          processing: "Processing",
+          timeout: "Paused due to time",
+          paused: "Paused",
+          failed: "Failed",
+          sent: "Sent",
+          "invalid-number": "Invalid number",
+          finished: "Finished",
+          archived: "Archived"
+        },
+        message: "Messages",
+        table: {
+          number: "Number",
+          status: "Status",
+          messageSent: "Sent Message"
+        },
+        search: "Search",
+        card: {
+          total: "TOTAL",
+          sent: "SENT",
+          failed: "FAILED"
+        },
+      },
+      campaigns: {
+        title: "Campaigns",
+        notifications: {
+          departamentDeleted: "The campaing has been deleted",
+          campaignPaused: "The campaing has been paused",
+          campaignCanceled: "The campaing has been canceled",
+          campaignStarted: "The campaing has been started",
+          campaignSaved: "The campaing has been saved",
+          campaignTested: "Test message sent",
+          campaignTestFailed: "Whatsapp Bot, Texto 1 and Number must be filled"
+        },
+        confirmationModal: {
+          archiveTitle: "Archive campaign",
+          archiveMessage: "Are you sure to archive the campaign? This action cannot be undone."
+        },
+        table: {
+          name: "Name",
+          actions: "Actions",
+          inicialDate: "Inicial date",
+          status: "Status",
+          details: "Details",
+          connection: "Connection",
+          createdAt: "Created at",
+          delay: "Delay",
+          total: "Total",
+          sent: "Sent",
+          failed: "Failed",
+          canceled: "Canceled"
+        },
+        buttons: {
+          add: "Add campaign"
+        },
+        toolTips: {
+          title: {
+            scheduled: "Scheduled",
+            processing: "Processing",
+            paused: "Paused",
+            canceled: "Canceled",
+            finished: "Finished",
+            failed: "Failed",
+            timeout: "Paused due to schedule",
+            archived: "Archived"
+          }
         }
       },
       queueSelect: {
@@ -667,6 +785,7 @@ const messages = {
         },
       },
       backendErrors: {
+        ERR_NUMBER_NOT_FOUND: "WhatsApp number not found.",
         ERR_NO_OTHER_WHATSAPP: "There must be at least one default WhatsApp.",
         ERR_NO_DEF_WAPP_FOUND: "No default WhatsApp found. Check connections page.",
         ERR_WAPP_NOT_INITIALIZED: "This WhatsApp session was not initialized. Please check the connections page.",
@@ -695,6 +814,9 @@ const messages = {
         ERR_CONNECTION_CREATION_COUNT: "Connection limit reached, contact support to change.",
         ERR_NO_TAG_FOUND: "Tag not found.",
         ERR_OUT_OF_HOURS: "Out of Office Hours!",
+        INTERNAL_ERROR: "Internal error, try later!",
+        ERR_INVALID_DATE: "Invalid date.",
+        ERR_NO_CONTACTS_FILE: "Invalid contacts file."
       },
     },
   },

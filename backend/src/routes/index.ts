@@ -13,6 +13,7 @@ import quickAnswerRoutes from "./quickAnswerRoutes";
 import apiRoutes from "./apiRoutes";
 import tagRoutes from "./tagRoutes";
 import departamentRoutes from "./departamentRoutes";
+import campaignRoutes from "./campaignRoutes";
 
 const routes = Router();
 
@@ -29,5 +30,8 @@ routes.use(quickAnswerRoutes);
 routes.use("/api/messages", apiRoutes);
 routes.use(tagRoutes);
 routes.use(departamentRoutes);
+if (process.env.CAMPAIGN_FUNCTION === "true") {
+  routes.use(campaignRoutes);
+}
 
 export default routes;

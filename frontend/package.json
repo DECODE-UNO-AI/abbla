@@ -21,6 +21,7 @@
     "markdown-to-jsx": "^7.1.0",
     "material-ui-color": "^1.2.0",
     "mic-recorder-to-mp3": "^2.2.2",
+    "papaparse": "^5.3.2",
     "qrcode.react": "^1.0.0",
     "react": "^16.13.1",
     "react-color": "^2.19.3",
