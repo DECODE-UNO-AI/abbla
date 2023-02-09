@@ -9,17 +9,14 @@ interface CampaignRequest {
   name: string;
   inicialDate: string;
   startNow?: string;
-  mediaBeforeMessage?: string;
   columnName: string;
   delay?: string;
-  sendTime: string;
-  message1: string;
-  message2?: string;
-  message3?: string;
-  message4?: string;
-  message5?: string;
-  mediaUrl?: string;
-  mediaType?: string;
+  sendTime: string[];
+  message1?: string[];
+  message2?: string[];
+  message3?: string[];
+  message4?: string[];
+  message5?: string[];
   userId: string;
   whatsappId: string;
 }
@@ -33,7 +30,6 @@ const CreateCampaignService = async ({
   campaign,
   medias
 }: Request): Promise<Campaign> => {
-  let mediaData: Express.Multer.File | undefined;
   let contacts: Express.Multer.File | undefined;
   if (medias) {
     await Promise.all(
@@ -45,8 +41,6 @@ const CreateCampaignService = async ({
           }
           if (media.mimetype === "text/csv") {
             contacts = media;
-          } else {
-            mediaData = media;
           }
         } catch (err) {
           logger.error(err);
@@ -84,12 +78,10 @@ const CreateCampaignService = async ({
     throw new AppError("ERR_NO_CONTACTS_FILE", 403);
   }
 
-  const mediaBeforeOrder = campaign.mediaBeforeMessage !== "false";
-
   const data: any = {
     name: campaign.name.trim(),
     inicialDate: startDate,
-    sendTime: campaign.sendTime.replace(",", "-"),
+    sendTime: campaign.sendTime,
     columnName: campaign.columnName.trim(),
     status: "scheduled",
     message1: campaign.message1,
@@ -99,10 +91,7 @@ const CreateCampaignService = async ({
     message5: campaign.message5,
     userId: campaign.userId,
     delay: delayValue,
-    mediaBeforeMessage: mediaBeforeOrder,
     contactsCsv: contacts?.filename,
-    mediaUrl: mediaData?.filename,
-    mediaType: mediaData?.mimetype.substr(0, mediaData.mimetype.indexOf("/")),
     whatsappId: campaign.whatsappId
   };
   const campaignData = await Campaign.create(data);

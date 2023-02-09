@@ -1,7 +1,7 @@
 import React from 'react';
 import { Field } from "formik";
 import { sortableContainer, sortableElement } from 'react-sortable-hoc';
-import { Reorder, Close } from "@material-ui/icons";
+import { Reorder, Close, CloudUpload } from "@material-ui/icons";
 import {arrayMoveImmutable} from 'array-move';
 import { TextField, Box, makeStyles, Button, InputLabel } from '@material-ui/core';
 
@@ -42,6 +42,9 @@ const useStyles = makeStyles(theme => ({
         border: '1px dashed #909090',
         borderRadius: 5
     },
+    button: {
+        color: "#fff"
+    },
     closeButton: {
         fontWeight: "bold",
         backgroundColor: "transparent",
@@ -57,13 +60,22 @@ const useStyles = makeStyles(theme => ({
         display: "flex",
         justifyContent: "space-between",
         alignItems: "center"
+    },
+    downloadContainer: {
+        width: "100%",
+        height: "100%",
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
+        flexDirection: "column",
+        gap: 10
     }
 }));
 
-const SortableItem = sortableElement(({ value, messageIndex, setMessageInputs, messageInputs, handleOnDeleteInput }) => {
+const SortableItem = sortableElement(({ value, messageIndex, setMessageInputs, messageInputs, handleOnDeleteInput, handleDownload }) => {
     const classes = useStyles();
-    const inputIndex = messageInputs.findIndex(input => input.id === value.id)
-    
+    const inputIndex = messageInputs[`message${messageIndex}Inputs`].findIndex(input => input.id === value.id)
+    const input = messageInputs[`message${messageIndex}Inputs`][inputIndex] || null
     return (
       <Box className={classes.inputContainer}>
         <Box className={classes.iconContainer}>
@@ -87,32 +99,62 @@ const SortableItem = sortableElement(({ value, messageIndex, setMessageInputs, m
                 multiline
                 maxRows={5}
                 minRows={4}
-                value={messageInputs[inputIndex].value}
+                value={input.value}
                 onChange={(e) => {
                     const value = e.target.value
-                    setMessageInputs(inputs => {
-                        inputs[inputIndex] = {...inputs[inputIndex], value: value}
-                        return ([...inputs]);
+                    setMessageInputs(i => {
+                        i[`message${messageIndex}Inputs`][inputIndex] = {...input, value: value}
+                        return ({...i});
                     })
+                    
                 }}
             />
         ) : (
             <>
                 {
-                    messageInputs[inputIndex].value ? 
+                    input.value ? 
                     <Box className={classes.fileContainer}>
-                        <InputLabel>{messageInputs[inputIndex].value?.name}</InputLabel>
+                        {
+                            typeof input.value !== "string" ?
+                            <InputLabel>{input.value?.name}</InputLabel>
+                            :
+                            <>
+                                <Box className={classes.downloadContainer}>
+                                    <InputLabel>{input.value.replace("file-", "")}</InputLabel>
+                                    <Button
+                                        onClick={() => handleDownload(true, input.value.replace("file-", ""))}
+                                        color="primary"
+                                        variant="contained"
+                                    >
+                                        Download
+                                    </Button>
+                                </Box>
+                            </>
+
+                        }
                     </Box>
                     :
                     <Box className={classes.fileContainer}>
+                        <label htmlFor={`input${messageIndex}-${value.id}`}>
+                            <Button
+                                variant="contained"
+                                color="default"
+                                component="span"
+                                className={classes.button}
+                                startIcon={<CloudUpload />}
+                            >
+                                Upload
+                            </Button>
+                        </label>
                         <input
                             id={`input${messageIndex}-${value.id}`} 
                             type="file"
+                            style={{ display: "none "}}
                             onChange={(e) => {
                                 const value = e.target.files[0]
-                                setMessageInputs(inputs => {
-                                inputs[inputIndex] = {...inputs[inputIndex], value: value}
-                                return ([...inputs]);
+                                setMessageInputs(i => {
+                                i[`message${messageIndex}Inputs`][inputIndex] = {...input, value: value}
+                                return ({...i});
                                 })
                             }}
                         />
@@ -128,40 +170,44 @@ const SortableContainer = sortableContainer(({ children }) => {
   return <div>{children}</div>;
 });
 
-const DynamicInputs = ({ messageInputs, setMessageInputs, messageIndex, inputOrder, setInputOrder, setSelectedPreviewMessage, setOpenPreview}) => {
+const DynamicInputs = ({ messageInputs, setMessageInputs, messageIndex, inputOrder, setInputOrder, setSelectedPreviewMessage, setOpenPreview, handleDownload}) => {
 
     const classes = useStyles();
 
+    const currentInputOrder = inputOrder[`message${messageIndex}InputOrder`] || []
+    const currentMessageInputs = messageInputs[`message${messageIndex}Inputs`] || []
+
     const handleAddInput = () => {
-        setMessageInputs([...messageInputs, { id: messageInputs.length, type: "text", value: "" }]);
-        setInputOrder([...inputOrder, messageInputs.length]);
-    };
-
-    const handleOnDeleteInput = (inputIndex) => {
-        messageInputs.splice(inputIndex, 1)
-        const orderIndex = inputOrder.findIndex(i => i === inputIndex)
-        inputOrder.splice(orderIndex, 1)
-        setMessageInputs(e => [...e])
-        setInputOrder(e => [...e])
-
+        setMessageInputs(e => ({...e,  [`message${messageIndex}Inputs`]: [...currentMessageInputs, { id: currentMessageInputs.length, type: "text", value: "" }]}))
+        setInputOrder(e => ({...e, [`message${messageIndex}InputOrder`]: [...currentInputOrder, currentMessageInputs.length]}));
     };
 
     const handleAddInputFile = () => {
-        setMessageInputs([...messageInputs, { id: messageInputs.length, type: "file", value: "" }]);
-        setInputOrder([...inputOrder, messageInputs.length]);
+        setMessageInputs(e => ({...e,  [`message${messageIndex}Inputs`]: [...currentMessageInputs, { id: currentMessageInputs.length, type: "file", value: "" }]}))
+        setInputOrder(e => ({...e, [`message${messageIndex}InputOrder`]: [...currentInputOrder, currentMessageInputs.length]}));
     };
-  
+
+    const handleOnDeleteInput = (inputIndex) => {
+        messageInputs[`message${messageIndex}Inputs`].splice(inputIndex, 1)
+        const orderIndex = inputOrder[`message${messageIndex}InputOrder`].findIndex(i => i === inputIndex)
+        inputOrder[`message${messageIndex}InputOrder`].splice(orderIndex, 1)
+        setMessageInputs(e => ({...e}))
+        setInputOrder(e => ({...e}))
+
+    };
+
     const onSortEnd = ({ oldIndex, newIndex }) => {
-      setInputOrder(arrayMoveImmutable(inputOrder, oldIndex, newIndex));
+        setInputOrder(e => ({...e, [`message${messageIndex}InputOrder`]: arrayMoveImmutable(currentInputOrder, oldIndex, newIndex)}));
     };
+    
     return (
         <>  
-            <SortableContainer onSortEnd={onSortEnd}>
-                {inputOrder.map((inputId, index) => {
-                    const input = messageInputs.find(input => input.id === inputId);
+            <SortableContainer onSortEnd={onSortEnd} distance={1}>
+                {currentInputOrder.map((inputId, index) => {
+                    const input = currentMessageInputs.find(input => input.id === inputId);
+                    
                     return (
-                        <>
-                            
+                        <>  
                             <SortableItem 
                                 messageIndex={messageIndex} 
                                 key={`message${messageIndex}-${input.id}`} 
@@ -170,6 +216,8 @@ const DynamicInputs = ({ messageInputs, setMessageInputs, messageIndex, inputOrd
                                 setMessageInputs={setMessageInputs}
                                 messageInputs={messageInputs}
                                 handleOnDeleteInput={handleOnDeleteInput}
+                                handleDownload={handleDownload}
+                                distance={400}
                             />
                         </>
                     );

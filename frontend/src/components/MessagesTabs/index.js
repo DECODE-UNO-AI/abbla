@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React from "react";
 import { Typography, Box, AppBar, Tabs, Tab } from "@material-ui/core";
 import DynamicInputs from "../DynamicInputs";
 
@@ -38,24 +38,16 @@ const MessagesTabs = (
         values, 
         setValues, 
         medias, 
-        setMedias, 
+        setMedias,
+        inputsOrder,
         setInputsOrder, 
         setAllMessagesInputs,
+        allMessagesInputs,
         setSelectedPreviewMessage,
         setOpenPreview,
+        handleDownload
     }
 ) => {
-
-    const [message1Inputs, setMessage1Inputs] = useState([])
-    const [input1Order, setInput1Order] = useState([]);
-    const [message2Inputs, setMessage2Inputs] = useState([])
-    const [input2Order, setInput2Order] = useState([]);
-    const [message3Inputs, setMessage3Inputs] = useState([])
-    const [input3Order, setInput3Order] = useState([]);
-    const [message4Inputs, setMessage4Inputs] = useState([])
-    const [input4Order, setInput4Order] = useState([]);
-    const [message5Inputs, setMessage5Inputs] = useState([])
-    const [input5Order, setInput5Order] = useState([]);
 
     const handleOnMediaChange = (input) => {
         const file = input.target.files[0]
@@ -63,66 +55,6 @@ const MessagesTabs = (
             return {...e, [input.target.name]: file}
         })
     }
-
-    useEffect(() => {
-        setAllMessagesInputs(e => ({...e, message1Inputs}))
-    }, [message1Inputs, setAllMessagesInputs])
-
-    useEffect(() => {
-        setAllMessagesInputs(e => ({...e, message2Inputs}))
-    }, [message2Inputs, setAllMessagesInputs])
-
-    useEffect(() => {
-        setAllMessagesInputs(e => ({...e, message3Inputs}))
-    }, [message3Inputs, setAllMessagesInputs])
-
-    useEffect(() => {
-        setAllMessagesInputs(e => ({...e, message4Inputs}))
-    }, [message4Inputs, setAllMessagesInputs])
-
-    useEffect(() => {
-        setAllMessagesInputs(e => ({...e, message5Inputs}))
-    }, [message5Inputs, setAllMessagesInputs])
-
-    useEffect(() => {
-        setInputsOrder((e) => {
-            return (
-                {...e, message1InputOrder: input1Order}
-            )
-        })
-    }, [input1Order, setInputsOrder])
-
-    useEffect(() => {
-        setInputsOrder((e) => {
-            return (
-                {...e, message2InputOrder: input2Order}
-            )
-        })
-    }, [input2Order, setInputsOrder])
-
-    useEffect(() => {
-        setInputsOrder((e) => {
-            return (
-                {...e, message3InputOrder: input3Order}
-            )
-        })
-    }, [input3Order, setInputsOrder])
-
-    useEffect(() => {
-        setInputsOrder((e) => {
-            return (
-                {...e, message4InputOrder: input4Order}
-            )
-        })
-    }, [input4Order, setInputsOrder])
-
-    useEffect(() => {
-        setInputsOrder((e) => {
-            return (
-                {...e, message5InputOrder: input5Order}
-            )
-        })
-    }, [input5Order, setInputsOrder])
 
     return (
         <Box sx={{ width: "100%" }} className={classes.box}>
@@ -148,61 +80,66 @@ const MessagesTabs = (
             </AppBar>
             <TabPanel value={tabValue} index={0} className={classes.messageTab} variant={"div"}>
                 <Box style={{ maxWidth: 800}}>
-                    <DynamicInputs values={values} setValues={setValues} messageInputs={message1Inputs} setMessageInputs={setMessage1Inputs} messageIndex={1}
+                    <DynamicInputs values={values} setValues={setValues} messageInputs={allMessagesInputs} setMessageInputs={setAllMessagesInputs} messageIndex={1}
                         handleOnMediaChange={handleOnMediaChange}
-                        inputOrder={input1Order} 
-                        setInputOrder={setInput1Order}
+                        inputOrder={inputsOrder} 
+                        setInputOrder={setInputsOrder}
                         medias={medias}
                         setSelectedPreviewMessage={setSelectedPreviewMessage}
                         setOpenPreview={setOpenPreview}
+                        handleDownload={handleDownload}
                     /> 
                 </Box>
             </TabPanel>
             <TabPanel value={tabValue} index={1} className={classes.messageTab} variant={"div"}>
                 <Box style={{ maxWidth: 800}}>
-                    <DynamicInputs values={values} setValues={setValues} messageInputs={message2Inputs} setMessageInputs={setMessage2Inputs} messageIndex={2}
-                        inputOrder={input2Order} 
-                        setInputOrder={setInput2Order}
+                    <DynamicInputs values={values} setValues={setValues} messageInputs={allMessagesInputs} setMessageInputs={setAllMessagesInputs} messageIndex={2}
+                        inputOrder={inputsOrder} 
+                        setInputOrder={setInputsOrder}
                         medias={medias}
                         handleOnMediaChange={handleOnMediaChange}
                         setSelectedPreviewMessage={setSelectedPreviewMessage}
                         setOpenPreview={setOpenPreview}
+                        handleDownload={handleDownload}
                     /> 
                 </Box>
             </TabPanel>
             <TabPanel value={tabValue} index={2} className={classes.messageTab} variant={"div"}>
                 <Box style={{ maxWidth: 800}}>
-                    <DynamicInputs values={values} setValues={setValues} messageInputs={message3Inputs} setMessageInputs={setMessage3Inputs} messageIndex={2}
-                        inputOrder={input3Order} 
-                        setInputOrder={setInput3Order}
+                    <DynamicInputs values={values} setValues={setValues} messageInputs={allMessagesInputs} setMessageInputs={setAllMessagesInputs} messageIndex={3}
+                        inputOrder={inputsOrder} 
+                        setInputOrder={setInputsOrder}
                         medias={medias}
                         handleOnMediaChange={handleOnMediaChange}
                         setSelectedPreviewMessage={setSelectedPreviewMessage}
                         setOpenPreview={setOpenPreview}
+                        handleDownload={handleDownload}
                     /> 
                 </Box>
             </TabPanel>
             <TabPanel value={tabValue} index={3} className={classes.messageTab} variant={"div"}>
                 <Box style={{ maxWidth: 800}}>
-                    <DynamicInputs values={values} setValues={setValues} messageInputs={message4Inputs} setMessageInputs={setMessage4Inputs} messageIndex={2}
-                        inputOrder={input4Order} 
-                        setInputOrder={setInput4Order}
+                    <DynamicInputs values={values} setValues={setValues} messageInputs={allMessagesInputs} setMessageInputs={setAllMessagesInputs} messageIndex={4}
+                        inputOrder={inputsOrder} 
+                        setInputOrder={setInputsOrder}
                         medias={medias}
                         handleOnMediaChange={handleOnMediaChange}
                         setSelectedPreviewMessage={setSelectedPreviewMessage}
                         setOpenPreview={setOpenPreview}
+                        handleDownload={handleDownload}
                     /> 
                 </Box>
             </TabPanel>
             <TabPanel value={tabValue} index={4} className={classes.messageTab} variant={"div"}>
                 <Box style={{ maxWidth: 800}}>
-                    <DynamicInputs values={values} setValues={setValues} messageInputs={message5Inputs} setMessageInputs={setMessage5Inputs} messageIndex={2}
-                        inputOrder={input5Order} 
-                        setInputOrder={setInput5Order}
+                    <DynamicInputs values={values} setValues={setValues} messageInputs={allMessagesInputs} setMessageInputs={setAllMessagesInputs} messageIndex={5}
+                        inputOrder={inputsOrder} 
+                        setInputOrder={setInputsOrder}
                         medias={medias}
                         handleOnMediaChange={handleOnMediaChange}
                         setSelectedPreviewMessage={setSelectedPreviewMessage}
                         setOpenPreview={setOpenPreview}
+                        handleDownload={handleDownload}
                     /> 
                 </Box>
             </TabPanel>

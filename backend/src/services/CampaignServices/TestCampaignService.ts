@@ -8,7 +8,7 @@ interface CampaignData {
   campaignData: {
     mediaUrl?: string;
     mediaBeforeMessage?: string;
-    message1: string;
+    message1: string[];
     number: string;
     whatsappId: string;
   };
@@ -68,13 +68,13 @@ const TestCampaignService = async ({
           sendAudioAsVoice: true,
           sendMediaAsDocument: false
         });
-        await whatsapp.sendMessage(whatsNumber._serialized, message1);
+        await whatsapp.sendMessage(whatsNumber._serialized, "message1");
       } else {
         await whatsapp.sendMessage(
           whatsNumber._serialized,
           "######## ATENÇÃO ########\n######### ABBLA #########\n\nA seguir será apresentada a mensagem de teste da sua campanha\n\n####### CAMPANHA #######"
         );
-        await whatsapp.sendMessage(whatsNumber._serialized, message1);
+        await whatsapp.sendMessage(whatsNumber._serialized, "message1"); // message1
         await whatsapp.sendMessage(whatsNumber._serialized, file, {
           sendAudioAsVoice: true,
           sendMediaAsDocument: false
@@ -85,7 +85,7 @@ const TestCampaignService = async ({
         whatsNumber._serialized,
         "######## ATENÇÃO ########\n######### ABBLA #########\nA seguir será apresentada a mensagem de teste da sua campanha\n####### CAMPANHA #######"
       );
-      await whatsapp.sendMessage(whatsNumber._serialized, message1);
+      await whatsapp.sendMessage(whatsNumber._serialized, ""); // message1
     }
   } catch (err) {
     throw new AppError("INTERNAL_ERROR", 500);

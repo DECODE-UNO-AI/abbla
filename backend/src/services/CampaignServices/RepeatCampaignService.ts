@@ -20,11 +20,11 @@ interface CampaignData {
   columnName: string;
   delay?: string;
   sendTime: string;
-  message1: string;
-  message2?: string;
-  message3?: string;
-  message4?: string;
-  message5?: string;
+  message1: string[];
+  message2?: string[];
+  message3?: string[];
+  message4?: string[];
+  message5?: string[];
   mediaUrl?: string;
   mediaType?: string;
   userId: string;

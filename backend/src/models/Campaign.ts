@@ -29,8 +29,16 @@ class Campaign extends Model<Campaign> {
   @Column
   inicialDate: Date;
 
-  @Column
-  sendTime: string;
+  @Column(DataType.STRING)
+  // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
+  set sendTime(value) {
+    this.setDataValue("sendTime", JSON.stringify(value));
+  }
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  get sendTime(): any {
+    return JSON.parse(this.getDataValue("sendTime"));
+  }
 
   @Column
   startNow: boolean;
@@ -69,42 +77,66 @@ class Campaign extends Model<Campaign> {
   )
   delay: string;
 
-  @Column
-  message1: string;
+  @Column(DataType.TEXT)
+  // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
+  set message1(value) {
+    this.setDataValue("message1", JSON.stringify(value));
+  }
 
-  @Column
-  message2: string;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  get message1(): any {
+    return JSON.parse(this.getDataValue("message1"));
+  }
 
-  @Column
-  message3: string;
+  @Column(DataType.TEXT)
+  // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
+  set message2(value) {
+    this.setDataValue("message2", JSON.stringify(value));
+  }
 
-  @Column
-  message4: string;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  get message2(): any {
+    return JSON.parse(this.getDataValue("message2"));
+  }
 
-  @Column
-  message5: string;
+  @Column(DataType.TEXT)
+  // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
+  set message3(value) {
+    this.setDataValue("message3", JSON.stringify(value));
+  }
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  get message3(): any {
+    return JSON.parse(this.getDataValue("message3"));
+  }
+
+  @Column(DataType.TEXT)
+  // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
+  set message4(value) {
+    this.setDataValue("message4", JSON.stringify(value));
+  }
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  get message4(): any {
+    return JSON.parse(this.getDataValue("message4"));
+  }
+
+  @Column(DataType.TEXT)
+  // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
+  set message5(value) {
+    this.setDataValue("message5", JSON.stringify(value));
+  }
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  get message5(): any {
+    return JSON.parse(this.getDataValue("message5"));
+  }
 
   @Column
   columnName: string;
 
   @Column
   contactsCsv: string;
-
-  @Column
-  mediaBeforeMessage: boolean;
-
-  @Column(DataType.STRING)
-  get mediaUrl(): string | null {
-    const value = this.getDataValue("mediaUrl");
-    if (value && value !== "null") {
-      const { BACKEND_URL } = process.env;
-      return `${BACKEND_URL}:${process.env.PROXY_PORT}/public/${value}`;
-    }
-    return null;
-  }
-
-  @Column
-  mediaType: string;
 
   @ForeignKey(() => User)
   @Column

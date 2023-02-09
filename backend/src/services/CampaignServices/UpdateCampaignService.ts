@@ -6,27 +6,18 @@ import { logger } from "../../utils/logger";
 import CreateCampaignContactsService from "../CampaignContactService/CreateCampaignContactsService";
 import DeleteCampaignContactService from "../CampaignContactService/DeleteCampaignContactService";
 
-const cArquivoName = (url: string | undefined) => {
-  if (!url) return "";
-  const split = url.split("/");
-  const name = split[split.length - 1];
-  return name;
-};
 interface CampaignData {
   name: string;
   inicialDate: string;
   startNow?: string;
-  mediaBeforeMessage?: string;
   columnName: string;
   delay?: string;
-  sendTime: string;
-  message1: string;
-  message2?: string;
-  message3?: string;
-  message4?: string;
-  message5?: string;
-  mediaUrl?: string;
-  mediaType?: string;
+  sendTime: string[];
+  message1: string[];
+  message2?: string[];
+  message3?: string[];
+  message4?: string[];
+  message5?: string[];
   userId: string;
   whatsappId: string;
 }
@@ -42,7 +33,6 @@ const UpdateCampaignService = async ({
   medias,
   campaignId
 }: Request): Promise<Campaign> => {
-  let mediaData: Express.Multer.File | undefined;
   let contacts: Express.Multer.File | undefined;
 
   let startDate;
@@ -70,17 +60,13 @@ const UpdateCampaignService = async ({
       ? "10-15"
       : null;
 
-  const mediaBeforeOrder = campaignData.mediaBeforeMessage !== "false";
-
   let data: any = {
     ...campaignData,
-    mediaUrl: cArquivoName(campaignData.mediaUrl),
     inicialDate: startDate,
-    mediaBeforeMessage: mediaBeforeOrder,
     columnName: campaignData.columnName.trim(),
     delay: delayValue,
     status: "scheduled",
-    sendTime: campaignData.sendTime.replace(",", "-")
+    sendTime: campaignData.sendTime
   };
 
   const campaignModel = await Campaign.findOne({
@@ -110,8 +96,6 @@ const UpdateCampaignService = async ({
           }
           if (media.mimetype === "text/csv") {
             contacts = media;
-          } else {
-            mediaData = media;
           }
         } catch (err) {
           logger.error(err);
@@ -124,23 +108,6 @@ const UpdateCampaignService = async ({
         contactsCsv: contacts.filename
       };
     }
-
-    if (mediaData) {
-      data = {
-        ...data,
-        mediaUrl: mediaData?.filename,
-        mediaType: mediaData?.mimetype.substr(
-          0,
-          mediaData.mimetype.indexOf("/")
-        )
-      };
-    }
-  } else if (campaignData.mediaUrl === "null") {
-    data = {
-      ...data,
-      mediaUrl: "",
-      mediaType: ""
-    };
   }
 
   if (!campaignModel) {

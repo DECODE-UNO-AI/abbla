@@ -211,14 +211,6 @@ const CampaignSchema = Yup.object().shape({
 		.max(50, i18n.t("campaignModal.errors.tooLong"))
 		.required(" "),
     whatsappId: Yup.string().required("Required"),
-    message1: Yup.string()
-        .min(5, i18n.t("campaignModal.errors.tooShort"))
-        .max(4096, i18n.t("campaignModal.errors.tooLong")),
-        // .required(i18n.t("campaignModal.errors.message")),
-    message2: Yup.string().min(5, i18n.t("campaignModal.errors.tooShort")).max(4096, i18n.t("campaignModal.errors.tooLong")),
-    message3: Yup.string().min(5, i18n.t("campaignModal.errors.tooShort")).max(4096, i18n.t("campaignModal.errors.tooLong")),
-    message4: Yup.string().min(5, i18n.t("campaignModal.errors.tooShort")).max(4096, i18n.t("campaignModal.errors.tooLong")),
-    message5: Yup.string().min(5, i18n.t("campaignModal.errors.tooShort")).max(4096, i18n.t("campaignModal.errors.tooLong")),
     columnName: Yup.string().required(" "),
 });
 
@@ -241,7 +233,7 @@ const CampaignModal = ({ open, onClose, campaignId, visualize = false }) => {
     const [delay, setDelay] = useState("15")
     const [tabValue, setTabValue] = useState(0);
     const [startNow, setStartNow] = useState(false);
-    const [csVFile, setCsvFile] = useState(null)
+    const [csvFile, setCsvFile] = useState(null)
     const [csvColumns, setCsvColumns] = useState([])
     const [submittingForm, setSubmittingForm] = useState(false)
     const [testNumber, setTestNumber] = useState("")
@@ -258,8 +250,7 @@ const CampaignModal = ({ open, onClose, campaignId, visualize = false }) => {
 			if (!campaignId) return;
 			try {
 				const { data } = await api.get(`/campaigns/${campaignId}`);
-                const sendInterval = data.sendTime.split('-').map(n => +n)
-                setSendTime(sendInterval)
+                setSendTime(data.sendTime)
                 const delayValue =
                     data.delay === "120-240"
                     ? "15"
@@ -291,6 +282,47 @@ const CampaignModal = ({ open, onClose, campaignId, visualize = false }) => {
                     }
 					return { ...prevState, ...data, inicialDate: settedDate};
 				});
+
+                setAllMessagesInputs({
+                    message1Inputs: data.message1.map((message, index) => {
+                        if(message.startsWith("file-")) {
+                            return ({id: index, type: "file", value: message})
+                        }
+                        return ({id: index, type: "text", value: message})
+                    }),
+                    message2Inputs: data.message2.map((message, index) => {
+                        if(message.startsWith("file-")) {
+                            return ({ id: index, type: "file", value: message})
+                        }
+                        return ({id: index, type: "text", value: message})
+                    }),
+                    message3Inputs: data.message3.map((message, index) => {
+                        if(message.startsWith("file-")) {
+                            return ({ id: index, type: "file", value: message})
+                        }
+                        return ({ id: index, type: "text", value: message})
+                    }),
+                    message4Inputs: data.message4.map((message, index) => {
+                        if(message.startsWith("file-")) {
+                            return ({ id: index, type: "file", value: message})
+                        }
+                        return ({ id: index, type: "text", value: message})
+                    }),
+                    message5Inputs: data.message5.map((message, index) => {
+                        if(message.startsWith("file-")) {
+                            return ({ id: index, type: "file", value: message})
+                        }
+                        return ({ id: index, type: "text", value: message})
+                    })
+                })
+
+                setInputsOrder({
+                    message1InputOrder: data.message1.map((message , index) => index),
+                    message2InputOrder: data.message2.map((message , index) => index),
+                    message3InputOrder: data.message3.map((message , index) => index),
+                    message4InputOrder: data.message4.map((message , index) => index),
+                    message5InputOrder: data.message5.map((message , index) => index)
+                })
 			} catch (err) {
 				toastError(err);
 			}
@@ -304,7 +336,7 @@ const CampaignModal = ({ open, onClose, campaignId, visualize = false }) => {
             setCsvFile(null);
             setStartNow(false);
             setIsRepeatModel(false);
-            inputsOrder([]);
+            setInputsOrder([]);
             setAllMessagesInputs([]);
 		};
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -335,12 +367,12 @@ const CampaignModal = ({ open, onClose, campaignId, visualize = false }) => {
 
     }
 
-    const handleDownload = async (isCsvFile) => {
+    const handleDownload = async (isCsvFile, fileName = "") => {
         let response
         if (isCsvFile) {
             response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/public/${campaignForm.contactsCsv}`)
         } else {
-            response = await fetch(`${campaignForm.mediaUrl}`)
+            response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/public/${fileName}`)
         }
         const file = await response.blob();
         const fileUrl = URL.createObjectURL(file);
@@ -385,19 +417,23 @@ const CampaignModal = ({ open, onClose, campaignId, visualize = false }) => {
 
     const handleOnSave = async(values) => {
         setSubmittingForm(true)
-        let form = {...values, delay, startNow, sendTime}
+        let form = {...values, delay, startNow, sendTime: JSON.stringify(sendTime)}
         const formData = new FormData();
+        let medias = []
         Object.keys(allMessagesInputs).forEach((messageInput, index) => {
             let message = inputsOrder[`message${index+1}InputOrder`].map((i) => {
                 const input = allMessagesInputs[messageInput].find(inp => inp.id === i)
                 if(input.type === "text"){
                     return input.value ? input.value : null
                 } else {
-                    formData.append("medias", input.value)
-                    return input.value ? `file-${input.value.name}` : null
+                    if(typeof input.value === File ){
+                        medias.push(input.value)
+                        return input.value ? `file-${input.value.name}` : null
+                    }
+                    return input.value || null
                 }
             })
-            message = message.filter(i => i !== null)
+            message = JSON.stringify(message.filter(i => i !== null))   
             form = {...form, [`message${index+1}`]: message}
         })
         if (
@@ -412,7 +448,15 @@ const CampaignModal = ({ open, onClose, campaignId, visualize = false }) => {
                 return
         }
 
-        formData.append("medias", csVFile)
+        medias = [...new Set(medias.map(media => media.name))].map(name => {
+            return medias.find(media => media.name === name);
+        });
+        
+        medias.forEach((file) => {
+            if(typeof file === File) formData.append("medias", file)
+        })
+        if (csvFile) formData.append("medias", csvFile)
+
         Object.keys(form).forEach((key) => {
             formData.append(key, form[key])
         })
@@ -457,7 +501,7 @@ const CampaignModal = ({ open, onClose, campaignId, visualize = false }) => {
         setCsvFile(null);
         setStartNow(false);
         setIsRepeatModel(false);
-        inputsOrder([])
+        setInputsOrder([])
         setAllMessagesInputs([])
         onClose()
     }
@@ -699,6 +743,7 @@ const CampaignModal = ({ open, onClose, campaignId, visualize = false }) => {
                                     allMessagesInputs={allMessagesInputs}
                                     setSelectedPreviewMessage={setSelectedPreviewMessage}
                                     setOpenPreview={setOpenPreview}
+                                    handleDownload={handleDownload}
                                 />
                                 <Box className={classes.variableContent}>
                                     <InputLabel style={{ display: "flex", alignItems: "center", marginRight: 2}}>{i18n.t("campaignModal.form.variables")}</InputLabel>

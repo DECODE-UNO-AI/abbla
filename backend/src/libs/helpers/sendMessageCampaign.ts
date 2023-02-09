@@ -1,7 +1,7 @@
 /* eslint-disable no-underscore-dangle */
 /* eslint-disable prettier/prettier */
 /* eslint-disable no-await-in-loop */
-import { join } from "path";
+// import { join } from "path";
 import { Server } from "socket.io";
 import { MessageMedia } from "whatsapp-web.js";
 import Campaign from "../../models/Campaign";
@@ -209,12 +209,13 @@ const sendMessageCampaign = async (campaign: Campaign): Promise<void> => {
     let randomMessage = messages[Math.floor(Math.random() * messages.length)];
 
     // getting media
-    let mediaFile: MessageMedia | null = null;
-    if (campaign.mediaUrl) {
-      const fileName = campaign.mediaUrl.split("/")[4];
-      const customPath = join(__dirname, "..", "..", "..", "public", fileName);
-      mediaFile = MessageMedia.fromFilePath(customPath);
-    }
+    // let mediaFile: MessageMedia | null = null;
+    const mediaFile = null
+    // if (campaign.mediaUrl) {
+    //   const fileName = campaign.mediaUrl.split("/")[4];
+    //   const customPath = join(__dirname, "..", "..", "..", "public", fileName);
+    //   mediaFile = MessageMedia.fromFilePath(customPath);
+    // }
     // replacing variables
     Object.keys(penddingContacts[i].details).forEach(key => {
       randomMessage = randomMessage.replace(
@@ -223,7 +224,7 @@ const sendMessageCampaign = async (campaign: Campaign): Promise<void> => {
       );
     });
     await setDelay(randomDelay * 1000);
-    await sendMessage(penddingContacts[i], randomMessage, whatsapp, mediaFile, campaign.mediaBeforeMessage, io, campaign);
+    await sendMessage(penddingContacts[i], randomMessage, whatsapp, mediaFile, true, io, campaign);
     if (i + 1 === penddingContacts.length) {
       try {
         await campaign.update({ status: "finished" });
