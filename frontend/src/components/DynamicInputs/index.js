@@ -72,13 +72,13 @@ const useStyles = makeStyles(theme => ({
     }
 }));
 
-const SortableItem = sortableElement(({ value, messageIndex, setMessageInputs, messageInputs, handleOnDeleteInput, handleDownload }) => {
+const SortableItem = sortableElement(({ value, messageIndex, setMessageInputs, messageInputs, handleOnDeleteInput, handleDownload, visualize }) => {
     const classes = useStyles();
     const inputIndex = messageInputs[`message${messageIndex}Inputs`].findIndex(input => input.id === value.id)
     const input = messageInputs[`message${messageIndex}Inputs`][inputIndex] || null
     return (
       <Box className={classes.inputContainer}>
-        <Box className={classes.iconContainer}>
+        <Box className={classes.iconContainer} style={{ display: visualize ? "none" : ""}}>
             <Box className={classes.icon}>
                 <Reorder />
             </Box>
@@ -90,7 +90,7 @@ const SortableItem = sortableElement(({ value, messageIndex, setMessageInputs, m
         {value.type === "text" ? (
             <Field
                 as={TextField}
-                disabled={false}
+                disabled={visualize}
                 style={{ width: "100%", padding: 0, cursor: "move"}}
                 labelId="message2-label"
                 id={`message${messageIndex}-${value.id}`}
@@ -113,7 +113,7 @@ const SortableItem = sortableElement(({ value, messageIndex, setMessageInputs, m
             <>
                 {
                     input.value ? 
-                    <Box className={classes.fileContainer}>
+                    <Box className={classes.fileContainer} style={{ cursor: visualize ? "auto" : "move"}}>
                         {
                             typeof input.value !== "string" ?
                             <InputLabel>{input.value?.name}</InputLabel>
@@ -134,7 +134,7 @@ const SortableItem = sortableElement(({ value, messageIndex, setMessageInputs, m
                         }
                     </Box>
                     :
-                    <Box className={classes.fileContainer}>
+                    <Box className={classes.fileContainer} style={{ cursor: visualize ? "auto" : "move"}}>
                         <label htmlFor={`input${messageIndex}-${value.id}`}>
                             <Button
                                 variant="contained"
@@ -170,7 +170,7 @@ const SortableContainer = sortableContainer(({ children }) => {
   return <div>{children}</div>;
 });
 
-const DynamicInputs = ({ messageInputs, setMessageInputs, messageIndex, inputOrder, setInputOrder, setSelectedPreviewMessage, setOpenPreview, handleDownload}) => {
+const DynamicInputs = ({ messageInputs, setMessageInputs, messageIndex, inputOrder, setInputOrder, setSelectedPreviewMessage, setOpenPreview, handleDownload, visualize}) => {
 
     const classes = useStyles();
 
@@ -202,7 +202,7 @@ const DynamicInputs = ({ messageInputs, setMessageInputs, messageIndex, inputOrd
     
     return (
         <>  
-            <SortableContainer onSortEnd={onSortEnd} distance={1}>
+            <SortableContainer onSortEnd={onSortEnd} distance={visualize ? 99999999999 : 1} >
                 {currentInputOrder.map((inputId, index) => {
                     const input = currentMessageInputs.find(input => input.id === inputId);
                     
@@ -218,6 +218,7 @@ const DynamicInputs = ({ messageInputs, setMessageInputs, messageIndex, inputOrd
                                 handleOnDeleteInput={handleOnDeleteInput}
                                 handleDownload={handleDownload}
                                 distance={400}
+                                visualize={visualize}
                             />
                         </>
                     );
@@ -225,8 +226,13 @@ const DynamicInputs = ({ messageInputs, setMessageInputs, messageIndex, inputOrd
             </SortableContainer>
             <Box className={classes.buttonContainer}>
                 <Box>
-                    <Button type="button" onClick={handleAddInput}>+TEXTO</Button>
-                    <Button type="button" onClick={handleAddInputFile}>+ARQUIVO</Button>
+                    {
+                        visualize ? "" : 
+                        <>
+                            <Button type="button" onClick={handleAddInput}>+TEXTO</Button>
+                            <Button type="button" onClick={handleAddInputFile}>+ARQUIVO</Button>
+                        </>
+                    }
                 </Box>
                 <Button type="button" onClick={() => {
                     setSelectedPreviewMessage(1)

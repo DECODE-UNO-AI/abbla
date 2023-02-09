@@ -241,8 +241,20 @@ const CampaignModal = ({ open, onClose, campaignId, visualize = false }) => {
     const [openPreview, setOpenPreview] = useState(false)
     const [confirmationModalOpen, setConfirmationModalOpen] = useState(false)
     const [selectedPreviewMessage, setSelectedPreviewMessage] = useState(null)
-    const [inputsOrder, setInputsOrder] = useState([])
-    const [allMessagesInputs, setAllMessagesInputs] = useState([])
+    const [inputsOrder, setInputsOrder] = useState({
+        message1InputOrder: [],
+        message2InputOrder: [],
+        message3InputOrder: [],
+        message4InputOrder: [],
+        message5InputOrder: [],
+    })
+    const [allMessagesInputs, setAllMessagesInputs] = useState({
+        message1Inputs: [],
+        message2Inputs: [],
+        message3Inputs: [],
+        message4Inputs: [],
+        message5Inputs: [],
+    })
     
 
     useEffect(() => {
@@ -426,14 +438,14 @@ const CampaignModal = ({ open, onClose, campaignId, visualize = false }) => {
                 if(input.type === "text"){
                     return input.value ? input.value : null
                 } else {
-                    if(typeof input.value === File ){
+                    if(typeof input.value !== "string" ){
                         medias.push(input.value)
-                        return input.value ? `file-${input.value.name}` : null
+                        return `file-${input.value.name}`
                     }
-                    return input.value || null
+                    return input.value
                 }
             })
-            message = JSON.stringify(message.filter(i => i !== null))   
+            message = JSON.stringify(message.filter(i => i !== null))
             form = {...form, [`message${index+1}`]: message}
         })
         if (
@@ -447,7 +459,6 @@ const CampaignModal = ({ open, onClose, campaignId, visualize = false }) => {
                 setSubmittingForm(false)
                 return
         }
-
         medias = [...new Set(medias.map(media => media.name))].map(name => {
             return medias.find(media => media.name === name);
         });
@@ -744,6 +755,7 @@ const CampaignModal = ({ open, onClose, campaignId, visualize = false }) => {
                                     setSelectedPreviewMessage={setSelectedPreviewMessage}
                                     setOpenPreview={setOpenPreview}
                                     handleDownload={handleDownload}
+                                    visualize={visualize}
                                 />
                                 <Box className={classes.variableContent}>
                                     <InputLabel style={{ display: "flex", alignItems: "center", marginRight: 2}}>{i18n.t("campaignModal.form.variables")}</InputLabel>

@@ -47,7 +47,6 @@ export const store = async (req: Request, res: Response): Promise<Response> => {
   if (profile !== "admin") {
     throw new AppError("ERR_NO_PERMISSION", 403);
   }
-
   let campaign: CampaignData = {
     ...req.body,
     message1: JSON.parse(req.body.message1),

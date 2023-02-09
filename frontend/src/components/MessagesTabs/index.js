@@ -45,7 +45,8 @@ const MessagesTabs = (
         allMessagesInputs,
         setSelectedPreviewMessage,
         setOpenPreview,
-        handleDownload
+        handleDownload,
+        visualize
     }
 ) => {
 
@@ -88,6 +89,7 @@ const MessagesTabs = (
                         setSelectedPreviewMessage={setSelectedPreviewMessage}
                         setOpenPreview={setOpenPreview}
                         handleDownload={handleDownload}
+                        visualize={visualize}
                     /> 
                 </Box>
             </TabPanel>
@@ -101,6 +103,7 @@ const MessagesTabs = (
                         setSelectedPreviewMessage={setSelectedPreviewMessage}
                         setOpenPreview={setOpenPreview}
                         handleDownload={handleDownload}
+                        visualize={visualize}
                     /> 
                 </Box>
             </TabPanel>
@@ -114,6 +117,7 @@ const MessagesTabs = (
                         setSelectedPreviewMessage={setSelectedPreviewMessage}
                         setOpenPreview={setOpenPreview}
                         handleDownload={handleDownload}
+                        visualize={visualize}
                     /> 
                 </Box>
             </TabPanel>
@@ -127,6 +131,7 @@ const MessagesTabs = (
                         setSelectedPreviewMessage={setSelectedPreviewMessage}
                         setOpenPreview={setOpenPreview}
                         handleDownload={handleDownload}
+                        visualize={visualize}
                     /> 
                 </Box>
             </TabPanel>
@@ -140,6 +145,7 @@ const MessagesTabs = (
                         setSelectedPreviewMessage={setSelectedPreviewMessage}
                         setOpenPreview={setOpenPreview}
                         handleDownload={handleDownload}
+                        visualize={visualize}
                     /> 
                 </Box>
             </TabPanel>
