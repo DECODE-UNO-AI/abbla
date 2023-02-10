@@ -17,7 +17,7 @@ campaignRoutes.post(
 campaignRoutes.post(
   "/campaigns/test",
   isAuth,
-  multer({ storage: multer.memoryStorage() }).single("media"),
+  multer({ storage: multer.memoryStorage() }).array("medias"),
   CampaignController.testCampaign
 );
 

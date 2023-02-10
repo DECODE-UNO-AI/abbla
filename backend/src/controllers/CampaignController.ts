@@ -296,19 +296,20 @@ export const testCampaign = async (
   }
   const schema = Yup.object().shape({
     number: Yup.string().required(),
-    message1: Yup.string().required(),
-    whatsappId: Yup.string().required(),
-    mediaBeforeMessage: Yup.string().required()
+    message: Yup.array().required(),
+    whatsappId: Yup.string().required()
   });
-
   const campaignData: {
-    mediaUrl?: string;
-    mediaBeforeMessage?: string;
-    message1: string[];
+    message: string[];
     number: string;
     whatsappId: string;
-  } = req.body;
-  const mediaFile = req.file || null;
+  } = {
+    message: req.body.message ? JSON.parse(req.body.message) : [],
+    number: req.body.number,
+    whatsappId: req.body.whatsappId
+  };
+
+  const medias = req.files as Express.Multer.File[];
 
   try {
     await schema.validate(campaignData);
@@ -316,7 +317,7 @@ export const testCampaign = async (
     throw new AppError(error.message);
   }
 
-  await TestCampaignService({ campaignData, mediaFile });
+  await TestCampaignService({ campaignData, medias });
 
   return res.status(200).json({ message: "message sent" });
 };

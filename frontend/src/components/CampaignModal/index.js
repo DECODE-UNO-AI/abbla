@@ -396,20 +396,38 @@ const CampaignModal = ({ open, onClose, campaignId, visualize = false }) => {
 
     const handleOnTest = async (values) => {
         setSubmittingForm(true)
-        const { whatsappId, message1 } = values
-        if (!whatsappId || !message1 || !testNumber ) {
+        const { whatsappId } = values
+        const messages = allMessagesInputs[`message${tabValue+1}Inputs`]
+        let medias = []
+        if (!whatsappId || !messages || !testNumber || messages.length < 1 ) {
             toast.error(`${i18n.t("campaigns.notifications.campaignTestFailed")}`);
             setSubmittingForm(false)
             return
         }
-        const data = { whatsappId, message1, number: testNumber, mediaUrl: campaignForm.mediaUrl || null }
+        let message = inputsOrder[`message${tabValue+1}InputOrder`].map((index) => {
+            const input = messages.find(inp => inp.id === index)
+            if(input.type === "text"){
+                return input.value ? input.value : null
+            } else {
+                if(typeof input.value !== "string" ){
+                    medias.push(input.value)
+                    return `file-${input.value.name}`
+                }
+                return input.value
+            }
+        })
+        message = JSON.stringify(message.filter(i => i !== null))
+        const data = { whatsappId, message, number: testNumber }
         const formData = new FormData()
         Object.keys(data).forEach((key) => {
             formData.append(key, data[key])
         })
-        // if (mediaFile) {
-        //     formData.append("media", mediaFile)
-        // }
+        medias = [...new Set(medias.map(media => media.name))].map(name => {
+            return medias.find(media => media.name === name);
+        });
+        medias.forEach((file) => {
+            formData.append("medias", file)
+        })
 
         try {
             await api.post(`/campaigns/test`, formData, {
