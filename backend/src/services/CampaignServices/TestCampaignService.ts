@@ -4,6 +4,7 @@ import { join } from "path";
 import { MessageMedia } from "whatsapp-web.js";
 import AppError from "../../errors/AppError";
 import { getWbot } from "../../libs/wbot";
+import { logger } from "../../utils/logger";
 
 interface CampaignData {
   campaignData: {
@@ -81,6 +82,7 @@ const TestCampaignService = async ({
         await whatsapp.sendMessage(whatsNumber._serialized, currentMessage);
       }
     } catch (err) {
+      logger.error(err);
       throw new AppError("INTERNAL_ERROR", 500);
     }
     await setDelay(1000);
