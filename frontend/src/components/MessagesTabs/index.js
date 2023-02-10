@@ -43,7 +43,6 @@ const MessagesTabs = (
         setInputsOrder, 
         setAllMessagesInputs,
         allMessagesInputs,
-        setSelectedPreviewMessage,
         setOpenPreview,
         handleDownload,
         visualize
@@ -81,12 +80,16 @@ const MessagesTabs = (
             </AppBar>
             <TabPanel value={tabValue} index={0} className={classes.messageTab} variant={"div"}>
                 <Box style={{ maxWidth: 800}}>
-                    <DynamicInputs values={values} setValues={setValues} messageInputs={allMessagesInputs} setMessageInputs={setAllMessagesInputs} messageIndex={1}
+                    <DynamicInputs 
+                        values={values} 
+                        setValues={setValues} 
+                        messageInputs={allMessagesInputs}
+                        setMessageInputs={setAllMessagesInputs} 
+                        messageIndex={1}
                         handleOnMediaChange={handleOnMediaChange}
                         inputOrder={inputsOrder} 
                         setInputOrder={setInputsOrder}
                         medias={medias}
-                        setSelectedPreviewMessage={setSelectedPreviewMessage}
                         setOpenPreview={setOpenPreview}
                         handleDownload={handleDownload}
                         visualize={visualize}
@@ -95,12 +98,16 @@ const MessagesTabs = (
             </TabPanel>
             <TabPanel value={tabValue} index={1} className={classes.messageTab} variant={"div"}>
                 <Box style={{ maxWidth: 800}}>
-                    <DynamicInputs values={values} setValues={setValues} messageInputs={allMessagesInputs} setMessageInputs={setAllMessagesInputs} messageIndex={2}
+                    <DynamicInputs 
+                        values={values}
+                        setValues={setValues} 
+                        messageInputs={allMessagesInputs} 
+                        setMessageInputs={setAllMessagesInputs} 
+                        messageIndex={2}
                         inputOrder={inputsOrder} 
                         setInputOrder={setInputsOrder}
                         medias={medias}
                         handleOnMediaChange={handleOnMediaChange}
-                        setSelectedPreviewMessage={setSelectedPreviewMessage}
                         setOpenPreview={setOpenPreview}
                         handleDownload={handleDownload}
                         visualize={visualize}
@@ -109,12 +116,16 @@ const MessagesTabs = (
             </TabPanel>
             <TabPanel value={tabValue} index={2} className={classes.messageTab} variant={"div"}>
                 <Box style={{ maxWidth: 800}}>
-                    <DynamicInputs values={values} setValues={setValues} messageInputs={allMessagesInputs} setMessageInputs={setAllMessagesInputs} messageIndex={3}
+                    <DynamicInputs 
+                        values={values} 
+                        setValues={setValues} 
+                        messageInputs={allMessagesInputs} 
+                        setMessageInputs={setAllMessagesInputs}
+                        messageIndex={3}
                         inputOrder={inputsOrder} 
                         setInputOrder={setInputsOrder}
                         medias={medias}
                         handleOnMediaChange={handleOnMediaChange}
-                        setSelectedPreviewMessage={setSelectedPreviewMessage}
                         setOpenPreview={setOpenPreview}
                         handleDownload={handleDownload}
                         visualize={visualize}
@@ -123,12 +134,16 @@ const MessagesTabs = (
             </TabPanel>
             <TabPanel value={tabValue} index={3} className={classes.messageTab} variant={"div"}>
                 <Box style={{ maxWidth: 800}}>
-                    <DynamicInputs values={values} setValues={setValues} messageInputs={allMessagesInputs} setMessageInputs={setAllMessagesInputs} messageIndex={4}
+                    <DynamicInputs 
+                        values={values} 
+                        setValues={setValues} 
+                        messageInputs={allMessagesInputs} 
+                        setMessageInputs={setAllMessagesInputs} 
+                        messageIndex={4}
                         inputOrder={inputsOrder} 
                         setInputOrder={setInputsOrder}
                         medias={medias}
                         handleOnMediaChange={handleOnMediaChange}
-                        setSelectedPreviewMessage={setSelectedPreviewMessage}
                         setOpenPreview={setOpenPreview}
                         handleDownload={handleDownload}
                         visualize={visualize}
@@ -137,12 +152,16 @@ const MessagesTabs = (
             </TabPanel>
             <TabPanel value={tabValue} index={4} className={classes.messageTab} variant={"div"}>
                 <Box style={{ maxWidth: 800}}>
-                    <DynamicInputs values={values} setValues={setValues} messageInputs={allMessagesInputs} setMessageInputs={setAllMessagesInputs} messageIndex={5}
+                    <DynamicInputs 
+                        values={values} 
+                        setValues={setValues} 
+                        messageInputs={allMessagesInputs} 
+                        setMessageInputs={setAllMessagesInputs} 
+                        messageIndex={5}
                         inputOrder={inputsOrder} 
                         setInputOrder={setInputsOrder}
                         medias={medias}
                         handleOnMediaChange={handleOnMediaChange}
-                        setSelectedPreviewMessage={setSelectedPreviewMessage}
                         setOpenPreview={setOpenPreview}
                         handleDownload={handleDownload}
                         visualize={visualize}

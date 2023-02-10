@@ -240,7 +240,6 @@ const CampaignModal = ({ open, onClose, campaignId, visualize = false }) => {
     const [isRepeatModel, setIsRepeatModel] = useState(false)
     const [openPreview, setOpenPreview] = useState(false)
     const [confirmationModalOpen, setConfirmationModalOpen] = useState(false)
-    const [selectedPreviewMessage, setSelectedPreviewMessage] = useState(null)
     const [inputsOrder, setInputsOrder] = useState({
         message1InputOrder: [],
         message2InputOrder: [],
@@ -752,7 +751,6 @@ const CampaignModal = ({ open, onClose, campaignId, visualize = false }) => {
                                     setInputsOrder={setInputsOrder}
                                     setAllMessagesInputs={setAllMessagesInputs}
                                     allMessagesInputs={allMessagesInputs}
-                                    setSelectedPreviewMessage={setSelectedPreviewMessage}
                                     setOpenPreview={setOpenPreview}
                                     handleDownload={handleDownload}
                                     visualize={visualize}
@@ -778,8 +776,8 @@ const CampaignModal = ({ open, onClose, campaignId, visualize = false }) => {
                                         <DialogContent style={{ padding: 0, minHeight: "400px"}}>
                                             <Box className={classes.previewContainer}>
                                                 <WhatsAppLayout 
-                                                    messages={allMessagesInputs[`message${selectedPreviewMessage}Inputs`]}
-                                                    order={inputsOrder[`message${selectedPreviewMessage}InputOrder`]}
+                                                    messages={allMessagesInputs[`message${tabValue+1}Inputs`]}
+                                                    order={inputsOrder[`message${tabValue+1}InputOrder`]}
                                                     
                                                 />
                                             </Box>

@@ -170,7 +170,7 @@ const SortableContainer = sortableContainer(({ children }) => {
   return <div>{children}</div>;
 });
 
-const DynamicInputs = ({ messageInputs, setMessageInputs, messageIndex, inputOrder, setInputOrder, setSelectedPreviewMessage, setOpenPreview, handleDownload, visualize}) => {
+const DynamicInputs = ({ messageInputs, setMessageInputs, messageIndex, inputOrder, setInputOrder, setOpenPreview, handleDownload, visualize}) => {
 
     const classes = useStyles();
 
@@ -235,7 +235,6 @@ const DynamicInputs = ({ messageInputs, setMessageInputs, messageIndex, inputOrd
                     }
                 </Box>
                 <Button type="button" onClick={() => {
-                    setSelectedPreviewMessage(1)
                     setOpenPreview(true)
                 }}>PREVIEW</Button>
             </Box>
