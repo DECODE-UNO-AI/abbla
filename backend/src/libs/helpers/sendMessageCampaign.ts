@@ -2,6 +2,7 @@
 /* eslint-disable prettier/prettier */
 /* eslint-disable no-await-in-loop */
 // import { join } from "path";
+import { join } from "path";
 import { Server } from "socket.io";
 import { MessageMedia } from "whatsapp-web.js";
 import Campaign from "../../models/Campaign";
@@ -18,10 +19,8 @@ const setDelay = async (delay: number) => {
 
 const sendMessage = async (
   contact: CampaignContact,
-  message: string,
+  message: string[],
   wbot: Session,
-  mediaFile: MessageMedia | null,
-  mediaBeforeMessage: boolean,
   io: Server,
   campaign: Campaign
 ): Promise<void> => {
@@ -30,7 +29,23 @@ const sendMessage = async (
   try {
     number = await wbot.getNumberId(`${contact.number}@c.us`);
   } catch (err) {
+    await contact.update({
+      status: "invalid-number",
+    });
+    await contact.reload()
+    await campaign.increment("contactsFailed", { by: 1 })
+    await campaign.reload()
+    io.emit("campaigns", {
+      action: "update",
+      campaign
+    });
+    io.emit(`campaign-${campaign.id}`, {
+      action: "update",
+      contact,
+      campaign
+    });
     logger.error(err);
+    return
   }
   if (!number) {
     await contact.update({
@@ -52,26 +67,31 @@ const sendMessage = async (
   }
   // Message sending logic
   try {
-    if (mediaFile) {
-      if (mediaBeforeMessage) {
-        await wbot.sendMessage(number._serialized, mediaFile, {
-          sendAudioAsVoice: true
+    for(let i = 0; i < message.length; i += 1) {
+      if (message[i].startsWith("file-")) {
+        const messageMedia = MessageMedia.fromFilePath(
+          join(
+            __dirname,
+            "..",
+            "..",
+            "..",
+            "public",
+            message[i].replace("file-", "")
+          )
+        );
+        if (!messageMedia) return;
+        await wbot.sendMessage(number._serialized, messageMedia, {
+          sendAudioAsVoice: true,
+          sendMediaAsDocument: false
         });
-        await setDelay(1000);
-        await wbot.sendMessage(number._serialized , message);
       } else {
-        await wbot.sendMessage(number._serialized , message);
-        await setDelay(1000);
-        await wbot.sendMessage(number._serialized, mediaFile, {
-          sendAudioAsVoice: true
-        });
+        await wbot.sendMessage(number._serialized , message[i]);
       }
-    } else {
-      await wbot.sendMessage(number._serialized , message);
+
     }
     await contact.update({
       status: "sent",
-      messageSent: message
+      messageSent: JSON.stringify(message)
     });
     await contact.reload()
     await campaign.increment("contactsSent", { by: 1 })
@@ -85,10 +105,10 @@ const sendMessage = async (
       contact,
       campaign
     });
+    await setDelay(1000);
+
   } catch (err) {
-    await contact.update({
-      status: "failed"
-    });
+    await contact.update({ status: "failed"});
     await contact.reload()
     await campaign.increment("contactsFailed", { by: 1 })
     await campaign.reload()
@@ -147,22 +167,37 @@ const sendMessageCampaign = async (campaign: Campaign): Promise<void> => {
   }
 
   // get messages
-  const messages = [campaign.message1];
+  const messages: Array<string[]> = [];
 
   // get sending hours interval
-  const sendTime = campaign.sendTime.split("-");
+  const { sendTime } = campaign;
 
-  if (campaign.message2 && campaign.message2 !== "") {
+  if (campaign.message1 && campaign.message1.length > 1) {
+    messages.push(campaign.message1);
+  }
+  if (campaign.message2 && campaign.message2.length > 1) {
     messages.push(campaign.message2);
   }
-  if (campaign.message3 && campaign.message3 !== "") {
+  if (campaign.message3 && campaign.message3.length > 1) {
     messages.push(campaign.message3);
   }
-  if (campaign.message4 && campaign.message4 !== "") {
+  if (campaign.message4 && campaign.message4.length > 1) {
     messages.push(campaign.message4);
   }
-  if (campaign.message5 && campaign.message5 !== "") {
+  if (campaign.message5 && campaign.message5.length > 1) {
     messages.push(campaign.message5);
+  }
+
+  if (messages.length === 0) {
+    await campaign.update({
+      status: "failed"
+    });
+    await campaign.reload();
+    io.emit("campaigns", {
+      action: "update",
+      campaign
+    });
+    return;
   }
 
   // get delay interval
@@ -206,25 +241,23 @@ const sendMessageCampaign = async (campaign: Campaign): Promise<void> => {
     const randomDelay = Math.floor(
       Math.random() * (range[1] - range[0] + 1) + range[0]
     );
-    let randomMessage = messages[Math.floor(Math.random() * messages.length)];
+    let randomMessages = messages[Math.floor(Math.random() * messages.length)];
 
-    // getting media
-    // let mediaFile: MessageMedia | null = null;
-    const mediaFile = null
-    // if (campaign.mediaUrl) {
-    //   const fileName = campaign.mediaUrl.split("/")[4];
-    //   const customPath = join(__dirname, "..", "..", "..", "public", fileName);
-    //   mediaFile = MessageMedia.fromFilePath(customPath);
-    // }
+
     // replacing variables
     Object.keys(penddingContacts[i].details).forEach(key => {
-      randomMessage = randomMessage.replace(
-        `$${key}`,
-        `${penddingContacts[i].details[key]}`
-      );
+      randomMessages = randomMessages.map((message: string) => {
+        if (message.startsWith("file-")) {
+          return message
+        }
+        return message.replace(
+          `$${key}`,
+          `${penddingContacts[i].details[key]}`
+        );
+      })
     });
     await setDelay(randomDelay * 1000);
-    await sendMessage(penddingContacts[i], randomMessage, whatsapp, mediaFile, true, io, campaign);
+    await sendMessage(penddingContacts[i], randomMessages, whatsapp, io, campaign);
     if (i + 1 === penddingContacts.length) {
       try {
         await campaign.update({ status: "finished" });
