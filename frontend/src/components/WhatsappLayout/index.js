@@ -4,8 +4,7 @@ import SendIcon from '@material-ui/icons/Send';
 import "./styles.css"
 
 const WhatsAppLayout = ({ messages, order }) => {
-    console.log(messages)
-    console.log(order)
+
     return (
         <div style={{ clear: "both", height: "100%" }}>
             <div class="page">
@@ -44,97 +43,82 @@ const WhatsAppLayout = ({ messages, order }) => {
                             </div>
                             <div class="conversation">
                             <div class="conversation-container">
-                            {
-                                // mediaBefore ? 
-                                // <>
-                                //    {
-                                //     media || mediaLink ?
-                                //         <>
-                                //             <div class="message sent">
-                                //                 {mediaType.includes("image") ? 
-                                //                 <img src={media ? URL.createObjectURL(media) : mediaLink} width={200} height={200} alt="mediaLink" /> : ""
-                                //                 }
-                                //                 {mediaType.includes("video") ? 
-                                //                 <video width={250} height={180} controls style={{ zIndex: 222222}}>
-                                //                     <source src={media ? URL.createObjectURL(media) : mediaLink} type="video/mp4"></source>
-                                //                 </video>
-                                //                 : ""
-                                //                 }
-                                //                 {mediaType.includes("audio") ? 
-                                //                 <audio controls style={{ width: 230}}>
-                                //                     <source src={media ? URL.createObjectURL(media) : mediaLink} type="audio/mp3"></source>
-                                //                 </audio> : ""
-                                //                 }                            
-                                //                 <span class="metadata">
-                                //                     <span class="time">3:46 PM</span><span class="tick"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="15" id="msg-dblcheck-ack" x="2063" y="2076"><path d="M15.01 3.316l-.478-.372a.365.365 0 0 0-.51.063L8.666 9.88a.32.32 0 0 1-.484.032l-.358-.325a.32.32 0 0 0-.484.032l-.378.48a.418.418 0 0 0 .036.54l1.32 1.267a.32.32 0 0 0 .484-.034l6.272-8.048a.366.366 0 0 0-.064-.512zm-4.1 0l-.478-.372a.365.365 0 0 0-.51.063L4.566 9.88a.32.32 0 0 1-.484.032L1.892 7.77a.366.366 0 0 0-.516.005l-.423.433a.364.364 0 0 0 .006.514l3.255 3.185a.32.32 0 0 0 .484-.033l6.272-8.048a.365.365 0 0 0-.063-.51z" fill="#4fc3f7"></path></svg></span>
-                                //                 </span>
-                                //             </div>
-                                //             <div class="message sent">
-                                //             {
-                                //                 message ?
-                                //                     <div style={{ maxWidth: 200, whiteSpace: "pre-wrap", overflowWrap: "break-word"}}>
-                                //                         {message}
-                                //                     </div>
-                                //                 : ""
-                                //             }
-                                //             <span class="metadata">
-                                //                 <span class="time">3:46 PM</span><span class="tick"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="15" id="msg-dblcheck-ack" x="2063" y="2076"><path d="M15.01 3.316l-.478-.372a.365.365 0 0 0-.51.063L8.666 9.88a.32.32 0 0 1-.484.032l-.358-.325a.32.32 0 0 0-.484.032l-.378.48a.418.418 0 0 0 .036.54l1.32 1.267a.32.32 0 0 0 .484-.034l6.272-8.048a.366.366 0 0 0-.064-.512zm-4.1 0l-.478-.372a.365.365 0 0 0-.51.063L4.566 9.88a.32.32 0 0 1-.484.032L1.892 7.77a.366.366 0 0 0-.516.005l-.423.433a.364.364 0 0 0 .006.514l3.255 3.185a.32.32 0 0 0 .484-.033l6.272-8.048a.365.365 0 0 0-.063-.51z" fill="#4fc3f7"></path></svg></span>
-                                //             </span>
-                                //         </div>
-                                //         </> : 
-                                //         <div class="message sent">
-                                //         {
-                                //             message ?
-                                //                 <div style={{ maxWidth: 200, whiteSpace: "pre-wrap", overflowWrap: "break-word"}}>
-                                //                     {message}
-                                //                 </div>
-                                //             : ""
-                                //         }
-                                //         <span class="metadata">
-                                //             <span class="time">3:46 PM</span><span class="tick"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="15" id="msg-dblcheck-ack" x="2063" y="2076"><path d="M15.01 3.316l-.478-.372a.365.365 0 0 0-.51.063L8.666 9.88a.32.32 0 0 1-.484.032l-.358-.325a.32.32 0 0 0-.484.032l-.378.48a.418.418 0 0 0 .036.54l1.32 1.267a.32.32 0 0 0 .484-.034l6.272-8.048a.366.366 0 0 0-.064-.512zm-4.1 0l-.478-.372a.365.365 0 0 0-.51.063L4.566 9.88a.32.32 0 0 1-.484.032L1.892 7.77a.366.366 0 0 0-.516.005l-.423.433a.364.364 0 0 0 .006.514l3.255 3.185a.32.32 0 0 0 .484-.033l6.272-8.048a.365.365 0 0 0-.063-.51z" fill="#4fc3f7"></path></svg></span>
-                                //         </span>
-                                //         </div>
+                            {   
+                                order.map((index) => {
+                                    if(messages[index].type === "text" && messages[index].value) {
+                                        return (
+                                                <div class="message sent">
+                                                    <div style={{ maxWidth: 200, whiteSpace: "pre-wrap", overflowWrap: "break-word"}}>
+                                                        {messages[index].value}
+                                                    </div>
+                                                    <span class="metadata">
+                                                        <span class="time">3:46 PM</span><span class="tick"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="15" id="msg-dblcheck-ack" x="2063" y="2076"><path d="M15.01 3.316l-.478-.372a.365.365 0 0 0-.51.063L8.666 9.88a.32.32 0 0 1-.484.032l-.358-.325a.32.32 0 0 0-.484.032l-.378.48a.418.418 0 0 0 .036.54l1.32 1.267a.32.32 0 0 0 .484-.034l6.272-8.048a.366.366 0 0 0-.064-.512zm-4.1 0l-.478-.372a.365.365 0 0 0-.51.063L4.566 9.88a.32.32 0 0 1-.484.032L1.892 7.77a.366.366 0 0 0-.516.005l-.423.433a.364.364 0 0 0 .006.514l3.255 3.185a.32.32 0 0 0 .484-.033l6.272-8.048a.365.365 0 0 0-.063-.51z" fill="#4fc3f7"></path></svg></span>
+                                                    </span>
+                                                </div>
+                                        )
+                                    } else if(messages[index].type === "file" && messages[index].value) {
+                                        if(typeof messages[index].value === "string") {
+                                            return (
+                                                <div class="message sent">
+                                                     { [".png", ".jpg", ".jpeg"].some(ext => messages[index].value.endsWith(ext)) ? 
+                                                        <img 
+                                                            src={`${process.env.REACT_APP_BACKEND_URL}/public/${messages[index].value.replace("file-", "")}`} 
+                                                            width={200} 
+                                                            height={200} 
+                                                            alt="mediaLink" /> : 
+                                                        [".mp4", ".mvk"].some(ext => messages[index].value.endsWith(ext)) ?
+                                                            <video width={250} height={180} controls style={{ zIndex: 222222}}>
+                                                                <source 
+                                                                    src={`${process.env.REACT_APP_BACKEND_URL}/public/${messages[index].value.replace("file-", "")}`} 
+                                                                    type="video/mp4"
+                                                                >
 
-                                //     } 
-                                // </> : 
-                                // <>
-                                //     <div class="message sent">
-                                //         {
-                                //             message ?
-                                //                 <div style={{ maxWidth: 200, whiteSpace: "pre-wrap", overflowWrap: "break-word"}}>
-                                //                     {message}
-                                //                 </div>
-                                //             : ""
-                                //         }
-                                //         <span class="metadata">
-                                //             <span class="time">3:46 PM</span><span class="tick"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="15" id="msg-dblcheck-ack" x="2063" y="2076"><path d="M15.01 3.316l-.478-.372a.365.365 0 0 0-.51.063L8.666 9.88a.32.32 0 0 1-.484.032l-.358-.325a.32.32 0 0 0-.484.032l-.378.48a.418.418 0 0 0 .036.54l1.32 1.267a.32.32 0 0 0 .484-.034l6.272-8.048a.366.366 0 0 0-.064-.512zm-4.1 0l-.478-.372a.365.365 0 0 0-.51.063L4.566 9.88a.32.32 0 0 1-.484.032L1.892 7.77a.366.366 0 0 0-.516.005l-.423.433a.364.364 0 0 0 .006.514l3.255 3.185a.32.32 0 0 0 .484-.033l6.272-8.048a.365.365 0 0 0-.063-.51z" fill="#4fc3f7"></path></svg></span>
-                                //         </span>
-                                //     </div>
-                                //     {
-                                //         media || mediaLink ?
-                                //         <>
-                                //             <div class="message sent">
-                                //                 {mediaType.includes("image") ? 
-                                //                 <img src={media ? URL.createObjectURL(media) : mediaLink} width={200} height={200} alt="mediaLink" /> : ""
-                                //                 }
-                                //                 {mediaType.includes("video") ? 
-                                //                 <video width={250} height={180} controls style={{ zIndex: 222222}}>
-                                //                     <source src={media ? URL.createObjectURL(media) : mediaLink} type="video/mp4"></source>
-                                //                 </video>
-                                //                 : ""
-                                //                 }
-                                //                 {mediaType.includes("audio") ? 
-                                //                 <audio controls style={{ width: 230}}>
-                                //                     <source src={media ? URL.createObjectURL(media) : mediaLink} type="audio/mp3"></source>
-                                //                 </audio> : ""
-                                //                 }                            
-                                //                 <span class="metadata">
-                                //                     <span class="time">3:46 PM</span><span class="tick"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="15" id="msg-dblcheck-ack" x="2063" y="2076"><path d="M15.01 3.316l-.478-.372a.365.365 0 0 0-.51.063L8.666 9.88a.32.32 0 0 1-.484.032l-.358-.325a.32.32 0 0 0-.484.032l-.378.48a.418.418 0 0 0 .036.54l1.32 1.267a.32.32 0 0 0 .484-.034l6.272-8.048a.366.366 0 0 0-.064-.512zm-4.1 0l-.478-.372a.365.365 0 0 0-.51.063L4.566 9.88a.32.32 0 0 1-.484.032L1.892 7.77a.366.366 0 0 0-.516.005l-.423.433a.364.364 0 0 0 .006.514l3.255 3.185a.32.32 0 0 0 .484-.033l6.272-8.048a.365.365 0 0 0-.063-.51z" fill="#4fc3f7"></path></svg></span>
-                                //                 </span>
-                                //             </div>
-                                //         </> : ""
-                                //     }
-                                // </>
+                                                                </source>
+                                                            </video> : 
+                                                        [".mp3", ".ogg"].some(ext => messages[index].value.endsWith(ext)) ? 
+                                                            <audio controls style={{ width: 230}}>
+                                                                <source 
+                                                                    src={`${process.env.REACT_APP_BACKEND_URL}/public/${messages[index].value.replace("file-", "")}`} 
+                                                                    type="audio/mp3"
+                                                                    >
+                                                                </source>
+                                                            </audio> : ""
+                                                     }
+                                                                                 
+                                                     <span class="metadata">
+                                                         <span class="time">3:46 PM</span><span class="tick"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="15" id="msg-dblcheck-ack" x="2063" y="2076"><path d="M15.01 3.316l-.478-.372a.365.365 0 0 0-.51.063L8.666 9.88a.32.32 0 0 1-.484.032l-.358-.325a.32.32 0 0 0-.484.032l-.378.48a.418.418 0 0 0 .036.54l1.32 1.267a.32.32 0 0 0 .484-.034l6.272-8.048a.366.366 0 0 0-.064-.512zm-4.1 0l-.478-.372a.365.365 0 0 0-.51.063L4.566 9.88a.32.32 0 0 1-.484.032L1.892 7.77a.366.366 0 0 0-.516.005l-.423.433a.364.364 0 0 0 .006.514l3.255 3.185a.32.32 0 0 0 .484-.033l6.272-8.048a.365.365 0 0 0-.063-.51z" fill="#4fc3f7"></path></svg></span>
+                                                     </span>
+                                                 </div>
+                                            )
+                                        } else {
+                                            const file = messages[index].value
+                                            return (
+                                                <div class="message sent">
+                                                 {file.type.includes("image") ? 
+                                                    <img src={URL.createObjectURL(file)} width={200} height={200} alt="mediaLink" /> : ""
+                                                 }
+                                                 {file.type.includes("video") ? 
+                                                    <video width={250} height={180} controls style={{ zIndex: 222222}}>
+                                                        <source src={URL.createObjectURL(file)} type="video/mp4"></source>
+                                                    </video>
+                                                 : ""
+                                                 }
+                                                 {file.type.includes("audio") ? 
+                                                    <audio controls style={{ width: 230}}>
+                                                        <source src={URL.createObjectURL(file)} type="audio/mp3"></source>
+                                                    </audio> : ""
+                                                 }                            
+                                                 <span class="metadata">
+                                                     <span class="time">3:46 PM</span><span class="tick"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="15" id="msg-dblcheck-ack" x="2063" y="2076"><path d="M15.01 3.316l-.478-.372a.365.365 0 0 0-.51.063L8.666 9.88a.32.32 0 0 1-.484.032l-.358-.325a.32.32 0 0 0-.484.032l-.378.48a.418.418 0 0 0 .036.54l1.32 1.267a.32.32 0 0 0 .484-.034l6.272-8.048a.366.366 0 0 0-.064-.512zm-4.1 0l-.478-.372a.365.365 0 0 0-.51.063L4.566 9.88a.32.32 0 0 1-.484.032L1.892 7.77a.366.366 0 0 0-.516.005l-.423.433a.364.364 0 0 0 .006.514l3.255 3.185a.32.32 0 0 0 .484-.033l6.272-8.048a.365.365 0 0 0-.063-.51z" fill="#4fc3f7"></path></svg></span>
+                                                 </span>
+                                             </div>
+                                            )
+                                        }
+                                    } else {
+                                        return ""
+                                    }
+                                })
+                                
                             }
                                 
                                

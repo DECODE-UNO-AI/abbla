@@ -122,7 +122,7 @@ const SortableItem = sortableElement(({ value, messageIndex, setMessageInputs, m
                                 <Box className={classes.downloadContainer}>
                                     <InputLabel>{input.value.replace("file-", "")}</InputLabel>
                                     <Button
-                                        onClick={() => handleDownload(true, input.value.replace("file-", ""))}
+                                        onClick={() => handleDownload(false, input.value.replace("file-", ""))}
                                         color="primary"
                                         variant="contained"
                                     >

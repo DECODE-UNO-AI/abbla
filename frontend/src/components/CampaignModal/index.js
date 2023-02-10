@@ -464,7 +464,7 @@ const CampaignModal = ({ open, onClose, campaignId, visualize = false }) => {
         });
         
         medias.forEach((file) => {
-            if(typeof file === File) formData.append("medias", file)
+            if(typeof file !== "string") formData.append("medias", file)
         })
         if (csvFile) formData.append("medias", csvFile)
 
@@ -780,7 +780,7 @@ const CampaignModal = ({ open, onClose, campaignId, visualize = false }) => {
                                                 <WhatsAppLayout 
                                                     messages={allMessagesInputs[`message${selectedPreviewMessage}Inputs`]}
                                                     order={inputsOrder[`message${selectedPreviewMessage}InputOrder`]}
-                                                    style={{ height: 20 }}
+                                                    
                                                 />
                                             </Box>
                                         </DialogContent>
