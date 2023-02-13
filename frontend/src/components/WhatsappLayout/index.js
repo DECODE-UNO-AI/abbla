@@ -45,40 +45,40 @@ const WhatsAppLayout = ({ messages, order }) => {
                             <div class="conversation-container">
                             {   
                                 order.map((index) => {
-                                    if(messages[index].type === "text" && messages[index].value) {
+                                    if(messages.find(m => m.id === index).type === "text" && messages.find(m => m.id === index).value) {
                                         return (
                                                 <div class="message sent">
                                                     <div style={{ maxWidth: 200, whiteSpace: "pre-wrap", overflowWrap: "break-word"}}>
-                                                        {messages[index].value}
+                                                        {messages.find(m => m.id === index).value}
                                                     </div>
                                                     <span class="metadata">
                                                         <span class="time">3:46 PM</span><span class="tick"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="15" id="msg-dblcheck-ack" x="2063" y="2076"><path d="M15.01 3.316l-.478-.372a.365.365 0 0 0-.51.063L8.666 9.88a.32.32 0 0 1-.484.032l-.358-.325a.32.32 0 0 0-.484.032l-.378.48a.418.418 0 0 0 .036.54l1.32 1.267a.32.32 0 0 0 .484-.034l6.272-8.048a.366.366 0 0 0-.064-.512zm-4.1 0l-.478-.372a.365.365 0 0 0-.51.063L4.566 9.88a.32.32 0 0 1-.484.032L1.892 7.77a.366.366 0 0 0-.516.005l-.423.433a.364.364 0 0 0 .006.514l3.255 3.185a.32.32 0 0 0 .484-.033l6.272-8.048a.365.365 0 0 0-.063-.51z" fill="#4fc3f7"></path></svg></span>
                                                     </span>
                                                 </div>
                                         )
-                                    } else if(messages[index].type === "file" && messages[index].value) {
-                                        if(typeof messages[index].value === "string") {
+                                    } else if(messages.find(m => m.id === index).type === "file" && messages.find(m => m.id === index).value) {
+                                        if(typeof messages.find(m => m.id === index).value === "string") {
                                             return (
                                                 <div class="message sent">
-                                                     { [".png", ".jpg", ".jpeg"].some(ext => messages[index].value.endsWith(ext)) ? 
+                                                     { [".png", ".jpg", ".jpeg"].some(ext => messages.find(m => m.id === index).value.endsWith(ext)) ? 
                                                         <img 
-                                                            src={`${process.env.REACT_APP_BACKEND_URL}/public/${messages[index].value.replace("file-", "")}`} 
+                                                            src={`${process.env.REACT_APP_BACKEND_URL}/public/${messages.find(m => m.id === index).value.replace("file-", "")}`} 
                                                             width={200} 
                                                             height={200} 
                                                             alt="mediaLink" /> : 
-                                                        [".mp4", ".mvk"].some(ext => messages[index].value.endsWith(ext)) ?
+                                                        [".mp4", ".mvk"].some(ext => messages.find(m => m.id === index).value.endsWith(ext)) ?
                                                             <video width={250} height={180} controls style={{ zIndex: 222222}}>
                                                                 <source 
-                                                                    src={`${process.env.REACT_APP_BACKEND_URL}/public/${messages[index].value.replace("file-", "")}`} 
+                                                                    src={`${process.env.REACT_APP_BACKEND_URL}/public/${messages.find(m => m.id === index).value.replace("file-", "")}`} 
                                                                     type="video/mp4"
                                                                 >
 
                                                                 </source>
                                                             </video> : 
-                                                        [".mp3", ".ogg"].some(ext => messages[index].value.endsWith(ext)) ? 
+                                                        [".mp3", ".ogg"].some(ext => messages.find(m => m.id === index).value.endsWith(ext)) ? 
                                                             <audio controls style={{ width: 230}}>
                                                                 <source 
-                                                                    src={`${process.env.REACT_APP_BACKEND_URL}/public/${messages[index].value.replace("file-", "")}`} 
+                                                                    src={`${process.env.REACT_APP_BACKEND_URL}/public/${messages.find(m => m.id === index).value.replace("file-", "")}`} 
                                                                     type="audio/mp3"
                                                                     >
                                                                 </source>
@@ -91,7 +91,7 @@ const WhatsAppLayout = ({ messages, order }) => {
                                                  </div>
                                             )
                                         } else {
-                                            const file = messages[index].value
+                                            const file = messages.find(m => m.id === index).value
                                             return (
                                                 <div class="message sent">
                                                  {file.type.includes("image") ? 
