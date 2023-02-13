@@ -58,6 +58,16 @@ export const store = async (req: Request, res: Response): Promise<Response> => {
     userId: id
   };
 
+  if (
+    (!campaign.message1 || campaign.message1.length < 1) &&
+    (!campaign.message2 || campaign.message2.length < 1) &&
+    (!campaign.message3 || campaign.message3.length < 1) &&
+    (!campaign.message4 || campaign.message4.length < 1) &&
+    (!campaign.message5 || campaign.message5.length < 1)
+  ) {
+    throw new AppError("INVALID_MESSAGES");
+  }
+
   medias.forEach(file => {
     if (file.mimetype === "text/csv") return;
     const message1 = campaign.message1?.map((str: string) => {
@@ -202,6 +212,16 @@ export const update = async (
     sendTime: req.body.sendTime ? JSON.parse(req.body.sendTime) : [],
     userId: id
   };
+
+  if (
+    (!campaign.message1 || campaign.message1.length < 1) &&
+    (!campaign.message2 || campaign.message2.length < 1) &&
+    (!campaign.message3 || campaign.message3.length < 1) &&
+    (!campaign.message4 || campaign.message4.length < 1) &&
+    (!campaign.message5 || campaign.message5.length < 1)
+  ) {
+    throw new AppError("INVALID_MESSAGES");
+  }
 
   medias.forEach(file => {
     if (file.mimetype === "text/csv") return;
@@ -460,6 +480,16 @@ export const repeatCampaign = async (
     sendTime: req.body.sendTime ? JSON.parse(req.body.sendTime) : [],
     userId: id
   };
+
+  if (
+    (!campaignData.message1 || campaignData.message1.length < 1) &&
+    (!campaignData.message2 || campaignData.message2.length < 1) &&
+    (!campaignData.message3 || campaignData.message3.length < 1) &&
+    (!campaignData.message4 || campaignData.message4.length < 1) &&
+    (!campaignData.message5 || campaignData.message5.length < 1)
+  ) {
+    throw new AppError("INVALID_MESSAGES");
+  }
 
   medias.forEach(file => {
     if (file.mimetype === "text/csv") return;

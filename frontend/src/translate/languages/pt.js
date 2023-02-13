@@ -324,6 +324,8 @@ const messages = {
           testMessage: "Testar Mensagem",
           testButton: "Testar",
           previewMessage: "Pré-visualizar mensagem",
+          addText: "Texto",
+          addFile: "Arquivo"
         },
         confirmationModal: {
           title: "Iniciar Campanha",

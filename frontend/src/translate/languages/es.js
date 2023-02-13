@@ -324,6 +324,8 @@ const messages = {
           testMessage: "Mensaje de prueba",
           testButton: "Mandar",
           previewMessage: "Mensaje de vista previa",
+          addText: "Texto",
+          addFile: "Archivo"
         },
         errors: {
           tooShort: "Muy corto",

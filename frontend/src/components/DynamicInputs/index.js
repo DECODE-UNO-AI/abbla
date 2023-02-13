@@ -4,6 +4,7 @@ import { sortableContainer, sortableElement } from 'react-sortable-hoc';
 import { Reorder, Close, CloudUpload } from "@material-ui/icons";
 import {arrayMoveImmutable} from 'array-move';
 import { TextField, Box, makeStyles, Button, InputLabel } from '@material-ui/core';
+import { i18n } from "../../translate/i18n";
 
 const useStyles = makeStyles(theme => ({
     inputContainer: {
@@ -229,8 +230,8 @@ const DynamicInputs = ({ messageInputs, setMessageInputs, messageIndex, inputOrd
                     {
                         visualize ? "" : 
                         <>
-                            <Button type="button" onClick={handleAddInput}>+TEXTO</Button>
-                            <Button type="button" onClick={handleAddInputFile}>+ARQUIVO</Button>
+                            <Button type="button" onClick={handleAddInput}>+{i18n.t("campaignModal.form.addText")}</Button>
+                            <Button type="button" onClick={handleAddInputFile}>+{i18n.t("campaignModal.form.addFile")}</Button>
                         </>
                     }
                 </Box>
