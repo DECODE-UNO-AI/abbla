@@ -51,9 +51,21 @@ const App = () => {
       overrides: {
         MuiOutlinedInput: {
           root: {
+            color: "#f1f1f1",
+            "&:disabled": {
+              color: "#52d869",
+              "& $notchedOutline": {
+                borderColor: "#52d869"
+              }
+            },
             "& $notchedOutline": {
               borderColor: "#424242"
             }
+          }
+        },
+        MuiInputBase: {
+          input: {
+            color: "#52d869",
           }
         },
         MuiCssBaseline: {

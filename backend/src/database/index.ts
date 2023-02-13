@@ -15,6 +15,8 @@ import ContactTag from "../models/ContactTag";
 import Departament from "../models/Departament";
 import DepartamentQueue from "../models/DepartamentQueue";
 import UserDepartament from "../models/UserDepartament";
+import Campaign from "../models/Campaign";
+import CampaignContact from "../models/CampaignContact";
 
 // eslint-disable-next-line
 const dbConfig = require("../config/database");
@@ -39,6 +41,8 @@ const models = [
   Departament,
   DepartamentQueue,
   UserDepartament,
+  Campaign,
+  CampaignContact
 ];
 
 sequelize.addModels(models);

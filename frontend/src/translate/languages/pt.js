@@ -299,6 +299,56 @@ const messages = {
         },
         success: "Atendente salvo com sucesso.",
       },
+      campaignModal: {
+        title: {
+          add: "Adicionar Campanha",
+          edit: "Editar Campanha",
+          preview: "Pré-visualização",
+          repeat: "Repetir Campanha"
+        },
+        form: {
+          name: "Nome da campanha",
+          sendTime: "Horário da campanha",
+          delay: "Velocidade de envio",
+          start: "Início",
+          startCheck: "Iniciar agora",
+          whatsappId: "Whatsapp Bot",
+          messageMedia: "Anexo da mensagem",
+          csvMedia: "Arquivo .csv de contatos",
+          messages: "Texto das mensagens",
+          tab: "Texto",
+          variables: "Variáveis disponíveis: (utilize $nome-da-variável)",
+          columnName: "Coluna de telefones",
+          sendMediaBefore: "Enviar mídia antes",
+          testNumberPlaceholder: "Numéro com DDD (apenas dígitos, sem pontuação)",
+          testMessage: "Testar Mensagem",
+          testButton: "Testar",
+          previewMessage: "Pré-visualizar mensagem",
+        },
+        confirmationModal: {
+          title: "Iniciar Campanha",
+          confirmLabel: "Li e concordo com as informações acima",
+          confirmMessage: {
+            title: "Informações importantes",
+          }
+        },
+        errors: {
+          tooShort: "Muito curto",
+          tooLong: "Muito comprido",
+          nameRequired: "O nome é obrigatório",
+          message: "A mensagem deve ser preenchida",
+          fileError: "Tamanho máximo 10mb"
+        },
+        buttons: {
+          okAdd: "Iniciar campanha",
+          okEdit: "Salvar",
+          cancel: "Cancelar",
+          preview: "Visualizar",
+          close: "Fechar"
+        },
+        success: "Campanha salva com sucesso.",
+        message: "Mensagem",
+      },
       chat: {
         noTicketMessage: "Selecione um ticket para começar a conversar.",
       },
@@ -400,7 +450,8 @@ const messages = {
           apititle: "API",
           apikey: "API key",
           token: "Token",
-          departaments: "Departamentos"
+          departaments: "Departamentos",
+          campaigns: "Campanhas"
         },
         appBar: {
           user: {
@@ -451,6 +502,82 @@ const messages = {
           deleteTitle: "Excluir",
           deleteMessage: "Você tem certeza? Essa ação não pode ser revertida! Os setores desse departamento continuarão existindo, mas não terão mais nenhum departamento atribuído.",
         },
+      },
+      campaign: {
+        inicialDate: "Data de início",
+        delay: "Intervalo de envios",
+        sendTime: "Horário dos envios",
+        status: {
+          pending: "Pendente",
+          canceled: "Cancelada",
+          scheduled: "Agendada",
+          processing: "Em andamento",
+          timeout: "Pausada devido ao horário",
+          paused: "Pausada",
+          failed: "Falhou",
+          sent: "Enviado",
+          "invalid-number": "Número inválido",
+          finished: "Finalizada",
+          archived: "Arquivada"
+        },
+        message: "Mensagens",
+        table: {
+          number: "Número",
+          status: "Status",
+          sentDate: "Data de envio",
+          messageSent: "Mensagem enviada"
+        },
+        search: "Pesquisa",
+        card: {
+          total: "TOTAL",
+          sent: "EVIADOS",
+          failed: "FALHAS"
+        },
+      },
+      campaigns: {
+        title: "Campanhas",
+        notifications: {
+          campaignDeleted: "A campanha foi deletada",
+          campaignPaused: "A campanha foi pausada",
+          campaignCanceled: "A campanha foi cancelada",
+          campaignStarted: "A campanha foi iniciada",
+          campaignSaved: "A campanha foi salva",
+          campaignTested: "Mensagem teste enviada",
+          campaignTestFailed: "Whatsapp Bot, Texto 1 e Número devem ser preenchidos"
+        },
+        confirmationModal: {
+          archiveTitle: "Arquivar a campanha",
+          archiveMessage: "Tem certeza que arquivar a campanha? Essa ação não pode ser desfeita."
+        },
+        table: {
+          name: "Nome",
+          inicialDate: "Início",
+          actions: "Ações",
+          status: "Status",
+          details: "Detalhes",
+          connection: "Conexão",
+          createdAt: "Criação",
+          delay: "Intervalo",
+          total: "Total",
+          sent: "Enviadas",
+          failed: "Falhas",
+          canceled: "Canceladas"
+        },
+        buttons: {
+          add: "Adicionar Campanha"
+        },
+        toolTips: {
+          title: {
+            scheduled: "Campanha agendada",
+            processing: "Campanha em andamento",
+            paused: "Campanha pausada",
+            canceled: "Campanha cancelada",
+            finished: "Campanha encerrada",
+            failed: "Campanha falhou",
+            timeout: "Campanha pausada devido ao horário",
+            archived: "Campanha arquivada"
+          }
+        }
       },
       queueSelect: {
         inputLabel: "Setores",
@@ -671,6 +798,7 @@ const messages = {
         },
       },
       backendErrors: {
+        ERR_NUMBER_NOT_FOUND: "Número não encontrado no WhatsApp.",
         ERR_NO_OTHER_WHATSAPP: "Deve haver pelo menos um WhatsApp padrão.",
         ERR_NO_DEF_WAPP_FOUND: "Nenhum WhatsApp padrão encontrado. Verifique a página de conexões.",
         ERR_WAPP_NOT_INITIALIZED: "Esta sessão do WhatsApp não foi inicializada. Verifique a página de conexões.",
@@ -699,6 +827,9 @@ const messages = {
         ERR_CONNECTION_CREATION_COUNT: "Limite de conexões atingido, para alterar entre em contato com o suporte.",
         ERR_NO_TAG_FOUND: "Tag não encontrada.",
         ERR_OUT_OF_HOURS: "Fora do Horário de Expediente!",
+        INTERNAL_ERROR: "Erro interno, tente mais tarde!",
+        ERR_INVALID_DATE: "Data inválida.",
+        ERR_NO_CONTACTS_FILE: "Arquivo de contato inválido."
       },
     },
   },

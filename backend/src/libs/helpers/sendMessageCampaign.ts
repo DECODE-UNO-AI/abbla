@@ -1,0 +1,242 @@
+/* eslint-disable no-underscore-dangle */
+/* eslint-disable prettier/prettier */
+/* eslint-disable no-await-in-loop */
+import { join } from "path";
+import { Server } from "socket.io";
+import { MessageMedia } from "whatsapp-web.js";
+import Campaign from "../../models/Campaign";
+import CampaignContact from "../../models/CampaignContact";
+import GetCampaignContactsService from "../../services/CampaignContactService/GetCampaignContactsService";
+import { logger } from "../../utils/logger";
+import { reSheduleJob } from "../campaignQueue";
+import { getIO } from "../socket";
+import { getWbot, Session } from "../wbot";
+
+const setDelay = async (delay: number) => {
+  await new Promise(resolve => setTimeout(resolve, delay));
+};
+
+const sendMessage = async (
+  contact: CampaignContact,
+  message: string,
+  wbot: Session,
+  mediaFile: MessageMedia | null,
+  mediaBeforeMessage: boolean,
+  io: Server,
+  campaign: Campaign
+): Promise<void> => {
+  // Verify if number is valid
+  let number;
+  try {
+    number = await wbot.getNumberId(`${contact.number}@c.us`);
+  } catch (err) {
+    logger.error(err);
+  }
+  if (!number) {
+    await contact.update({
+      status: "invalid-number",
+    });
+    await contact.reload()
+    await campaign.increment("contactsFailed", { by: 1 })
+    await campaign.reload()
+    io.emit("campaigns", {
+      action: "update",
+      campaign
+    });
+    io.emit(`campaign-${campaign.id}`, {
+      action: "update",
+      contact,
+      campaign
+    });
+    return;
+  }
+  // Message sending logic
+  try {
+    if (mediaFile) {
+      if (mediaBeforeMessage) {
+        await wbot.sendMessage(number._serialized, mediaFile, {
+          sendAudioAsVoice: true
+        });
+        await setDelay(1000);
+        await wbot.sendMessage(number._serialized , message);
+      } else {
+        await wbot.sendMessage(number._serialized , message);
+        await setDelay(1000);
+        await wbot.sendMessage(number._serialized, mediaFile, {
+          sendAudioAsVoice: true
+        });
+      }
+    } else {
+      await wbot.sendMessage(number._serialized , message);
+    }
+    await contact.update({
+      status: "sent",
+      messageSent: message
+    });
+    await contact.reload()
+    await campaign.increment("contactsSent", { by: 1 })
+    await campaign.reload()
+    io.emit("campaigns", {
+      action: "update",
+      campaign
+    });
+    io.emit(`campaign-${campaign.id}`, {
+      action: "update",
+      contact,
+      campaign
+    });
+  } catch (err) {
+    await contact.update({
+      status: "failed"
+    });
+    await contact.reload()
+    await campaign.increment("contactsFailed", { by: 1 })
+    await campaign.reload()
+    io.emit("campaigns", {
+      action: "update",
+      campaign
+    });
+    io.emit(`campaign-${campaign.id}`, {
+      action: "update",
+      contact,
+      campaign
+    });
+  }
+};
+
+const sendMessageCampaign = async (campaign: Campaign): Promise<void> => {
+  await campaign.update({ status: "processing" });
+  await campaign.reload();
+  const io = getIO();
+  io.emit("campaigns", {
+    action: "update",
+    campaign
+  });
+  const penddingContacts = await GetCampaignContactsService(
+    campaign.id,
+    "pending"
+  );
+
+  // getting wbot
+  let whatsapp;
+  try {
+    whatsapp = getWbot(+campaign.whatsappId);
+    const whatsappState = await whatsapp.getState();
+    if (!whatsapp || whatsappState !== "CONNECTED") {
+      await campaign.update({
+        status: "failed"
+      });
+      await campaign.reload();
+      io.emit("campaigns", {
+        action: "update",
+        campaign
+      });
+      return;
+    }
+  } catch (err) {
+    logger.error(err);
+    await campaign.update({
+      status: "failed"
+    });
+    await campaign.reload();
+    io.emit("campaigns", {
+      action: "update",
+      campaign
+    });
+    return;
+  }
+
+  // get messages
+  const messages = [campaign.message1];
+
+  // get sending hours interval
+  const sendTime = campaign.sendTime.split("-");
+
+  if (campaign.message2 && campaign.message2 !== "") {
+    messages.push(campaign.message2);
+  }
+  if (campaign.message3 && campaign.message3 !== "") {
+    messages.push(campaign.message3);
+  }
+  if (campaign.message4 && campaign.message4 !== "") {
+    messages.push(campaign.message4);
+  }
+  if (campaign.message5 && campaign.message5 !== "") {
+    messages.push(campaign.message5);
+  }
+
+  // get delay interval
+  const delay = campaign.delay.split("-");
+  const range = delay.map(num => parseInt(num, 10));
+
+  // interate over contatcs
+  for (let i = 0; i < penddingContacts.length; i += 1) {
+    const { status } = await campaign.reload();
+    if (status !== "processing") {
+      break;
+    }
+    // verify if campaign is in time
+    const currentDate = new Date();
+    if (
+      !(
+        currentDate.getHours() >= +sendTime[0] &&
+        currentDate.getHours() < +sendTime[1]
+      )
+    ) {
+      if (currentDate.getHours() < +sendTime[0]) {
+        currentDate.setHours(+sendTime[0]);
+        currentDate.setMinutes(0);
+      } else {
+        currentDate.setHours(currentDate.getHours() + 24);
+        currentDate.setHours(+sendTime[0])
+        currentDate.setMinutes(0);
+      }
+      reSheduleJob(campaign, currentDate);
+      await campaign.update({
+        status: "timeout",
+      });
+      await campaign.reload();
+      io.emit("campaigns", {
+        action: "update",
+        campaign
+      });
+      break;
+    }
+    // random delay and message
+    const randomDelay = Math.floor(
+      Math.random() * (range[1] - range[0] + 1) + range[0]
+    );
+    let randomMessage = messages[Math.floor(Math.random() * messages.length)];
+
+    // getting media
+    let mediaFile: MessageMedia | null = null;
+    if (campaign.mediaUrl) {
+      const fileName = campaign.mediaUrl.split("/")[4];
+      const customPath = join(__dirname, "..", "..", "..", "public", fileName);
+      mediaFile = MessageMedia.fromFilePath(customPath);
+    }
+    // replacing variables
+    Object.keys(penddingContacts[i].details).forEach(key => {
+      randomMessage = randomMessage.replace(
+        `$${key}`,
+        `${penddingContacts[i].details[key]}`
+      );
+    });
+    await setDelay(randomDelay * 1000);
+    await sendMessage(penddingContacts[i], randomMessage, whatsapp, mediaFile, campaign.mediaBeforeMessage, io, campaign);
+    if (i + 1 === penddingContacts.length) {
+      try {
+        await campaign.update({ status: "finished" });
+        await campaign.reload();
+        io.emit("campaigns", {
+          action: "update",
+          campaign
+        });
+      } catch (err) {
+        logger.error(err);
+      }
+    }
+  }
+};
+
+export default sendMessageCampaign;
