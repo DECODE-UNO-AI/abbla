@@ -172,19 +172,19 @@ const sendMessageCampaign = async (campaign: Campaign): Promise<void> => {
   // get sending hours interval
   const { sendTime } = campaign;
 
-  if (campaign.message1 && campaign.message1.length > 1) {
+  if (campaign.message1 && campaign.message1.length > 0) {
     messages.push(campaign.message1);
   }
-  if (campaign.message2 && campaign.message2.length > 1) {
+  if (campaign.message2 && campaign.message2.length > 0) {
     messages.push(campaign.message2);
   }
-  if (campaign.message3 && campaign.message3.length > 1) {
+  if (campaign.message3 && campaign.message3.length > 0) {
     messages.push(campaign.message3);
   }
-  if (campaign.message4 && campaign.message4.length > 1) {
+  if (campaign.message4 && campaign.message4.length > 0) {
     messages.push(campaign.message4);
   }
-  if (campaign.message5 && campaign.message5.length > 1) {
+  if (campaign.message5 && campaign.message5.length > 0) {
     messages.push(campaign.message5);
   }
 
