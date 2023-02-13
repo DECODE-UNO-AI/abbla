@@ -317,7 +317,7 @@ const messages = {
           csvMedia: "Contacts file .csv",
           messages: "Message text",
           variables: "Available variables: (use $nome-da-variável)",
-          tab: "Text",
+          tab: "Message",
           columnName: "Number column",
           sendMediaBefore: "Send media file before",
           testNumberPlaceholder: "Number with DDD (digits only, without punctuation)",
@@ -532,7 +532,7 @@ const messages = {
           campaignStarted: "The campaing has been started",
           campaignSaved: "The campaing has been saved",
           campaignTested: "Test message sent",
-          campaignTestFailed: "Whatsapp Bot, Texto 1 and Number must be filled"
+          campaignTestFailed: "Whatsapp Bot, Message and Number must be filled"
         },
         confirmationModal: {
           archiveTitle: "Archive campaign",
