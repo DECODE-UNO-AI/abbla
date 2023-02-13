@@ -48,6 +48,14 @@ const TestCampaignService = async ({
     throw new AppError("ERR_NUMBER_NOT_FOUND", 404);
   }
 
+  try {
+    await whatsapp.sendMessage(
+      whatsNumber._serialized,
+      "------------------------------------------------------- \n MENSAGEM DE TESTE \n ABBLA - CAMPANHA \n -------------------------------------------------------"
+    );
+  } catch {
+    throw new AppError("INTERNAL_ERROR", 500);
+  }
   for (let i = 0; i < message.length; i += 1) {
     const currentMessage = message[i];
     try {
