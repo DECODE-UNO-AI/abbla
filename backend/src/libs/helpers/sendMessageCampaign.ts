@@ -68,8 +68,9 @@ const sendMessage = async (
   // Message sending logic
   try {
     for(let i = 0; i < message.length; i += 1) {
+      (async () => {
       if (message[i].startsWith("file-")) {
-        const messageMedia = MessageMedia.fromFilePath(
+          const messageMedia = MessageMedia.fromFilePath(
           join(
             __dirname,
             "..",
@@ -87,6 +88,8 @@ const sendMessage = async (
       } else {
         await wbot.sendMessage(number._serialized , message[i]);
       }
+      await setDelay((Math.floor(Math.random() * 3) + 3) * 1000);
+      })();
 
     }
     await contact.update({
@@ -105,7 +108,6 @@ const sendMessage = async (
       contact,
       campaign
     });
-    await setDelay(1000);
 
   } catch (err) {
     await contact.update({ status: "failed"});

@@ -57,43 +57,45 @@ const TestCampaignService = async ({
     throw new AppError("INTERNAL_ERROR", 500);
   }
   for (let i = 0; i < message.length; i += 1) {
-    const currentMessage = message[i];
-    try {
-      if (currentMessage.startsWith("file-")) {
-        let messageMedia;
-        const media = medias.find(
-          file => file.originalname === currentMessage.replace("file-", "")
-        );
-        if (media) {
-          messageMedia = new MessageMedia(
-            media.mimetype,
-            media.buffer.toString("base64")
+    (async () => {
+      const currentMessage = message[i];
+      try {
+        if (currentMessage.startsWith("file-")) {
+          let messageMedia;
+          const media = medias.find(
+            file => file.originalname === currentMessage.replace("file-", "")
           );
+          if (media) {
+            messageMedia = new MessageMedia(
+              media.mimetype,
+              media.buffer.toString("base64")
+            );
+          } else {
+            messageMedia = MessageMedia.fromFilePath(
+              join(
+                __dirname,
+                "..",
+                "..",
+                "..",
+                "public",
+                currentMessage.replace("file-", "")
+              )
+            );
+          }
+          if (!messageMedia) return;
+          await whatsapp.sendMessage(whatsNumber._serialized, messageMedia, {
+            sendAudioAsVoice: true,
+            sendMediaAsDocument: false
+          });
         } else {
-          messageMedia = MessageMedia.fromFilePath(
-            join(
-              __dirname,
-              "..",
-              "..",
-              "..",
-              "public",
-              currentMessage.replace("file-", "")
-            )
-          );
+          await whatsapp.sendMessage(whatsNumber._serialized, currentMessage);
         }
-        if (!messageMedia) return;
-        await whatsapp.sendMessage(whatsNumber._serialized, messageMedia, {
-          sendAudioAsVoice: true,
-          sendMediaAsDocument: false
-        });
-      } else {
-        await whatsapp.sendMessage(whatsNumber._serialized, currentMessage);
+      } catch (err) {
+        logger.error(err);
+        throw new AppError("INTERNAL_ERROR", 500);
       }
-    } catch (err) {
-      logger.error(err);
-      throw new AppError("INTERNAL_ERROR", 500);
-    }
-    await setDelay(1000);
+      await setDelay((Math.floor(Math.random() * 3) + 3) * 1000);
+    })();
   }
 };
 
