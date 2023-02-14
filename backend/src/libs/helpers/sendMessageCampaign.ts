@@ -68,7 +68,7 @@ const sendMessage = async (
   // Message sending logic
   try {
     for(let i = 0; i < message.length; i += 1) {
-      (async () => {
+      await (async () => {
       if (message[i].startsWith("file-")) {
           const messageMedia = MessageMedia.fromFilePath(
           join(

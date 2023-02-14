@@ -57,7 +57,7 @@ const TestCampaignService = async ({
     throw new AppError("INTERNAL_ERROR", 500);
   }
   for (let i = 0; i < message.length; i += 1) {
-    (async () => {
+    await (async () => {
       const currentMessage = message[i];
       try {
         if (currentMessage.startsWith("file-")) {
