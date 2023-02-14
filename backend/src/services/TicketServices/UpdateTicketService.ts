@@ -52,6 +52,10 @@ const UpdateTicketService = async ({
     await CheckContactOpenTickets(ticket.contact.id, ticket.whatsappId);
   }
 
+  if (ticketData.status === "closed") {
+    await SetTicketMessagesAsRead(ticket);
+  }
+
   await ticket.update({
     status,
     queueId,
