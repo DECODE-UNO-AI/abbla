@@ -1,8 +1,9 @@
-import React, { useContext } from "react"
+import React, { useContext, useState } from "react"
 
 import Paper from "@material-ui/core/Paper"
 import Container from "@material-ui/core/Container"
 import Grid from "@material-ui/core/Grid"
+import { Tabs, Tab, Box } from "@material-ui/core"
 import { makeStyles } from "@material-ui/core/styles"
 import Typography from "@material-ui/core/Typography";
 
@@ -42,9 +43,36 @@ const useStyles = makeStyles(theme => ({
 	},
 }))
 
+function a11yProps(index) {
+	return {
+	  id: `simple-tab-${index}`,
+	  'aria-controls': `simple-tabpanel-${index}`,
+	};
+}
+
+function TabPanel(props) {
+	const { children, value, index, ...other } = props;
+  
+	return (
+	  <div
+		role="tabpanel"
+		hidden={value !== index}
+		id={`simple-tabpanel-${index}`}
+		aria-labelledby={`simple-tab-${index}`}
+		{...other}
+	  >
+		{value === index && (
+		  <Box div={3} style={{ marginTop: -5 }}>
+			<Typography>{children}</Typography>
+		  </Box>
+		)}
+	  </div>
+	);
+}
+
 const Dashboard = () => {
 	const classes = useStyles()
-
+	const [tabValue, setTabValue] = useState(0)
 	const { user } = useContext(AuthContext);
 	var userQueueIds = [];
 
@@ -54,13 +82,13 @@ const Dashboard = () => {
 
 	const GetTickets = (status, showAll, withUnreadMessages) => {
 
-		const { count } = useTickets({
+		const { allTicketsCount } = useTickets({
 			status: status,
 			showAll: showAll,
 			withUnreadMessages: withUnreadMessages,
 			queueIds: JSON.stringify(userQueueIds)
 		});
-		return count;
+		return allTicketsCount;
 	}
 
 	return (
@@ -103,12 +131,33 @@ const Dashboard = () => {
 							</Grid>
 						</Paper>
 					</Grid>
-					<Grid item xs={12}>
-						<Paper className={classes.fixedHeightPaper}>
-							<Chart />
-						</Paper>
-					</Grid>
 				</Grid>
+				<Paper square style={{ display: "flex", justifyContent: "center", marginTop: 20 }}>
+					<Tabs 
+						value={tabValue} 
+						onChange={(event, newValue) => setTabValue(newValue)} 
+						aria-label="simple tabs example" 
+						textColor="primary"
+						indicatorColor="primary"
+                        variant="scrollable"
+                        scrollButtons="auto"
+					>
+						<Tab label="Item One" {...a11yProps(0)} />
+						<Tab label="Item Two" {...a11yProps(1)} />
+						<Tab label="Item Three" {...a11yProps(2)} />
+					</Tabs>
+				</Paper>
+				<TabPanel value={tabValue} index={0} style={{ padding: 0 }}>
+					<Paper className={classes.fixedHeightPaper} >
+						<Chart />
+					</Paper>
+				</TabPanel>
+				<TabPanel value={tabValue} index={1}>
+					Item Two
+				</TabPanel>
+				<TabPanel value={tabValue} index={2}>
+					Item Three
+				</TabPanel>
 			</Container>
 		</div>
 	)
