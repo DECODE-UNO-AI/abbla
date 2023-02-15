@@ -15,6 +15,7 @@ const useTickets = ({
     queueIds,
     withUnreadMessages,
     adminFilterOptions: adminFilter,
+    dateOrder
 }) => {
     const [loading, setLoading] = useState(true);
     const [hasMore, setHasMore] = useState(false);
@@ -40,6 +41,7 @@ const useTickets = ({
                             queueIds,
                             withUnreadMessages,
                             selectedTags,
+                            dateOrder
                         },
                     })
                     setTickets(data.tickets)
@@ -90,7 +92,8 @@ const useTickets = ({
         queueIds,
         withUnreadMessages,
         adminFilter,
-        selectedTags
+        selectedTags,
+        dateOrder
     ])
 
     return { tickets, loading, hasMore, count, allTicketsCount};

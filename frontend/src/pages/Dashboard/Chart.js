@@ -69,7 +69,7 @@ const Chart = () => {
 			<Title>{`${i18n.t("dashboard.charts.perDay.title")}${
 				tickets.length
 			}`}</Title>
-			<ResponsiveContainer>
+			<ResponsiveContainer height={250}>
 				<BarChart
 					data={chartData}
 					barSize={40}

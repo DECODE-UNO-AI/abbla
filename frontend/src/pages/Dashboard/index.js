@@ -14,6 +14,8 @@ import { AuthContext } from "../../context/Auth/AuthContext";
 import { i18n } from "../../translate/i18n";
 
 import Chart from "./Chart"
+import QueueChart from "./QueueChart"
+import DepartamentChart from "./DepartamentChart"
 
 const useStyles = makeStyles(theme => ({
 	container: {
@@ -25,14 +27,13 @@ const useStyles = makeStyles(theme => ({
 		display: "flex",
 		overflow: "auto",
 		flexDirection: "column",
-		height: 240,
 	},
 	customFixedHeightPaper: {
 		padding: theme.spacing(2),
 		display: "flex",
 		overflow: "auto",
 		flexDirection: "column",
-		height: 120,
+		minHeight: 120,
 	},
 	customFixedHeightPaperLg: {
 		padding: theme.spacing(2),
@@ -62,7 +63,7 @@ function TabPanel(props) {
 		{...other}
 	  >
 		{value === index && (
-		  <Box div={3} style={{ marginTop: -5 }}>
+		  <Box div={3} style={{ marginTop: -5, height: "auto" }}>
 			<Typography>{children}</Typography>
 		  </Box>
 		)}
@@ -132,7 +133,7 @@ const Dashboard = () => {
 						</Paper>
 					</Grid>
 				</Grid>
-				<Paper square style={{ display: "flex", justifyContent: "center", marginTop: 20 }}>
+				<Paper square style={{ display: "flex", justifyContent: "left", marginTop: 20 }}>
 					<Tabs 
 						value={tabValue} 
 						onChange={(event, newValue) => setTabValue(newValue)} 
@@ -144,7 +145,10 @@ const Dashboard = () => {
 					>
 						<Tab label="Item One" {...a11yProps(0)} />
 						<Tab label="Item Two" {...a11yProps(1)} />
-						<Tab label="Item Three" {...a11yProps(2)} />
+						{
+							user?.profile === "admin" || user?.profile === "supervisor" ?
+							<Tab label="Item Three" {...a11yProps(2)} /> : ""
+						}
 					</Tabs>
 				</Paper>
 				<TabPanel value={tabValue} index={0} style={{ padding: 0 }}>
@@ -153,10 +157,14 @@ const Dashboard = () => {
 					</Paper>
 				</TabPanel>
 				<TabPanel value={tabValue} index={1}>
-					Item Two
+					<Paper className={classes.fixedHeightPaper} >
+						<QueueChart userQueues={user.queues} />
+					</Paper>
 				</TabPanel>
 				<TabPanel value={tabValue} index={2}>
-					Item Three
+					<Paper className={classes.fixedHeightPaper} >
+						<DepartamentChart userDepartaments={user.departaments} userQueues={user.queues} isAdmin={user?.profile === "admin"}/>
+					</Paper>
 				</TabPanel>
 			</Container>
 		</div>
