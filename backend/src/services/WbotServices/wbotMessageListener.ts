@@ -309,7 +309,7 @@ const handleMessage = async (
       msg.type === "e2e_notification" ||
       msg.type === "notification_template" ||
       msg.from === "status@broadcast" ||
-      msg.author != null ||
+      // msg.author != null ||
       chat.isGroup
     ) {
       return;
