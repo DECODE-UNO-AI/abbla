@@ -61,9 +61,8 @@ const DepartamentChart = ({ userQueues, userDepartaments, isAdmin }) => {
             departs.forEach((dep, depIndex) => {
                 dep.queues.forEach(q => {
                     tickets.forEach(t => {
-                        if (!dep[depIndex]) return
                         if (q.id === t.queueId) {
-                            departs[depIndex] = {...departs[depIndex], tickets: departs[depIndex].tickets + 1}
+                            departs[depIndex] = {...departs[depIndex], tickets: departs[depIndex].tickets? departs[depIndex].tickets + 1 : 1}
                         }
                     })
                     
