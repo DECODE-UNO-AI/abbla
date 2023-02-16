@@ -106,7 +106,7 @@ const DepartamentChart = ({ userQueues, userDepartaments, isAdmin }) => {
                         />
                     </Space>
                 </Box>
-			<ResponsiveContainer height={(50*departaments?.length > 250 ? 50*departaments?.length : 250)}>
+			<ResponsiveContainer height={500}>
             <BarChart margin={{ left: 100 }} legend={{ fontSize: 12 }} width={400} height={(50*departaments?.length)} data={departaments} layout="vertical">
                 <CartesianGrid strokeDasharray="3 3" />
                 <Tooltip />

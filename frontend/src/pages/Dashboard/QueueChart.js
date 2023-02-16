@@ -76,14 +76,14 @@ const QueueChart = ({ userQueues }) => {
                         />
                     </Space>
                 </Box>
-			<ResponsiveContainer height={(50*queues.length)}>
-            <BarChart margin={{ left: 150 }} legend={{ fontSize: 3 }} width={500} height={(50*queues.length)} data={queues} layout="vertical">
+			<ResponsiveContainer height={500}>
+            <BarChart margin={{ left: 150 }} legend={{ fontSize: 3 }} width={500} height={500} data={queues} layout="vertical">
                 <CartesianGrid strokeDasharray="3 3" />
                 <Tooltip />
                 <Legend />
                 <XAxis dataKey="tickets" type="number" name="Tickets" allowDecimals={false} stroke={theme.palette.text.secondary}/>
                 <YAxis dataKey="name" type="category" name="Setores" fill={theme.palette.primary.main} stroke={theme.palette.text.secondary} angle={-20} textAnchor="end"/>
-                <Bar accentHeight={50} dataKey="tickets" name="Tickets" fill={theme.palette.primary.main}/>
+                <Bar accentHeight={10} dataKey="tickets" name="Tickets" fill={theme.palette.primary.main}/>
             </BarChart>
 			</ResponsiveContainer>
 		</React.Fragment>
