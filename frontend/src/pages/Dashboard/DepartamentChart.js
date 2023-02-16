@@ -74,8 +74,6 @@ const DepartamentChart = ({ userQueues, userDepartaments, isAdmin }) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [tickets])
 
-
-    console.log(departaments)
 	return (
 		<React.Fragment>
 			<Box style={{ marginBottom: 40, marginTop: 20 }}>
