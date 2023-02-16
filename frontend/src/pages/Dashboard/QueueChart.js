@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from "react";
-import { useTheme } from "@material-ui/core/styles";
+import React, { useState, useEffect } from "react"
+import { useTheme } from "@material-ui/core/styles"
 import {
 	BarChart,
 	CartesianGrid,
@@ -9,9 +9,10 @@ import {
 	ResponsiveContainer,
     Legend,
     Tooltip
-} from "recharts";
-import { DatePicker, Space, Radio } from 'antd';
+} from "recharts"
+import { DatePicker, Space, Radio } from 'antd'
 import { InputLabel, Box } from "@material-ui/core"
+import BackdropLoading from '../../components/BackdropLoading'
 import dayjs from 'dayjs';
 import useTickets from "../../hooks/useTickets";
 
@@ -29,24 +30,34 @@ const QueueChart = ({ userQueues }) => {
     )
     const [date, setDate] = useState([dayjs(dayjs().format("YYYY/MM/DD"), "YYYY/MM/DD"), dayjs(dayjs().format("YYYY/MM/DD"), "YYYY/MM/DD")])
     const [dateOrder, setDateOrder] = useState("createTicket")
+    const [isLoading, setIsLoading] = useState(false)
 
-	const { tickets } = useTickets({ queueIds: JSON.stringify(userQueues.map(q => q.id)), date: JSON.stringify(date), dateOrder });
+	const { tickets, loading } = useTickets({ queueIds: JSON.stringify(userQueues.map(q => q.id)), date: JSON.stringify(date), dateOrder });
 
     useEffect(() => {
         if (!tickets) return
+        setIsLoading(true)
         setQueues(prevState => {
             let aux = userQueues.map((e) => ({id: e.id, name: e.name, tickets: 0}))
             tickets.forEach(t => {
                 const index = aux.findIndex(a => a.id === t.queueId)
+                if (!aux[index]) return
                 aux[index] = {...aux[index], tickets: aux[index].tickets ?  aux[index].tickets + 1  : 1}
             })
            
             return aux
         })
+        setIsLoading(false)
     }, [tickets, userQueues])
 
 	return (
 		<React.Fragment>
+            {
+                loading || isLoading ?
+                <>
+                    <BackdropLoading />
+                </>: ""
+            }
 			<Box style={{ marginBottom: 40, marginTop: 20 }}>
                     <InputLabel style={{ marginBottom: 4, display: "flex", justifyContent: "space-between" }}>Data 
                     <Radio.Group name="radiogroup" value={dateOrder}  onChange={(e) => setDateOrder(e.target.value)}>

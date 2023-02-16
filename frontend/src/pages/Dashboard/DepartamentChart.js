@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from "react";
-import { useTheme } from "@material-ui/core/styles";
+import React, { useState, useEffect } from "react"
+import { useTheme } from "@material-ui/core/styles"
 import {
 	BarChart,
 	CartesianGrid,
@@ -9,9 +9,10 @@ import {
 	ResponsiveContainer,
     Legend,
     Tooltip
-} from "recharts";
-import { DatePicker, Space, Radio } from 'antd';
+} from "recharts"
+import { DatePicker, Space, Radio } from 'antd'
 import { InputLabel, Box } from "@material-ui/core"
+import BackdropLoading from '../../components/BackdropLoading'
 import dayjs from 'dayjs';
 import useTickets from "../../hooks/useTickets";
 import api from "../../services/api";
@@ -31,12 +32,14 @@ const DepartamentChart = ({ userQueues, userDepartaments, isAdmin }) => {
     const [queues, setQueues] = useState(userQueues)
     const [date, setDate] = useState([dayjs(dayjs().format("YYYY/MM/DD"), "YYYY/MM/DD"), dayjs(dayjs().format("YYYY/MM/DD"), "YYYY/MM/DD")])
     const [dateOrder, setDateOrder] = useState("createTicket")
+    const [isLoading, setIsLoading] = useState(false)
 
-	const { tickets } = useTickets({ queueIds: JSON.stringify(queues.map(q => q.id)), date: JSON.stringify(date), dateOrder });
+	const { tickets, loading } = useTickets({ queueIds: JSON.stringify(queues.map(q => q.id)), date: JSON.stringify(date), dateOrder });
 
     useEffect(() => {
         if(isAdmin) {
             (async () => {
+                setIsLoading(true)
                 try {
                   const { data } = await api.get("/departament");
                   const depart = data.map((e) => ({id: e.id, name: e.name, tickets: 0, queues: e.queues}))
@@ -47,7 +50,9 @@ const DepartamentChart = ({ userQueues, userDepartaments, isAdmin }) => {
                     depart.forEach(dep => dep.queues.forEach((i) => q.push(i)))
                     return q;
                   })
+                  setIsLoading(false)
                 } catch (err) {
+                  setIsLoading(false)
                   toastError("INTERNAL_ERROR")
                 }
               })();
@@ -56,6 +61,7 @@ const DepartamentChart = ({ userQueues, userDepartaments, isAdmin }) => {
 
     useEffect(() => {
         if (!tickets) return
+        setIsLoading(true)
         setDepartaments(preveState => {
             let departs = allDepartaments.map((e) => ({id: e.id, name: e.name, tickets: 0, queues: e.queues}))
             departs.forEach((dep, depIndex) => {
@@ -70,11 +76,18 @@ const DepartamentChart = ({ userQueues, userDepartaments, isAdmin }) => {
             })
             return departs
         })
+        setIsLoading(false)
     // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [tickets])
 
 	return (
 		<React.Fragment>
+            {
+                loading || isLoading ?
+                <>
+                    <BackdropLoading />
+                </>: ""
+            }
 			<Box style={{ marginBottom: 40, marginTop: 20 }}>
                     <InputLabel style={{ marginBottom: 4, display: "flex", justifyContent: "space-between" }}>Data 
                     <Radio.Group name="radiogroup" value={dateOrder}  onChange={(e) => setDateOrder(e.target.value)}>

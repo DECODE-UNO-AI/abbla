@@ -24,6 +24,7 @@ const useStyles = makeStyles(theme => ({
 	},
 	fixedHeightPaper: {
 		padding: theme.spacing(2),
+		position: "relative",
 		display: "flex",
 		overflow: "auto",
 		flexDirection: "column",
