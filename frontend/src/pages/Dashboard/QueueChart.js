@@ -33,6 +33,7 @@ const QueueChart = ({ userQueues }) => {
 	const { tickets } = useTickets({ queueIds: JSON.stringify(userQueues.map(q => q.id)), date: JSON.stringify(date), dateOrder });
 
     useEffect(() => {
+        if (!tickets) return
         setQueues(prevState => {
             let aux = userQueues.map((e) => ({id: e.id, name: e.name, tickets: 0}))
             tickets.forEach(t => {
