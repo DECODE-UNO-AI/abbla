@@ -19,6 +19,7 @@ interface Request {
   withUnreadMessages?: string;
   queueIds: number[];
   tagSelect: [];
+  dateOrder: string;
 }
 
 interface Response {
@@ -30,14 +31,15 @@ interface Response {
 
 const ListTicketsService = async ({
   searchParam = "",
-  pageNumber = "1",
+  pageNumber,
   queueIds,
   status,
   date,
   showAll,
   userId,
   withUnreadMessages,
-  tagSelect
+  tagSelect,
+  dateOrder
 }: Request): Promise<Response> => {
   let whereCondition: Filterable["where"] = {
     [Op.or]: [{ userId }, { status: "pending" }],
@@ -151,11 +153,37 @@ const ListTicketsService = async ({
   }
 
   if (date) {
-    whereCondition = {
-      createdAt: {
-        [Op.between]: [+startOfDay(parseISO(date)), +endOfDay(parseISO(date))]
-      }
-    };
+    let jsonDate;
+    try {
+      jsonDate = JSON.parse(date);
+    } catch (err) {
+      jsonDate = null;
+    }
+    if (dateOrder === "lastMessage") {
+      whereCondition = {
+        updatedAt: {
+          [Op.between]:
+            jsonDate === null
+              ? [+startOfDay(parseISO(date)), +endOfDay(parseISO(date))]
+              : [
+                  +startOfDay(parseISO(jsonDate[0])),
+                  +endOfDay(parseISO(jsonDate[1]))
+                ]
+        }
+      };
+    } else {
+      whereCondition = {
+        createdAt: {
+          [Op.between]:
+            jsonDate === null
+              ? [+startOfDay(parseISO(date)), +endOfDay(parseISO(date))]
+              : [
+                  +startOfDay(parseISO(jsonDate[0])),
+                  +endOfDay(parseISO(jsonDate[1]))
+                ]
+        }
+      };
+    }
   }
 
   if (withUnreadMessages === "true") {
@@ -170,14 +198,14 @@ const ListTicketsService = async ({
   }
 
   const limit = 40;
-  const offset = limit * (+pageNumber - 1);
+  const offset = pageNumber ? limit * (+pageNumber - 1) : 0;
 
   const { count, rows: tickets } = await Ticket.findAndCountAll({
     where: whereCondition,
     include: includeCondition,
     distinct: true,
-    limit,
-    offset,
+    limit: pageNumber ? limit : undefined,
+    offset: pageNumber ? offset : undefined,
     order: [["updatedAt", "DESC"]]
   });
 

@@ -1,8 +1,9 @@
-import React, { useContext } from "react"
+import React, { useContext, useState } from "react"
 
 import Paper from "@material-ui/core/Paper"
 import Container from "@material-ui/core/Container"
 import Grid from "@material-ui/core/Grid"
+import { Tabs, Tab, Box } from "@material-ui/core"
 import { makeStyles } from "@material-ui/core/styles"
 import Typography from "@material-ui/core/Typography";
 
@@ -13,6 +14,8 @@ import { AuthContext } from "../../context/Auth/AuthContext";
 import { i18n } from "../../translate/i18n";
 
 import Chart from "./Chart"
+import QueueChart from "./QueueChart"
+import DepartamentChart from "./DepartamentChart"
 
 const useStyles = makeStyles(theme => ({
 	container: {
@@ -24,14 +27,13 @@ const useStyles = makeStyles(theme => ({
 		display: "flex",
 		overflow: "auto",
 		flexDirection: "column",
-		height: 240,
 	},
 	customFixedHeightPaper: {
 		padding: theme.spacing(2),
 		display: "flex",
 		overflow: "auto",
 		flexDirection: "column",
-		height: 120,
+		minHeight: 120,
 	},
 	customFixedHeightPaperLg: {
 		padding: theme.spacing(2),
@@ -42,9 +44,36 @@ const useStyles = makeStyles(theme => ({
 	},
 }))
 
+function a11yProps(index) {
+	return {
+	  id: `simple-tab-${index}`,
+	  'aria-controls': `simple-tabpanel-${index}`,
+	};
+}
+
+function TabPanel(props) {
+	const { children, value, index, ...other } = props;
+  
+	return (
+	  <div
+		role="tabpanel"
+		hidden={value !== index}
+		id={`simple-tabpanel-${index}`}
+		aria-labelledby={`simple-tab-${index}`}
+		{...other}
+	  >
+		{value === index && (
+		  <Box div={3} style={{ marginTop: -5, height: "auto" }}>
+			<Typography>{children}</Typography>
+		  </Box>
+		)}
+	  </div>
+	);
+}
+
 const Dashboard = () => {
 	const classes = useStyles()
-
+	const [tabValue, setTabValue] = useState(0)
 	const { user } = useContext(AuthContext);
 	var userQueueIds = [];
 
@@ -54,13 +83,13 @@ const Dashboard = () => {
 
 	const GetTickets = (status, showAll, withUnreadMessages) => {
 
-		const { count } = useTickets({
+		const { allTicketsCount } = useTickets({
 			status: status,
 			showAll: showAll,
 			withUnreadMessages: withUnreadMessages,
 			queueIds: JSON.stringify(userQueueIds)
 		});
-		return count;
+		return allTicketsCount;
 	}
 
 	return (
@@ -103,12 +132,40 @@ const Dashboard = () => {
 							</Grid>
 						</Paper>
 					</Grid>
-					<Grid item xs={12}>
-						<Paper className={classes.fixedHeightPaper}>
-							<Chart />
-						</Paper>
-					</Grid>
 				</Grid>
+				<Paper square style={{ display: "flex", justifyContent: "left", marginTop: 20 }}>
+					<Tabs 
+						value={tabValue} 
+						onChange={(event, newValue) => setTabValue(newValue)} 
+						aria-label="simple tabs example" 
+						textColor="primary"
+						indicatorColor="primary"
+                        variant="scrollable"
+                        scrollButtons="auto"
+					>
+						<Tab label="Hoje" {...a11yProps(0)} />
+						<Tab label="Setores" {...a11yProps(1)} />
+						{
+							user?.profile === "admin" || user?.profile === "supervisor" ?
+							<Tab label="Departamentos" {...a11yProps(2)} /> : ""
+						}
+					</Tabs>
+				</Paper>
+				<TabPanel value={tabValue} index={0} style={{ padding: 0 }}>
+					<Paper className={classes.fixedHeightPaper} >
+						<Chart />
+					</Paper>
+				</TabPanel>
+				<TabPanel value={tabValue} index={1}>
+					<Paper className={classes.fixedHeightPaper} >
+						<QueueChart userQueues={user.queues} />
+					</Paper>
+				</TabPanel>
+				<TabPanel value={tabValue} index={2}>
+					<Paper className={classes.fixedHeightPaper} >
+						<DepartamentChart userDepartaments={user.departaments} userQueues={user.queues} isAdmin={user?.profile === "admin"}/>
+					</Paper>
+				</TabPanel>
 			</Container>
 		</div>
 	)
