@@ -143,11 +143,11 @@ const Dashboard = () => {
                         variant="scrollable"
                         scrollButtons="auto"
 					>
-						<Tab label="Item One" {...a11yProps(0)} />
-						<Tab label="Item Two" {...a11yProps(1)} />
+						<Tab label="Hoje" {...a11yProps(0)} />
+						<Tab label="Setores" {...a11yProps(1)} />
 						{
 							user?.profile === "admin" || user?.profile === "supervisor" ?
-							<Tab label="Item Three" {...a11yProps(2)} /> : ""
+							<Tab label="Departamentos" {...a11yProps(2)} /> : ""
 						}
 					</Tabs>
 				</Paper>
