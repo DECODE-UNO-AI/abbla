@@ -38,6 +38,7 @@ const QueueChart = ({ userQueues }) => {
             let aux = userQueues.map((e) => ({id: e.id, name: e.name, tickets: 0}))
             tickets.forEach(t => {
                 const index = aux.findIndex(a => a.id === t.queueId)
+                if (!aux[index]) return
                 aux[index] = {...aux[index], tickets: aux[index].tickets + 1}
             })
            
