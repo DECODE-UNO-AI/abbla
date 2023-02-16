@@ -26,9 +26,9 @@ const { RangePicker } = DatePicker;
 
 const DepartamentChart = ({ userQueues, userDepartaments, isAdmin }) => {
 	const theme = useTheme();
-    
+
     const [departaments, setDepartaments] = useState(userDepartaments?.map((e) => ({id: e.id, name: e.name, tickets: 0, queues: e.queues})))
-    const [allDepartaments, setAllDepartaments] = useState(userDepartaments)
+    const [allDepartaments, setAllDepartaments] = useState(userDepartaments || [])
     const [queues, setQueues] = useState(userQueues)
     const [date, setDate] = useState([dayjs(dayjs().format("YYYY/MM/DD"), "YYYY/MM/DD"), dayjs(dayjs().format("YYYY/MM/DD"), "YYYY/MM/DD")])
     const [dateOrder, setDateOrder] = useState("createTicket")
@@ -106,8 +106,8 @@ const DepartamentChart = ({ userQueues, userDepartaments, isAdmin }) => {
                         />
                     </Space>
                 </Box>
-			<ResponsiveContainer height={(50*departaments.length > 250 ? 50*departaments.length : 250)}>
-            <BarChart margin={{ left: 100 }} legend={{ fontSize: 12 }} width={400} height={(50*departaments.length)} data={departaments} layout="vertical">
+			<ResponsiveContainer height={(50*departaments?.length > 250 ? 50*departaments?.length : 250)}>
+            <BarChart margin={{ left: 100 }} legend={{ fontSize: 12 }} width={400} height={(50*departaments?.length)} data={departaments} layout="vertical">
                 <CartesianGrid strokeDasharray="3 3" />
                 <Tooltip />
                 <Legend />
