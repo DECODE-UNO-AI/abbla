@@ -11,7 +11,15 @@ import {
     Tooltip
 } from "recharts"
 import { DatePicker, Space, Radio } from 'antd'
-import { InputLabel, Box } from "@material-ui/core"
+import { 
+    InputLabel, 
+    Box, 
+    Dialog, 
+    DialogActions, 
+    DialogContent,
+    Button 
+} from "@material-ui/core"
+import { OpenWith } from "@material-ui/icons"
 import BackdropLoading from '../../components/BackdropLoading'
 import dayjs from 'dayjs';
 import useTickets from "../../hooks/useTickets";
@@ -31,6 +39,7 @@ const QueueChart = ({ userQueues }) => {
     const [date, setDate] = useState([dayjs(dayjs().format("YYYY/MM/DD"), "YYYY/MM/DD"), dayjs(dayjs().format("YYYY/MM/DD"), "YYYY/MM/DD")])
     const [dateOrder, setDateOrder] = useState("createTicket")
     const [isLoading, setIsLoading] = useState(false)
+    const [chartModalOpen, setChartModalOpen] = useState(false)
 
 	const { tickets, loading } = useTickets({ queueIds: JSON.stringify(userQueues.map(q => q.id)), date: JSON.stringify(date), dateOrder });
 
@@ -51,13 +60,45 @@ const QueueChart = ({ userQueues }) => {
     }, [tickets, userQueues])
 
 	return (
-		<React.Fragment>
+		<Box style={{ overflow: 'hidden' }}>
             {
                 loading || isLoading ?
                 <>
                     <BackdropLoading />
                 </>: ""
             }
+            <Dialog fullScreen  open={chartModalOpen} onClose={() => setChartModalOpen(false)}>
+                <DialogContent dividers>
+                    <ResponsiveContainer width={window.innerWidth - 100} height={window.innerHeight - 100}>
+                        <BarChart margin={{ left: 150 }} legend={{ fontSize: 3 }} wi    dth={window.innerWidth - 100} height={window.innerHeight - 100} data={queues} layout="vertical">
+                            <CartesianGrid strokeDasharray="3 3" />
+                            <Tooltip />
+                            <Legend />
+                            <XAxis dataKey="tickets" type="number" name="Tickets" allowDecimals={false} stroke={theme.palette.text.secondary}/>
+                            <YAxis 
+                                dataKey="name" 
+                                type="category" 
+                                name="Setores" 
+                                fill={theme.palette.primary.main} 
+                                stroke={theme.palette.text.secondary}
+                                textAnchor="end"
+                                />
+                            <Bar accentHeight={10} dataKey="tickets" name="Tickets" fill={theme.palette.primary.main}/>
+                        </BarChart>
+                    </ResponsiveContainer>
+                </DialogContent>
+                <DialogActions>
+                    <Button
+                        onClick={() => setChartModalOpen(false)}
+                        
+                        disabled={loading}
+                        variant="outlined"
+                    >
+                        Fechar  
+                    </Button>
+                </DialogActions>
+		    </Dialog>
+            
 			<Box style={{ marginBottom: 40, marginTop: 20 }}>
                     <InputLabel style={{ marginBottom: 4, display: "flex", justifyContent: "space-between" }}>Data 
                     <Radio.Group name="radiogroup" value={dateOrder}  onChange={(e) => setDateOrder(e.target.value)}>
@@ -76,17 +117,27 @@ const QueueChart = ({ userQueues }) => {
                         />
                     </Space>
                 </Box>
-			<ResponsiveContainer height={500}>
-            <BarChart margin={{ left: 150 }} legend={{ fontSize: 3 }} width={500} height={500} data={queues} layout="vertical">
+			<ResponsiveContainer height={500} >
+            <BarChart margin={{ left: 150 }} legend={{ fontSize: 3 }} width={400} height={500} data={queues} layout="vertical">
                 <CartesianGrid strokeDasharray="3 3" />
                 <Tooltip />
                 <Legend />
                 <XAxis dataKey="tickets" type="number" name="Tickets" allowDecimals={false} stroke={theme.palette.text.secondary}/>
-                <YAxis dataKey="name" type="category" name="Setores" fill={theme.palette.primary.main} stroke={theme.palette.text.secondary} angle={-20} textAnchor="end"/>
+                <YAxis 
+                    dataKey="name" 
+                    type="category" 
+                    name="Setores" 
+                    fill={theme.palette.primary.main} 
+                    stroke={theme.palette.text.secondary}
+                    textAnchor="end"
+                    />
                 <Bar accentHeight={10} dataKey="tickets" name="Tickets" fill={theme.palette.primary.main}/>
             </BarChart>
 			</ResponsiveContainer>
-		</React.Fragment>
+            <Box style={{ width: "100%", display: "flex", justifyContent: "end", marginTop: -25 }}>
+                <OpenWith color="primary" style={{ cursor: "pointer", zIndex: 2 }} onClick={() => setChartModalOpen(true)} />
+            </Box>
+		</Box>
 	);
 };
 
