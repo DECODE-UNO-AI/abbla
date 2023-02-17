@@ -107,12 +107,12 @@ const DepartamentChart = ({ userQueues, userDepartaments, isAdmin }) => {
                     </Space>
                 </Box>
 			<ResponsiveContainer height={500}>
-            <BarChart margin={{ left: 100 }} legend={{ fontSize: 12 }} width={400} height={(50*departaments?.length)} data={departaments} layout="vertical">
+            <BarChart margin={{ left: 100 }} legend={{ fontSize: 12 }} width={500} data={departaments} layout="vertical">
                 <CartesianGrid strokeDasharray="3 3" />
                 <Tooltip />
                 <Legend />
                 <XAxis dataKey="tickets" type="number" name="Tickets" allowDecimals={false} stroke={theme.palette.text.secondary}/>
-                <YAxis dataKey="name" type="category" name="Departaments" fill={theme.palette.primary.main} stroke={theme.palette.text.secondary} angle={-20}textAnchor="end"/>
+                <YAxis dataKey="name" type="category" name="Departaments" fill={theme.palette.primary.main} stroke={theme.palette.text.secondary} textAnchor="end"/>
                 <Bar accentHeight={50} dataKey="tickets" name="Tickets" fill={theme.palette.primary.main}/>
             </BarChart>
 			</ResponsiveContainer>
