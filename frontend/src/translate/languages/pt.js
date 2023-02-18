@@ -316,7 +316,7 @@ const messages = {
           messageMedia: "Anexo da mensagem",
           csvMedia: "Arquivo .csv de contatos",
           messages: "Texto das mensagens",
-          tab: "Texto",
+          tab: "Mensagem",
           variables: "Variáveis disponíveis: (utilize $nome-da-variável)",
           columnName: "Coluna de telefones",
           sendMediaBefore: "Enviar mídia antes",
@@ -324,6 +324,8 @@ const messages = {
           testMessage: "Testar Mensagem",
           testButton: "Testar",
           previewMessage: "Pré-visualizar mensagem",
+          addText: "Texto",
+          addFile: "Arquivo"
         },
         confirmationModal: {
           title: "Iniciar Campanha",
@@ -543,7 +545,7 @@ const messages = {
           campaignStarted: "A campanha foi iniciada",
           campaignSaved: "A campanha foi salva",
           campaignTested: "Mensagem teste enviada",
-          campaignTestFailed: "Whatsapp Bot, Texto 1 e Número devem ser preenchidos"
+          campaignTestFailed: "Whatsapp Bot, Mensagem e Número devem ser preenchidos"
         },
         confirmationModal: {
           archiveTitle: "Arquivar a campanha",

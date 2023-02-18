@@ -1,10 +1,10 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect } from "react";
 
 import * as Yup from "yup";
 import {
 	Formik,
 	Form,
-	Field
+	Field,
 } from "formik";
 
 import {
@@ -23,14 +23,7 @@ import {
 	TextField,
     Checkbox,
     Typography,
-    Tab,
-    Tabs,
-    AppBar,
     Box,
-    FormControl,
-    RadioGroup,
-    FormControlLabel,
-    Radio
 } from '@material-ui/core';
 import NearMeIcon from '@material-ui/icons/NearMe';
 import SaveIcon from '@material-ui/icons/Save';
@@ -46,6 +39,7 @@ import useWhatsApps from "../../hooks/useWhatsApps";
 import SpeedMessageCards from "../SpeedMessageCards";
 import WhatsAppLayout from "../WhatsappLayout";
 import ConfirmationModal from "../ConfirmationModal";
+import MessagesTabs from "../MessagesTabs";
 // import Papa from 'papaparse';
 
 
@@ -185,32 +179,6 @@ const marks = [
     },
   ];
 
-function TabPanel(props) {
-    const { children, value, index, ...other } = props;
-    return (
-        <div
-          role="tabpanel"
-          hidden={value !== index}
-          id={`scrollable-auto-tabpanel-${index}`}
-          aria-labelledby={`scrollable-auto-tab-${index}`}
-          {...other}
-        >
-          {value === index && (
-            <Box p={3}>
-              <Typography>{children}</Typography>
-            </Box>
-          )}
-        </div>
-      );
-}
-
-function a11yProps(index) {
-  return {
-    id: `scrollable-auto-tab-${index}`,
-    'aria-controls': `scrollable-auto-tabpanel-${index}`,
-  };
-}
-
 function getFirstDate(){
     const currentDate = new Date();
     currentDate.setDate(currentDate.getDate() + 1);
@@ -243,14 +211,6 @@ const CampaignSchema = Yup.object().shape({
 		.max(50, i18n.t("campaignModal.errors.tooLong"))
 		.required(" "),
     whatsappId: Yup.string().required("Required"),
-    message1: Yup.string()
-        .min(5, i18n.t("campaignModal.errors.tooShort"))
-        .max(4096, i18n.t("campaignModal.errors.tooLong"))
-        .required(i18n.t("campaignModal.errors.message")),
-    message2: Yup.string().min(5, i18n.t("campaignModal.errors.tooShort")).max(4096, i18n.t("campaignModal.errors.tooLong")),
-    message3: Yup.string().min(5, i18n.t("campaignModal.errors.tooShort")).max(4096, i18n.t("campaignModal.errors.tooLong")),
-    message4: Yup.string().min(5, i18n.t("campaignModal.errors.tooShort")).max(4096, i18n.t("campaignModal.errors.tooLong")),
-    message5: Yup.string().min(5, i18n.t("campaignModal.errors.tooShort")).max(4096, i18n.t("campaignModal.errors.tooLong")),
     columnName: Yup.string().required(" "),
 });
 
@@ -265,13 +225,7 @@ const CampaignModal = ({ open, onClose, campaignId, visualize = false }) => {
         inicialDate: getFirstDate(),
         startNow: false,
         whatsappId: "",
-        message1: "",
-        message2: "",
-        message3: "",
-        message4: "",
-        message5: "",
         columnName: "",
-        mediaBeforeMessage: "true",
     };
 
     const [campaignForm, setCapaignForm] = useState(initialState)
@@ -279,26 +233,35 @@ const CampaignModal = ({ open, onClose, campaignId, visualize = false }) => {
     const [delay, setDelay] = useState("15")
     const [tabValue, setTabValue] = useState(0);
     const [startNow, setStartNow] = useState(false);
-    const [cvsFile, setCsvFile] = useState(null)
+    const [csvFile, setCsvFile] = useState(null)
     const [csvColumns, setCsvColumns] = useState([])
-    const [mediaFile, setMediaFile] = useState(null)
-    const [mediaError, setMediaError] = useState(false)
-    const [mediaFirst, setMediaFirst] = useState(true)
     const [submittingForm, setSubmittingForm] = useState(false)
     const [testNumber, setTestNumber] = useState("")
     const [isRepeatModel, setIsRepeatModel] = useState(false)
     const [openPreview, setOpenPreview] = useState(false)
     const [confirmationModalOpen, setConfirmationModalOpen] = useState(false)
-    const [selectedPreviewMessage, setSelectedPreviewMessage] = useState("message1")
-    const inputFileRef = useRef();
+    const [inputsOrder, setInputsOrder] = useState({
+        message1InputOrder: [],
+        message2InputOrder: [],
+        message3InputOrder: [],
+        message4InputOrder: [],
+        message5InputOrder: [],
+    })
+    const [allMessagesInputs, setAllMessagesInputs] = useState({
+        message1Inputs: [],
+        message2Inputs: [],
+        message3Inputs: [],
+        message4Inputs: [],
+        message5Inputs: [],
+    })
+    
 
     useEffect(() => {
         (async () => {
 			if (!campaignId) return;
 			try {
 				const { data } = await api.get(`/campaigns/${campaignId}`);
-                const sendInterval = data.sendTime.split('-').map(n => +n)
-                setSendTime(sendInterval)
+                setSendTime(data.sendTime)
                 const delayValue =
                     data.delay === "120-240"
                     ? "15"
@@ -330,21 +293,62 @@ const CampaignModal = ({ open, onClose, campaignId, visualize = false }) => {
                     }
 					return { ...prevState, ...data, inicialDate: settedDate};
 				});
+
+                setAllMessagesInputs({
+                    message1Inputs: data.message1.map((message, index) => {
+                        if(message.startsWith("file-")) {
+                            return ({id: index, type: "file", value: message})
+                        }
+                        return ({id: index, type: "text", value: message})
+                    }),
+                    message2Inputs: data.message2.map((message, index) => {
+                        if(message.startsWith("file-")) {
+                            return ({ id: index, type: "file", value: message})
+                        }
+                        return ({id: index, type: "text", value: message})
+                    }),
+                    message3Inputs: data.message3.map((message, index) => {
+                        if(message.startsWith("file-")) {
+                            return ({ id: index, type: "file", value: message})
+                        }
+                        return ({ id: index, type: "text", value: message})
+                    }),
+                    message4Inputs: data.message4.map((message, index) => {
+                        if(message.startsWith("file-")) {
+                            return ({ id: index, type: "file", value: message})
+                        }
+                        return ({ id: index, type: "text", value: message})
+                    }),
+                    message5Inputs: data.message5.map((message, index) => {
+                        if(message.startsWith("file-")) {
+                            return ({ id: index, type: "file", value: message})
+                        }
+                        return ({ id: index, type: "text", value: message})
+                    })
+                })
+
+                setInputsOrder({
+                    message1InputOrder: data.message1.map((message , index) => index),
+                    message2InputOrder: data.message2.map((message , index) => index),
+                    message3InputOrder: data.message3.map((message , index) => index),
+                    message4InputOrder: data.message4.map((message , index) => index),
+                    message5InputOrder: data.message5.map((message , index) => index)
+                })
 			} catch (err) {
 				toastError(err);
 			}
 		})();
 
 		return () => {
-            setMediaError(false)
 			setCapaignForm(initialState);
             setCsvColumns([]);
-            setSendTime(initialState.sendTime)
-            setDelay("15")
-            setMediaFile(null);
+            setSendTime(initialState.sendTime);
+            setDelay("15");
             setCsvFile(null);
             setStartNow(false);
             setIsRepeatModel(false);
+            setInputsOrder([]);
+            setAllMessagesInputs([]);
 		};
     // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [campaignId])
@@ -374,28 +378,12 @@ const CampaignModal = ({ open, onClose, campaignId, visualize = false }) => {
 
     }
 
-    const handleOnMediaFileChange = (file) => {
-        setMediaError(false)
-        const fileMedia = file.target.files[0]
-        if (!fileMedia) {
-            setMediaFile(null)
-            return
-        }
-        if (fileMedia.size > 10 * 1024 * 1024){ // 10mb 
-            setMediaFile(null)
-            inputFileRef.current.value = null;
-            setMediaError(true);
-        }
-            
-        setMediaFile(fileMedia)
-    }
-
-    const handleDownload = async (isCsvFile) => {
+    const handleDownload = async (isCsvFile, fileName = "") => {
         let response
         if (isCsvFile) {
             response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/public/${campaignForm.contactsCsv}`)
         } else {
-            response = await fetch(`${campaignForm.mediaUrl}`)
+            response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/public/${fileName}`)
         }
         const file = await response.blob();
         const fileUrl = URL.createObjectURL(file);
@@ -408,20 +396,38 @@ const CampaignModal = ({ open, onClose, campaignId, visualize = false }) => {
 
     const handleOnTest = async (values) => {
         setSubmittingForm(true)
-        const { whatsappId, message1 } = values
-        if (!whatsappId || !message1 || !testNumber ) {
+        const { whatsappId } = values
+        const messages = allMessagesInputs[`message${tabValue+1}Inputs`]
+        let medias = []
+        if (!whatsappId || !messages || !testNumber || messages.length < 1 ) {
             toast.error(`${i18n.t("campaigns.notifications.campaignTestFailed")}`);
             setSubmittingForm(false)
             return
         }
-        const data = { whatsappId, message1, mediaBeforeMessage: mediaFirst, number: testNumber, mediaUrl: campaignForm.mediaUrl || null }
+        let message = inputsOrder[`message${tabValue+1}InputOrder`].map((index) => {
+            const input = messages.find(inp => inp.id === index)
+            if(input.type === "text"){
+                return input.value ? input.value : null
+            } else {
+                if(typeof input.value !== "string" ){
+                    medias.push(input.value)
+                    return `file-${input.value.name}`
+                }
+                return input.value
+            }
+        })
+        message = JSON.stringify(message.filter(i => i !== null))
+        const data = { whatsappId, message, number: testNumber }
         const formData = new FormData()
         Object.keys(data).forEach((key) => {
             formData.append(key, data[key])
         })
-        if (mediaFile) {
-            formData.append("media", mediaFile)
-        }
+        medias = [...new Set(medias.map(media => media.name))].map(name => {
+            return medias.find(media => media.name === name);
+        });
+        medias.forEach((file) => {
+            formData.append("medias", file)
+        })
 
         try {
             await api.post(`/campaigns/test`, formData, {
@@ -440,18 +446,49 @@ const CampaignModal = ({ open, onClose, campaignId, visualize = false }) => {
 
     const handleOnSave = async(values) => {
         setSubmittingForm(true)
-        setMediaError(false)
-        const campaignData = ({...values, delay: delay, startNow, sendTime, mediaBeforeMessage: mediaFirst})
+        let form = {...values, delay, startNow, sendTime: JSON.stringify(sendTime)}
         const formData = new FormData();
-        Object.keys(campaignData).forEach((key) => {
-            formData.append(key, campaignData[key])
+        let medias = []
+        Object.keys(allMessagesInputs).forEach((messageInput, index) => {
+            let message = inputsOrder[`message${index+1}InputOrder`].map((i) => {
+                const input = allMessagesInputs[messageInput].find(inp => inp.id === i)
+                if(input.type === "text"){
+                    return input.value ? input.value : null
+                } else {
+                    if(typeof input.value !== "string" ){
+                        medias.push(input.value)
+                        return `file-${input.value.name}`
+                    }
+                    return input.value
+                }
+            })
+            message = JSON.stringify(message.filter(i => i !== null))
+            form = {...form, [`message${index+1}`]: message}
         })
-        if (cvsFile) {
-            formData.append("medias", cvsFile)
+        if (
+            form.message1.length === 0 
+            && form.message2.length === 0 
+            && form.message3.length === 0
+            && form.message4.length === 0 
+            && form.message5.length === 0
+            ) {
+                toast.error("A mensagem é obrigatória")
+                setSubmittingForm(false)
+                return
         }
-        if (mediaFile) {
-            formData.append("medias", mediaFile)
-        }
+        medias = [...new Set(medias.map(media => media.name))].map(name => {
+            return medias.find(media => media.name === name);
+        });
+        
+        medias.forEach((file) => {
+            if(typeof file !== "string") formData.append("medias", file)
+        })
+        if (csvFile) formData.append("medias", csvFile)
+
+        Object.keys(form).forEach((key) => {
+            formData.append(key, form[key])
+        })
+
         try {
             if (campaignId && !isRepeatModel) {
                 await api.put(`/campaigns/${campaignId}`, formData, {
@@ -485,15 +522,15 @@ const CampaignModal = ({ open, onClose, campaignId, visualize = false }) => {
     }
 
     const handleOnModalClose = () => {
-        setMediaError(false)
 		setCapaignForm(initialState);
         setSendTime(initialState.sendTime)
         setCsvColumns([]);
         setDelay("15")
-        setMediaFile(null);
         setCsvFile(null);
         setStartNow(false);
         setIsRepeatModel(false);
+        setInputsOrder([])
+        setAllMessagesInputs([])
         onClose()
     }
 
@@ -527,7 +564,9 @@ const CampaignModal = ({ open, onClose, campaignId, visualize = false }) => {
 						}, 400);
 					}}
 				>
-					{({ touched, errors, isSubmitting, values }) => (
+					{({ touched, errors, isSubmitting, values, setValues }) => {
+                        return(
+
                         <>
                             <ConfirmationModal
                             open={confirmationModalOpen}
@@ -718,122 +757,22 @@ const CampaignModal = ({ open, onClose, campaignId, visualize = false }) => {
                                         </Box>
                                     </Box>
                                 </Box>
-                                <Box sx={{ width: "100%" }} className={classes.box}>
-                                    <Typography variant="h6">
-                                        {i18n.t("campaignModal.form.messages")}
-                                    </Typography> 
-                                    <AppBar position="static" color="transparent">
-                                        <Tabs
-                                            value={tabValue}
-                                            onChange={handleTabChange}
-                                            indicatorColor="primary"
-                                            textColor="primary"
-                                            variant="scrollable"
-                                            scrollButtons="auto"
-                                            aria-label="scrollable auto tabs example"
-                                        >
-                                        <Tab label={`${i18n.t("campaignModal.form.tab")} 1`} {...a11yProps(0)} />
-                                        <Tab label={`${i18n.t("campaignModal.form.tab")} 2`} {...a11yProps(1)} />
-                                        <Tab label={`${i18n.t("campaignModal.form.tab")} 3`} {...a11yProps(2)} />
-                                        <Tab label={`${i18n.t("campaignModal.form.tab")} 4`} {...a11yProps(3)} />
-                                        <Tab label={`${i18n.t("campaignModal.form.tab")} 5`} {...a11yProps(4)} />
-                                        </Tabs>
-                                    </AppBar>
-                                    <TabPanel value={tabValue} index={0} className={classes.messageTab} variant={"div"}>
-                                        <Box>
-                                        <Field
-                                            as={TextField}
-                                            disabled={visualize}
-									        style={{ width: "100%", padding: 0}}
-                                            labelId="message1-label"
-                                            id="message1"
-                                            variant="outlined"
-                                            margin="none"
-                                            multiline
-                                            maxRows={5}
-                                            minRows={4}
-                                            name="message1"
-                                            error={touched.message1 && Boolean(errors.message1)}
-                                            helperText={touched.message1 && errors.message1}
-								        />
-                                        </Box>
-                                    </TabPanel>
-                                    <TabPanel value={tabValue} index={1} className={classes.messageTab} variant={"div"}>
-                                        <Field
-                                            as={TextField}
-                                            disabled={visualize}
-									        style={{ width: "100%", padding: 0}}
-                                            labelId="message2-label"
-                                            id="message2"
-                                            variant="outlined"
-                                            margin="none"
-                                            multiline
-                                            maxRows={5}
-                                            minRows={4}
-                                            name="message2"
-                                            error={touched.message2 && Boolean(errors.message2)}
-                                            helperText={touched.message2 && errors.message2}
-								        />
-                                    </TabPanel>
-                                    <TabPanel value={tabValue} index={2} className={classes.messageTab} variant={"div"}>
-                                        <Field
-                                            as={TextField}
-                                            disabled={visualize}
-									        style={{ width: "100%", padding: 0}}
-                                            labelId="message3-label"
-                                            id="message3"
-                                            variant="outlined"
-                                            margin="none"
-                                            multiline
-                                            maxRows={5}
-                                            minRows={4}
-                                            name="message3"
-                                            error={touched.message3 && Boolean(errors.message3)}
-                                            helperText={touched.message3 && errors.message3}
-								        />
-                                    </TabPanel>
-                                    <TabPanel value={tabValue} index={3} className={classes.messageTab} variant={"div"}>
-                                        <Field
-                                            as={TextField}
-                                            disabled={visualize}
-									        style={{ width: "100%", padding: 0}}
-                                            labelId="message4-label"
-                                            id="message4"
-                                            variant="outlined"
-                                            margin="none"
-                                            multiline
-                                            maxRows={5}
-                                            minRows={4}
-                                            name="message4"
-                                            error={touched.message4 && Boolean(errors.message4)}
-                                            helperText={touched.message4 && errors.message4}
-								        />
-                                    </TabPanel>
-                                    <TabPanel value={tabValue} index={4} className={classes.messageTab} variant={"div"}>
-                                        <Field
-                                            as={TextField}
-                                            disabled={visualize}
-									        style={{ width: "100%", padding: 0}}
-                                            labelId="message5-label"
-                                            id="message5"
-                                            variant="outlined"
-                                            margin="none"
-                                            multiline
-                                            maxRows={5}
-                                            minRows={4}
-                                            name="message5"
-                                            error={touched.message5 && Boolean(errors.message5)}
-                                            helperText={touched.message5 && errors.message5}
-								        />
-                                    </TabPanel>
-                                    {   
-                                        errors.message1 ? setTabValue(0) :
-                                        errors.message2 ? setTabValue(1) :
-                                        errors.message3 ? setTabValue(2) : 
-                                        errors.message4 ? setTabValue(3) :
-                                        errors.message5 ? setTabValue(4) : ""
-                                    }
-                                </Box>
+                                <MessagesTabs 
+                                    classes={classes} 
+                                    tabValue={tabValue} 
+                                    handleTabChange={handleTabChange} 
+                                    values={values} 
+                                    setTabValue={setTabValue} 
+                                    errors={errors} 
+                                    setValues={setValues}
+                                    inputsOrder={inputsOrder}
+                                    setInputsOrder={setInputsOrder}
+                                    setAllMessagesInputs={setAllMessagesInputs}
+                                    allMessagesInputs={allMessagesInputs}
+                                    setOpenPreview={setOpenPreview}
+                                    handleDownload={handleDownload}
+                                    visualize={visualize}
+                                />
                                 <Box className={classes.variableContent}>
                                     <InputLabel style={{ display: "flex", alignItems: "center", marginRight: 2}}>{i18n.t("campaignModal.form.variables")}</InputLabel>
                                     <Box className={classes.chipBox}>
@@ -843,106 +782,6 @@ const CampaignModal = ({ open, onClose, campaignId, visualize = false }) => {
                                     </Box>
                                 </Box>
                                 <Box sx={{ width: "100%", marginTop: 10 }} className={classes.box}>
-                                    <Typography variant="h6">
-                                        {i18n.t("campaignModal.form.messageMedia")}
-                                    </Typography>
-                                    <Box style={{ display: "flex", alignItems: "center" }}>
-                                        <Field
-                                            as={Checkbox}
-                                            checked={mediaFirst}
-                                            disabled={visualize}
-                                            onChange={(e) => setMediaFirst(e.target.checked)}
-                                            inputProps={{ 'aria-label': 'primary checkbox' }}
-                                            name="mediaBeforeMessage"
-								        />
-                                        <InputLabel>
-                                            {i18n.t("campaignModal.form.sendMediaBefore")}
-                                        </InputLabel>
-                                    </Box>
-                                    <Box style={{ display: "flex", alignItems: "center", gap: 10, marginTop: 15}}>
-                                        {
-                                            campaignId && campaignForm.mediaUrl ? 
-                                                <>
-                                                <Button
-                                                    style={{ marginBottom: 10 }}
-                                                    onClick={() => handleDownload(false)}
-                                                    color="primary"
-                                                    disabled={isSubmitting}
-                                                    variant="contained"
-
-                                                >
-                                                    Download
-                                                </Button>
-                                                { !visualize && (
-                                                    <p>Ou</p>
-                                                )}
-                                                </>
-                                            : ""
-                                        }
-                                        { !visualize && (
-                                            <input
-                                                style={{ marginTop: 5 }}
-                                                onChange={handleOnMediaFileChange}
-                                                ref={inputFileRef}
-                                                type="file"
-                                                // accept=".mp3,.mp4,.mkv"                       
-                                            />
-                                        )}
-                                        
-                                        {mediaError ? <span style={{ color: "#ff5d32"}}>{i18n.t("campaignModal.errors.fileError")}</span> : ""}
-                                    </Box>
-                                    <Box className={classes.testContainer}>
-                                        <Typography variant="h6">
-                                            {i18n.t("campaignModal.form.previewMessage")}
-                                        </Typography>
-                                        <Box className={classes.previewBox}>
-                                            <FormControl component="fieldset" style={{ marginBottom: 5 }}>
-                                                <RadioGroup 
-                                                    row aria-label="message" 
-                                                    name="message" 
-                                                    value={selectedPreviewMessage} 
-                                                    onChange={(e) => setSelectedPreviewMessage(e.target.value)}
-                                                >
-                                                    { values?.message1 !== '' ? 
-                                                        <FormControlLabel 
-                                                            value="message1" 
-                                                            defaultChecked control={<Radio />} 
-                                                            label={`${i18n.t("campaignModal.message")} 1`} 
-                                                        /> : ""}
-                                                    { values?.message2 !== '' ? 
-                                                        <FormControlLabel 
-                                                            value="message2" 
-                                                            control={<Radio />} 
-                                                            label={`${i18n.t("campaignModal.message")} 2`} 
-                                                        /> : ""}
-                                                    { values?.message3 !== '' ? 
-                                                        <FormControlLabel 
-                                                            value="message3" 
-                                                            control={<Radio />} 
-                                                            label={`${i18n.t("campaignModal.message")} 3`} 
-                                                        /> : ""}
-                                                    { values?.message4 !== '' ? 
-                                                        <FormControlLabel 
-                                                            value="message4" 
-                                                            control={<Radio />} 
-                                                            label={`${i18n.t("campaignModal.message")} 4`} 
-                                                        /> : ""}
-                                                    { values?.message5 !== '' ? 
-                                                        <FormControlLabel 
-                                                            value="message5" 
-                                                            control={<Radio />} 
-                                                            label={`${i18n.t("campaignModal.message")} 5`} 
-                                                        /> : ""}
-                                                </RadioGroup>
-                                            </FormControl>
-                                        </Box>
-                                        <Button
-                                            onClick={()=>{setOpenPreview(true)}}
-                                            variant="outlined"
-                                        >
-                                            {i18n.t("campaignModal.buttons.preview")}
-                                        </Button>
-                                    </Box>
                                     <Dialog
                                         open={openPreview}
                                         onClose={() => {setOpenPreview(false)}}
@@ -955,12 +794,9 @@ const CampaignModal = ({ open, onClose, campaignId, visualize = false }) => {
                                         <DialogContent style={{ padding: 0, minHeight: "400px"}}>
                                             <Box className={classes.previewContainer}>
                                                 <WhatsAppLayout 
-                                                    message={values[selectedPreviewMessage]} 
-                                                    mediaLink={campaignForm.mediaUrl}
-                                                    mediaType={mediaFile ? mediaFile.type : campaignForm.mediaType} 
-                                                    media={mediaFile}
-                                                    mediaBefore={mediaFirst} 
-                                                    style={{ height: 20 }}
+                                                    messages={allMessagesInputs[`message${tabValue+1}Inputs`]}
+                                                    order={inputsOrder[`message${tabValue+1}InputOrder`]}
+                                                    
                                                 />
                                             </Box>
                                         </DialogContent>
@@ -1055,7 +891,7 @@ const CampaignModal = ({ open, onClose, campaignId, visualize = false }) => {
 							</DialogActions>
 						</Form>
                         </>
-					)}
+					)}}
 				</Formik>
 			</Dialog>
 	);

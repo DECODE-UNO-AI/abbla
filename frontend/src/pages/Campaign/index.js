@@ -9,6 +9,11 @@ import {
     TableCell, 
     TableBody,  
     TextField,
+    Dialog,
+    DialogTitle,
+    DialogContent,
+    DialogActions,
+    Button
 } from '@material-ui/core';
 import { makeStyles } from "@material-ui/core/styles";
 import EmailIcon from '@material-ui/icons/Email';
@@ -17,6 +22,7 @@ import CloseIcon from '@material-ui/icons/Close';
 import CampaignNumberCard from '../../components/CampaignNumberCard';
 import TableRowSkeleton from "../../components/TableRowSkeleton";
 import Title from "../../components/Title";
+import WhatsAppLayout from '../../components/WhatsappLayout';
 import toastError from '../../errors/toastError';
 import api from '../../services/api';
 import openSocket from "../../services/socket-io";
@@ -76,6 +82,20 @@ const useStyles = makeStyles(theme => ({
         alignItems: "center",
         justifyContent: "space-between",
         gap: 40
+    },
+    dialog: {
+        "& > div > div": {
+            maxWidth: 1200
+        }
+    },
+    previewContainer: {
+        height: "100%", 
+        minHeight: "400px", 
+        margin: 25,
+        "@media (max-width: 720px)": {
+            margin: 0,
+            marginTop: 20
+        }
     }
 }));
 
@@ -119,6 +139,8 @@ const Campaign = () => {
     const [contacts, dispatch] = useReducer(reducer, []);
     const [search, setSearch] = useState(null)
     const [isLoading, setLoading] = useState(false)
+    const [openPreview, setOpenPreview] = useState(false)
+    const [selectedContact, setSelectedContact] = useState({messageSent: "[]"})
 
     useEffect(() => {
         (async () => {
@@ -154,8 +176,42 @@ const Campaign = () => {
 
     const filterContacts = search ? contacts.filter((contact) => contact.number.includes(search)) : contacts;
     
+    const selectedContactMessages = selectedContact.messageSent ? JSON.parse(selectedContact.messageSent).map((mes, index) => {
+        if(mes.startsWith("file-")) {
+            return ({id: index, type: "file", value: mes})
+        }
+        return ({id: index, type: "text", value: mes})
+    }) : []
+
     return(
         <>
+        <Dialog
+            open={openPreview}
+            onClose={() => {setOpenPreview(false)}}
+            className={classes.dialog}
+            scroll="paper"
+        >   
+            <DialogTitle id="form-dialog-title">
+                {i18n.t("campaignModal.title.preview")+":"}
+            </DialogTitle>
+            <DialogContent style={{ padding: 0, minHeight: "400px"}}>
+                <Box className={classes.previewContainer}>
+                    <WhatsAppLayout 
+                        messages={selectedContactMessages}
+                        order={selectedContactMessages.map((i, index) => index)}
+                        
+                    />
+                </Box>
+            </DialogContent>
+            <DialogActions>
+                <Button
+                    onClick={()=>{setOpenPreview(false)}}
+                    variant="outlined"
+                >
+                    {i18n.t("campaignModal.buttons.close")}
+                </Button>
+            </DialogActions>
+        </Dialog>
         <Box className={classes.infoPaper}>
             <Box className={classes.Header}>
                 <Title>#{campaign?.id} {campaign?.name}</Title>
@@ -197,7 +253,7 @@ const Campaign = () => {
                             <TableCell align="center">
                                 {i18n.t("campaign.table.status")}
                             </TableCell>
-                            <TableCell align="left">
+                            <TableCell align="center">
                                 {i18n.t("campaign.table.messageSent")}
                             </TableCell>
                         </TableRow>
@@ -231,10 +287,19 @@ const Campaign = () => {
                                             </Box>
                                         </Box>
                                     </TableCell>
-                                    <TableCell align='left'>
-                                        <p style={{maxWidth: "40ch", overflow: "hidden", "textOverflow": "ellipsis", whiteSpace: "nowrap"}}>
-                                            {contact.messageSent || "-"}
-                                        </p>
+                                    <TableCell align='center'>
+                                        {   
+                                            contact.messageSent ? 
+                                            <Button 
+                                                type="button" 
+                                                onClick={() => {
+                                                    setOpenPreview(true)
+                                                    setSelectedContact(contact)
+                                                }}
+                                            >
+                                                VER
+                                            </Button> : ""   
+                                        }   
                                     </TableCell>
                                 </TableRow>
                             

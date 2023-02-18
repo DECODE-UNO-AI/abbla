@@ -24,16 +24,14 @@ interface CampaignData {
   inicialDate: string;
   startNow?: string;
   columnName: string;
-  mediaBeforeMessage?: string;
-  sendTime: string;
+  sendTime: string[];
   delay?: string;
-  message1: string;
-  message2?: string;
-  message3?: string;
-  message4?: string;
-  message5?: string;
-  contacts: string;
-  mediaUrl: string;
+  message1: string[];
+  message2?: string[];
+  message3?: string[];
+  message4?: string[];
+  message5?: string[];
+  contactsCsv: string;
   userId: string;
   whatsappId: string;
 }
@@ -49,21 +47,80 @@ export const store = async (req: Request, res: Response): Promise<Response> => {
   if (profile !== "admin") {
     throw new AppError("ERR_NO_PERMISSION", 403);
   }
-
-  const campaign: CampaignData = {
+  let campaign: CampaignData = {
     ...req.body,
+    message1: req.body.message1 ? JSON.parse(req.body.message1) : [],
+    message2: req.body.message2 ? JSON.parse(req.body.message2) : [],
+    message3: req.body.message3 ? JSON.parse(req.body.message3) : [],
+    message4: req.body.message4 ? JSON.parse(req.body.message4) : [],
+    message5: req.body.message5 ? JSON.parse(req.body.message5) : [],
+    sendTime: req.body.sendTime ? JSON.parse(req.body.sendTime) : [],
     userId: id
   };
+
+  if (
+    (!campaign.message1 || campaign.message1.length < 1) &&
+    (!campaign.message2 || campaign.message2.length < 1) &&
+    (!campaign.message3 || campaign.message3.length < 1) &&
+    (!campaign.message4 || campaign.message4.length < 1) &&
+    (!campaign.message5 || campaign.message5.length < 1)
+  ) {
+    throw new AppError("INVALID_MESSAGES");
+  }
+
+  medias.forEach(file => {
+    if (file.mimetype === "text/csv") return;
+    const message1 = campaign.message1?.map((str: string) => {
+      if (file.filename.includes(str.replace("file-", ""))) {
+        return `file-${file.filename}`;
+      }
+      return str;
+    });
+    const message2 = campaign.message2?.map((str: string) => {
+      if (file.filename.includes(str.replace("file-", ""))) {
+        return `file-${file.filename}`;
+      }
+      return str;
+    });
+    const message3 = campaign.message3?.map((str: string) => {
+      if (file.filename.includes(str.replace("file-", ""))) {
+        return `file-${file.filename}`;
+      }
+      return str;
+    });
+    const message4 = campaign.message4?.map((str: string) => {
+      if (file.filename.includes(str.replace("file-", ""))) {
+        return `file-${file.filename}`;
+      }
+      return str;
+    });
+    const message5 = campaign.message5?.map((str: string) => {
+      if (file.filename.includes(str.replace("file-", ""))) {
+        return `file-${file.filename}`;
+      }
+      return str;
+    });
+
+    campaign = {
+      ...campaign,
+      message1,
+      message2,
+      message3,
+      message4,
+      message5
+    };
+  });
+
   const schema = Yup.object().shape({
     name: Yup.string().required(),
     inicialDate: Yup.string().required(),
     columnName: Yup.string().required(),
-    sendTime: Yup.string().required(),
-    message1: Yup.string().required(),
-    message2: Yup.string(),
-    message3: Yup.string(),
-    message4: Yup.string(),
-    message5: Yup.string(),
+    sendTime: Yup.array().required(),
+    message1: Yup.array(),
+    message2: Yup.array(),
+    message3: Yup.array(),
+    message4: Yup.array(),
+    message5: Yup.array(),
     userId: Yup.string().required(),
     whatsappId: Yup.string().required()
   });
@@ -144,34 +201,94 @@ export const update = async (
   if (profile !== "admin") {
     throw new AppError("ERR_NO_PERMISSION", 403);
   }
-  const campaignData: CampaignData = {
+
+  let campaign: CampaignData = {
     ...req.body,
+    message1: req.body.message1 ? JSON.parse(req.body.message1) : [],
+    message2: req.body.message2 ? JSON.parse(req.body.message2) : [],
+    message3: req.body.message3 ? JSON.parse(req.body.message3) : [],
+    message4: req.body.message4 ? JSON.parse(req.body.message4) : [],
+    message5: req.body.message5 ? JSON.parse(req.body.message5) : [],
+    sendTime: req.body.sendTime ? JSON.parse(req.body.sendTime) : [],
     userId: id
   };
+
+  if (
+    (!campaign.message1 || campaign.message1.length < 1) &&
+    (!campaign.message2 || campaign.message2.length < 1) &&
+    (!campaign.message3 || campaign.message3.length < 1) &&
+    (!campaign.message4 || campaign.message4.length < 1) &&
+    (!campaign.message5 || campaign.message5.length < 1)
+  ) {
+    throw new AppError("INVALID_MESSAGES");
+  }
+
+  medias.forEach(file => {
+    if (file.mimetype === "text/csv") return;
+    const message1 = campaign.message1?.map((str: string) => {
+      if (file.filename.includes(str.replace("file-", ""))) {
+        return `file-${file.filename}`;
+      }
+      return str;
+    });
+    const message2 = campaign.message2?.map((str: string) => {
+      if (file.filename.includes(str.replace("file-", ""))) {
+        return `file-${file.filename}`;
+      }
+      return str;
+    });
+    const message3 = campaign.message3?.map((str: string) => {
+      if (file.filename.includes(str.replace("file-", ""))) {
+        return `file-${file.filename}`;
+      }
+      return str;
+    });
+    const message4 = campaign.message4?.map((str: string) => {
+      if (file.filename.includes(str.replace("file-", ""))) {
+        return `file-${file.filename}`;
+      }
+      return str;
+    });
+    const message5 = campaign.message5?.map((str: string) => {
+      if (file.filename.includes(str.replace("file-", ""))) {
+        return `file-${file.filename}`;
+      }
+      return str;
+    });
+
+    campaign = {
+      ...campaign,
+      message1,
+      message2,
+      message3,
+      message4,
+      message5
+    };
+  });
 
   const schema = Yup.object().shape({
     name: Yup.string().required(),
     inicialDate: Yup.string().required(),
     columnName: Yup.string().required(),
-    sendTime: Yup.string().required(),
-    message1: Yup.string().required(),
-    message2: Yup.string(),
-    message3: Yup.string(),
-    message4: Yup.string(),
-    message5: Yup.string(),
+    sendTime: Yup.array().required(),
+    message1: Yup.array(),
+    message2: Yup.array(),
+    message3: Yup.array(),
+    message4: Yup.array(),
+    message5: Yup.array(),
     userId: Yup.string().required(),
     whatsappId: Yup.string().required()
   });
 
   try {
-    await schema.validate(campaignData);
+    await schema.validate(campaign);
   } catch (error) {
     throw new AppError(error.message);
   }
 
   const { campaignId } = req.params;
   const campaignObj = await UpdateCampaignService({
-    campaignData,
+    campaignData: campaign,
     medias,
     campaignId
   });
@@ -199,19 +316,20 @@ export const testCampaign = async (
   }
   const schema = Yup.object().shape({
     number: Yup.string().required(),
-    message1: Yup.string().required(),
-    whatsappId: Yup.string().required(),
-    mediaBeforeMessage: Yup.string().required()
+    message: Yup.array().required(),
+    whatsappId: Yup.string().required()
   });
-
   const campaignData: {
-    mediaUrl?: string;
-    mediaBeforeMessage?: string;
-    message1: string;
+    message: string[];
     number: string;
     whatsappId: string;
-  } = req.body;
-  const mediaFile = req.file || null;
+  } = {
+    message: req.body.message ? JSON.parse(req.body.message) : [],
+    number: req.body.number,
+    whatsappId: req.body.whatsappId
+  };
+
+  const medias = req.files as Express.Multer.File[];
 
   try {
     await schema.validate(campaignData);
@@ -219,7 +337,7 @@ export const testCampaign = async (
     throw new AppError(error.message);
   }
 
-  await TestCampaignService({ campaignData, mediaFile });
+  await TestCampaignService({ campaignData, medias });
 
   return res.status(200).json({ message: "message sent" });
 };
@@ -347,26 +465,85 @@ export const repeatCampaign = async (
   res: Response
 ): Promise<Response> => {
   const { id, profile } = req.user;
-  const medias = req.files as Express.Multer.File[];
   const { campaignId } = req.params;
+  const medias = req.files as Express.Multer.File[];
   if (profile !== "admin") {
     throw new AppError("ERR_NO_PERMISSION", 403);
   }
-  const campaignData: CampaignData = {
+  let campaignData: CampaignData = {
     ...req.body,
+    message1: req.body.message1 ? JSON.parse(req.body.message1) : [],
+    message2: req.body.message2 ? JSON.parse(req.body.message2) : [],
+    message3: req.body.message3 ? JSON.parse(req.body.message3) : [],
+    message4: req.body.message4 ? JSON.parse(req.body.message4) : [],
+    message5: req.body.message5 ? JSON.parse(req.body.message5) : [],
+    sendTime: req.body.sendTime ? JSON.parse(req.body.sendTime) : [],
     userId: id
   };
+
+  if (
+    (!campaignData.message1 || campaignData.message1.length < 1) &&
+    (!campaignData.message2 || campaignData.message2.length < 1) &&
+    (!campaignData.message3 || campaignData.message3.length < 1) &&
+    (!campaignData.message4 || campaignData.message4.length < 1) &&
+    (!campaignData.message5 || campaignData.message5.length < 1)
+  ) {
+    throw new AppError("INVALID_MESSAGES");
+  }
+
+  medias.forEach(file => {
+    if (file.mimetype === "text/csv") return;
+    const message1 = campaignData.message1?.map((str: string) => {
+      if (file.filename.includes(str.replace("file-", ""))) {
+        return `file-${file.filename}`;
+      }
+      return str;
+    });
+    const message2 = campaignData.message2?.map((str: string) => {
+      if (file.filename.includes(str.replace("file-", ""))) {
+        return `file-${file.filename}`;
+      }
+      return str;
+    });
+    const message3 = campaignData.message3?.map((str: string) => {
+      if (file.filename.includes(str.replace("file-", ""))) {
+        return `file-${file.filename}`;
+      }
+      return str;
+    });
+    const message4 = campaignData.message4?.map((str: string) => {
+      if (file.filename.includes(str.replace("file-", ""))) {
+        return `file-${file.filename}`;
+      }
+      return str;
+    });
+    const message5 = campaignData.message5?.map((str: string) => {
+      if (file.filename.includes(str.replace("file-", ""))) {
+        return `file-${file.filename}`;
+      }
+      return str;
+    });
+
+    campaignData = {
+      ...campaignData,
+      message1,
+      message2,
+      message3,
+      message4,
+      message5
+    };
+  });
 
   const schema = Yup.object().shape({
     name: Yup.string().required(),
     inicialDate: Yup.string().required(),
     columnName: Yup.string().required(),
-    sendTime: Yup.string().required(),
-    message1: Yup.string().required(),
-    message2: Yup.string(),
-    message3: Yup.string(),
-    message4: Yup.string(),
-    message5: Yup.string(),
+    sendTime: Yup.array().required(),
+    message1: Yup.array(),
+    message2: Yup.array(),
+    message3: Yup.array(),
+    message4: Yup.array(),
+    message5: Yup.array(),
     userId: Yup.string().required(),
     whatsappId: Yup.string().required()
   });

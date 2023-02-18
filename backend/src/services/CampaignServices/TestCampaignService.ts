@@ -1,27 +1,30 @@
+/* eslint-disable no-await-in-loop */
 /* eslint-disable no-underscore-dangle */
 import { join } from "path";
 import { MessageMedia } from "whatsapp-web.js";
 import AppError from "../../errors/AppError";
 import { getWbot } from "../../libs/wbot";
+import { logger } from "../../utils/logger";
 
 interface CampaignData {
   campaignData: {
-    mediaUrl?: string;
-    mediaBeforeMessage?: string;
-    message1: string;
+    message: string[];
     number: string;
     whatsappId: string;
   };
-  mediaFile: Express.Multer.File | null;
+  medias: Express.Multer.File[];
 }
+
+const setDelay = async (delay: number) => {
+  await new Promise(resolve => setTimeout(resolve, delay));
+};
 
 const TestCampaignService = async ({
   campaignData,
-  mediaFile
+  medias
 }: CampaignData): Promise<void> => {
-  const { message1, mediaBeforeMessage, number } = campaignData;
-  const whatsapp = getWbot(+campaignData.whatsappId);
-
+  const { message, number, whatsappId } = campaignData;
+  const whatsapp = getWbot(+whatsappId);
   const whatsappState = await whatsapp.getState();
   if (!whatsapp || whatsappState !== "CONNECTED") {
     throw new AppError("ERR_WAPP_NOT_INITIALIZED", 400);
@@ -32,6 +35,7 @@ const TestCampaignService = async ({
   if (!contactNumber.startsWith("55")) {
     contactNumber = `55${contactNumber}`;
   }
+
   try {
     whatsNumber = await whatsapp.getNumberId(`${contactNumber}@c.us`);
     if (!whatsNumber) {
@@ -44,51 +48,54 @@ const TestCampaignService = async ({
     throw new AppError("ERR_NUMBER_NOT_FOUND", 404);
   }
 
-  // getting media
-  let file = null;
-  if (mediaFile) {
-    file = new MessageMedia(
-      mediaFile.mimetype,
-      mediaFile.buffer.toString("base64")
-    );
-  } else if (campaignData.mediaUrl && campaignData.mediaUrl !== "null") {
-    // hotfix
-    const fileName = campaignData.mediaUrl.split("/")[4];
-    const customPath = join(__dirname, "..", "..", "..", "public", fileName);
-    file = MessageMedia.fromFilePath(customPath);
-  }
   try {
-    if (file) {
-      if (mediaBeforeMessage) {
-        await whatsapp.sendMessage(
-          whatsNumber._serialized,
-          "######## ATENÇÃO ########\n######### ABBLA #########\n\nA seguir será apresentada a mensagem de teste da sua campanha\n\n####### CAMPANHA #######"
-        );
-        await whatsapp.sendMessage(whatsNumber._serialized, file, {
-          sendAudioAsVoice: true,
-          sendMediaAsDocument: false
-        });
-        await whatsapp.sendMessage(whatsNumber._serialized, message1);
-      } else {
-        await whatsapp.sendMessage(
-          whatsNumber._serialized,
-          "######## ATENÇÃO ########\n######### ABBLA #########\n\nA seguir será apresentada a mensagem de teste da sua campanha\n\n####### CAMPANHA #######"
-        );
-        await whatsapp.sendMessage(whatsNumber._serialized, message1);
-        await whatsapp.sendMessage(whatsNumber._serialized, file, {
-          sendAudioAsVoice: true,
-          sendMediaAsDocument: false
-        });
-      }
-    } else {
-      await whatsapp.sendMessage(
-        whatsNumber._serialized,
-        "######## ATENÇÃO ########\n######### ABBLA #########\nA seguir será apresentada a mensagem de teste da sua campanha\n####### CAMPANHA #######"
-      );
-      await whatsapp.sendMessage(whatsNumber._serialized, message1);
-    }
-  } catch (err) {
+    await whatsapp.sendMessage(
+      whatsNumber._serialized,
+      "------------------------------------------------------- \n MENSAGEM DE TESTE \n ABBLA - CAMPANHA \n -------------------------------------------------------"
+    );
+  } catch {
     throw new AppError("INTERNAL_ERROR", 500);
+  }
+  for (let i = 0; i < message.length; i += 1) {
+    await (async () => {
+      const currentMessage = message[i];
+      try {
+        if (currentMessage.startsWith("file-")) {
+          let messageMedia;
+          const media = medias.find(
+            file => file.originalname === currentMessage.replace("file-", "")
+          );
+          if (media) {
+            messageMedia = new MessageMedia(
+              media.mimetype,
+              media.buffer.toString("base64")
+            );
+          } else {
+            messageMedia = MessageMedia.fromFilePath(
+              join(
+                __dirname,
+                "..",
+                "..",
+                "..",
+                "public",
+                currentMessage.replace("file-", "")
+              )
+            );
+          }
+          if (!messageMedia) return;
+          await whatsapp.sendMessage(whatsNumber._serialized, messageMedia, {
+            sendAudioAsVoice: true,
+            sendMediaAsDocument: false
+          });
+        } else {
+          await whatsapp.sendMessage(whatsNumber._serialized, currentMessage);
+        }
+      } catch (err) {
+        logger.error(err);
+        throw new AppError("INTERNAL_ERROR", 500);
+      }
+      await setDelay((Math.floor(Math.random() * 3) + 3) * 1000);
+    })();
   }
 };
 

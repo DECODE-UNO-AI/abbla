@@ -73,7 +73,6 @@ const CustomToolTip = ({ title, content, children }) => {
 	);
 };
 
-
 const useStyles = makeStyles(theme => ({
 	mainPaper: {
 		flex: 1,

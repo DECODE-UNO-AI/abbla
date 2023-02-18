@@ -317,13 +317,15 @@ const messages = {
           csvMedia: "Archivo .csv del contactos",
           messages: "Mensaje de texto",
           variables: "Variables disponibles: (usar $nome-da-variável)",
-          tab: "Texto",
+          tab: "Mensaje",
           columnName: "Columna telefonica",
           sendMediaBefore: "Enviar archivo antes",
           testNumberPlaceholder: "Número con DDD (solo dígitos, sin puntuación)",
           testMessage: "Mensaje de prueba",
           testButton: "Mandar",
           previewMessage: "Mensaje de vista previa",
+          addText: "Texto",
+          addFile: "Archivo"
         },
         errors: {
           tooShort: "Muy corto",
