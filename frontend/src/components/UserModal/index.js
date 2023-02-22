@@ -86,7 +86,7 @@ const UserSchema = Yup.object().shape({
 		.required("Required"),
 	password: Yup.string().min(5, "Too Short!").max(50, "Too Long!"),
 	email: Yup.string().email("Invalid email").required("Required"),
-	whatsappNumber: Yup.string().min(8, "Too Short!").max(50, "Too Long!").matches(/^\d+$/, i18n.t("userModal.form.numberFormatError")),
+	whatsappNumber: Yup.string().min(8, "Too Short!").max(50, "Too Long!").matches(/^\d+$/, i18n.t("userModal.form.numberFormatError")).nullable(),
 });
 
 const UserModal = ({ open, onClose, userId }) => {
