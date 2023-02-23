@@ -1,7 +1,7 @@
 import React from 'react';
 import { Field } from "formik";
 import { sortableContainer, sortableElement } from 'react-sortable-hoc';
-import { Reorder, Close, CloudUpload } from "@material-ui/icons";
+import { Reorder, Close, CloudUpload, Reddit } from "@material-ui/icons";
 import {arrayMoveImmutable} from 'array-move';
 import { TextField, Box, makeStyles, Button, InputLabel } from '@material-ui/core';
 import { i18n } from "../../translate/i18n";
@@ -16,12 +16,12 @@ const useStyles = makeStyles(theme => ({
     },
     iconContainer: {
         position: "absolute", 
-        top: 5, 
+        top: 10, 
         right: 5,
         display: "flex", 
         alignItems: "center", 
-        justifyContent: "center",
-        width: 45,
+        justifyContent: "right",
+        width: 75,
         gap: 5
     },
     icon: { 
@@ -32,7 +32,11 @@ const useStyles = makeStyles(theme => ({
         display: "flex", 
         alignItems: "center", 
         justifyContent: "center",
-        position: "relative"
+        position: "relative",
+
+        "&:hover": {
+            color: "#f50057"
+        }
     },
     fileContainer: {
         width: "100%",
@@ -73,13 +77,23 @@ const useStyles = makeStyles(theme => ({
     }
 }));
 
-const SortableItem = sortableElement(({ value, messageIndex, setMessageInputs, messageInputs, handleOnDeleteInput, handleDownload, visualize }) => {
+const SortableItem = sortableElement(({ value, messageIndex, setMessageInputs, messageInputs, handleOnDeleteInput, handleDownload, visualize, setOpenIAModal, setModalInput }) => {
     const classes = useStyles();
     const inputIndex = messageInputs[`message${messageIndex}Inputs`].findIndex(input => input.id === value.id)
     const input = messageInputs[`message${messageIndex}Inputs`][inputIndex] || null
     return (
       <Box className={classes.inputContainer}>
         <Box className={classes.iconContainer} style={{ display: visualize ? "none" : ""}}>
+            {
+                value.type === "text" ? 
+                    <Box className={classes.icon} style={{ cursor: "pointer", zIndex: 999999999}} >
+                        <Reddit />
+                        <button className={classes.closeButton} onClick={() => {
+                            setOpenIAModal(true)
+                            setModalInput({ messageIndex, inputIndex})
+                        }}></button>
+                    </Box> : ""
+            }
             <Box className={classes.icon}>
                 <Reorder />
             </Box>
@@ -92,7 +106,7 @@ const SortableItem = sortableElement(({ value, messageIndex, setMessageInputs, m
             <Field
                 as={TextField}
                 disabled={visualize}
-                style={{ width: "100%", padding: 0, cursor: "move"}}
+                style={{ width: "100%", padding: 0, paddingTop: 8, cursor: "move"}}
                 labelId="message2-label"
                 id={`message${messageIndex}-${value.id}`}
                 variant="outlined"
@@ -171,7 +185,7 @@ const SortableContainer = sortableContainer(({ children }) => {
   return <div>{children}</div>;
 });
 
-const DynamicInputs = ({ messageInputs, setMessageInputs, messageIndex, inputOrder, setInputOrder, setOpenPreview, handleDownload, visualize}) => {
+const DynamicInputs = ({ messageInputs, setMessageInputs, messageIndex, inputOrder, setInputOrder, setOpenPreview, handleDownload, visualize, setOpenIAModal, setModalInput }) => {
 
     const classes = useStyles();
 
@@ -220,6 +234,8 @@ const DynamicInputs = ({ messageInputs, setMessageInputs, messageIndex, inputOrd
                                 handleDownload={handleDownload}
                                 distance={400}
                                 visualize={visualize}
+                                setOpenIAModal={setOpenIAModal}
+                                setModalInput={setModalInput}
                             />
                         </>
                     );

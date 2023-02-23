@@ -45,7 +45,9 @@ const MessagesTabs = (
         allMessagesInputs,
         setOpenPreview,
         handleDownload,
-        visualize
+        visualize,
+        setOpenIAModal,
+        setModalInput
     }
 ) => {
 
@@ -93,6 +95,8 @@ const MessagesTabs = (
                         setOpenPreview={setOpenPreview}
                         handleDownload={handleDownload}
                         visualize={visualize}
+                        setOpenIAModal={setOpenIAModal}
+                        setModalInput={setModalInput}
                     /> 
                 </Box>
             </TabPanel>
@@ -111,6 +115,8 @@ const MessagesTabs = (
                         setOpenPreview={setOpenPreview}
                         handleDownload={handleDownload}
                         visualize={visualize}
+                        setOpenIAModal={setOpenIAModal}
+                        setModalInput={setModalInput}
                     /> 
                 </Box>
             </TabPanel>
@@ -129,6 +135,8 @@ const MessagesTabs = (
                         setOpenPreview={setOpenPreview}
                         handleDownload={handleDownload}
                         visualize={visualize}
+                        setOpenIAModal={setOpenIAModal}
+                        setModalInput={setModalInput}
                     /> 
                 </Box>
             </TabPanel>
@@ -147,6 +155,8 @@ const MessagesTabs = (
                         setOpenPreview={setOpenPreview}
                         handleDownload={handleDownload}
                         visualize={visualize}
+                        setOpenIAModal={setOpenIAModal}
+                        setModalInput={setModalInput}
                     /> 
                 </Box>
             </TabPanel>
@@ -165,6 +175,8 @@ const MessagesTabs = (
                         setOpenPreview={setOpenPreview}
                         handleDownload={handleDownload}
                         visualize={visualize}
+                        setOpenIAModal={setOpenIAModal}
+                        setModalInput={setModalInput}
                     /> 
                 </Box>
             </TabPanel>
