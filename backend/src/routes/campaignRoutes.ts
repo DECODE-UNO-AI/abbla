@@ -22,6 +22,12 @@ campaignRoutes.post(
 );
 
 campaignRoutes.post(
+  "/campaigns/getsugestion",
+  isAuth,
+  CampaignController.sugestionMessage
+);
+
+campaignRoutes.post(
   "/campaigns/repeat/:campaignId",
   isAuth,
   upload.array("medias"),

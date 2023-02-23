@@ -1,6 +1,8 @@
+/* eslint-disable import/no-extraneous-dependencies */
 import * as Yup from "yup";
 import { Request, Response } from "express";
 import AppError from "../errors/AppError";
+import openai from "../libs/chatgpt";
 
 import CreateCampaignService from "../services/CampaignServices/CreateCampaignService";
 import ListCampaignService from "../services/CampaignServices/ListCampaignService";
@@ -567,4 +569,32 @@ export const repeatCampaign = async (
     campaign
   });
   return res.status(200).json(campaign);
+};
+
+export const sugestionMessage = async (
+  req: Request,
+  res: Response
+): Promise<Response> => {
+  const { prompt }: { prompt: string } = req.body;
+  const { profile } = req.user;
+
+  if (!prompt) {
+    throw new AppError("ERR_NO_PROMP", 403);
+  }
+
+  if (profile !== "admin") {
+    throw new AppError("ERR_NO_PERMISSION", 401);
+  }
+
+  try {
+    const response = await openai.createCompletion({
+      model: "text-davinci-003",
+      prompt,
+      max_tokens: 500,
+      temperature: 0
+    });
+    return res.status(200).json({ message: response.data.choices[0].text });
+  } catch (err) {
+    throw new AppError("ERR_INTERNAL_ERROR", 500);
+  }
 };

@@ -27,6 +27,7 @@ import {
 } from '@material-ui/core';
 import NearMeIcon from '@material-ui/icons/NearMe';
 import SaveIcon from '@material-ui/icons/Save';
+import Reddit from '@material-ui/icons/Reddit';
 import { green } from "@material-ui/core/colors";
 
 
@@ -145,6 +146,24 @@ const useStyles = makeStyles(theme => ({
             margin: 0,
             marginTop: 20
         }
+    },
+    IAContainer: {
+        height: "100%", 
+        minHeight: "400px",
+        maxWidth: "600px",
+        margin: 25,
+        display: "flex",
+        flexDirection: "column",
+        "@media (max-width: 720px)": {
+            margin: 0,
+            marginTop: 20
+        }
+    },
+    IADialog: {
+        minWidth: 600,
+        "@media (max-width: 720px)": {
+            minWidth: "unset"
+        }
     }
 }));
 
@@ -240,6 +259,11 @@ const CampaignModal = ({ open, onClose, campaignId, visualize = false }) => {
     const [isRepeatModel, setIsRepeatModel] = useState(false)
     const [openPreview, setOpenPreview] = useState(false)
     const [confirmationModalOpen, setConfirmationModalOpen] = useState(false)
+    const [openIAModal, setOpenIAModal] = useState(false)
+    const [prompt, setPrompt] = useState("")
+    const [IAModalInput, setModalInput] = useState(null)
+    const [IAMessage, setIAMessage] = useState("")
+    const [isGeneratingIAMessage, setIsGeneratingIAMessage] = useState(false)
     const [inputsOrder, setInputsOrder] = useState({
         message1InputOrder: [],
         message2InputOrder: [],
@@ -521,6 +545,31 @@ const CampaignModal = ({ open, onClose, campaignId, visualize = false }) => {
         }
     }
 
+    const handleSetIAMessage = () => {
+        const { messageIndex, inputIndex } = IAModalInput
+        const input = allMessagesInputs[`message${messageIndex}Inputs`][inputIndex]
+        setAllMessagesInputs(i => {
+            i[`message${messageIndex}Inputs`][inputIndex] = {...input, value: IAMessage.trim()}
+            return ({...i});
+        })
+        setOpenIAModal(false)
+        setIAMessage(null)
+        setModalInput(null)
+    }
+    
+    const handleGenerateIAMessage = async () => {
+        if(!prompt) return toast.error("A mensagem é obrigatória")
+        try {
+            setIsGeneratingIAMessage(true)
+            const { data } = await api.post("/campaigns/getsugestion", { prompt })
+            setIAMessage(data.message)
+        } catch (err) {
+            toastError(err)
+        } finally {
+            setIsGeneratingIAMessage(false)
+        }
+    }
+
     const handleOnModalClose = () => {
 		setCapaignForm(initialState);
         setSendTime(initialState.sendTime)
@@ -772,6 +821,8 @@ const CampaignModal = ({ open, onClose, campaignId, visualize = false }) => {
                                     setOpenPreview={setOpenPreview}
                                     handleDownload={handleDownload}
                                     visualize={visualize}
+                                    setOpenIAModal={setOpenIAModal}
+                                    setModalInput={setModalInput}
                                 />
                                 <Box className={classes.variableContent}>
                                     <InputLabel style={{ display: "flex", alignItems: "center", marginRight: 2}}>{i18n.t("campaignModal.form.variables")}</InputLabel>
@@ -782,6 +833,125 @@ const CampaignModal = ({ open, onClose, campaignId, visualize = false }) => {
                                     </Box>
                                 </Box>
                                 <Box sx={{ width: "100%", marginTop: 10 }} className={classes.box}>
+                                    <Dialog
+                                        open={openIAModal}
+                                        onClose={() => {setOpenIAModal(false)}}
+                                        className={classes.dialog}
+                                        scroll="paper"
+                                    >   
+                                        <DialogTitle id="form-dialog-title">
+                                            Sugestões:
+                                        </DialogTitle>
+                                        <DialogContent className={classes.IADialog} style={{ padding: 0, minHeight: "500px" }}>
+                                            <Box className={classes.IAContainer}>
+                                                <Box>
+                                                    <TextField
+                                                        variant="outlined"
+                                                        margin="dense"
+                                                        style={{ width : "100%"}}
+                                                        className={classes.textField}
+                                                        onChange={(e) => setPrompt(e.target.value)}
+                                                        multiline
+                                                        minRows={3}
+                                                        value={prompt}
+                                                        placeholder="Exemplo: Faça uma campanha de Whatsapp oferecendo um serviço de consultoria bancária."
+                                                    />
+                                                    <Button
+                                                        onClick={()=>{handleGenerateIAMessage()}}
+                                                        color="primary"
+                                                        variant="contained"
+                                                        fullWidth
+                                                        style={{ marginTop: 5 }}
+                                                        disabled={isGeneratingIAMessage}
+                                                    >
+                                                        Gerar
+                                                    </Button>
+                                                </Box>
+                                                {
+                                                    IAMessage ? 
+                                                    <Box style={{ width: "100%", height: "100%", display: "flex", alignItems: "center" }}>
+                                                        <div style={{ 
+                                                            marginTop: 20, 
+                                                            width: "100%",
+                                                            whiteSpace: "pre-wrap", 
+                                                            overflowWrap: "break-word", 
+                                                            fontSize: 16,
+                                                            padding: 20,
+                                                            border: "1px solid #f1f1f1"
+                                                        }}>
+                                                            {IAMessage.trimStart()}
+                                                        </div>
+                                                    </Box> : ""
+                                                    
+                                                }
+                                                {
+                                                    !IAMessage && !isGeneratingIAMessage ?
+                                                    <Box style={{ 
+                                                        width: "100%", 
+                                                        height: "100%", 
+                                                        display: "flex", 
+                                                        alignItems: "center", 
+                                                        justifyContent: "center", 
+                                                        color: "#F1F1F1",
+                                                        position: "relative",
+                                                        top: 120
+                                                    }}>
+                                                        <Reddit style={{ fontSize: 100 }}/>
+                                                    </Box> : ""
+                                                }
+                                                {
+                                                    isGeneratingIAMessage ? 
+                                                        <Box style={{ 
+                                                            width: "100%", 
+                                                            height: "100%", 
+                                                            display: "flex", 
+                                                            alignItems: "center", 
+                                                            justifyContent: "center", 
+                                                            color: "#F1F1F1",
+                                                            position: "relative",
+                                                            top: 120
+                                                        }}>
+                                                            <CircularProgress
+                                                            size={24}
+                                                            className={classes.buttonProgress}
+                                                            />
+                                                        </Box> : ""
+                                                }
+                                                
+                                            </Box>
+                                        </DialogContent>
+                                        <DialogActions>
+                                            <Button
+                                                onClick={()=>{
+                                                    setOpenIAModal(false)
+                                                    setIAMessage(null)
+                                                    setModalInput(null)
+                                                }}
+                                                variant="outlined"
+                                            >
+                                                {i18n.t("campaignModal.buttons.close")}
+                                            </Button>
+                                            <Button
+                                                onClick={()=>{
+                                                    setIAMessage(null)
+                                                    setPrompt("")
+                                                }}
+                                                color="secondaty"
+                                                variant="outlined"
+                                                disabled={!IAMessage || isGeneratingIAMessage}
+                                            >
+                                                LIMPAR
+                                            </Button>
+                                            <Button
+                                                onClick={()=>{handleSetIAMessage()}}
+                                                color="primary"
+                                                variant="contained"
+                                                disabled={!IAMessage || isGeneratingIAMessage}
+                                            >
+                                                USAR
+                                            </Button>
+                                        </DialogActions>
+                                    </Dialog>
                                     <Dialog
                                         open={openPreview}
                                         onClose={() => {setOpenPreview(false)}}
