@@ -229,20 +229,14 @@ const ListTicketsServiceAdmin = async ({
       whereCondition = {
         ...whereCondition,
         createdAt: {
-          [Op.between]: [
-            +startOfDay(parseISO(betweenDate[0])),
-            +endOfDay(parseISO(betweenDate[1]))
-          ]
+          [Op.between]: [+parseISO(betweenDate[0]), +parseISO(betweenDate[1])]
         }
       };
     } else {
       whereCondition = {
         ...whereCondition,
         updatedAt: {
-          [Op.between]: [
-            +startOfDay(parseISO(betweenDate[0])),
-            +endOfDay(parseISO(betweenDate[1]))
-          ]
+          [Op.between]: [+parseISO(betweenDate[0]), +parseISO(betweenDate[1])]
         }
       };
     }
