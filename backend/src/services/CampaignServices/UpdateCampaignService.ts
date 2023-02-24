@@ -78,7 +78,9 @@ const UpdateCampaignService = async ({
   }
 
   if (
-    ["paused, timeout, processing", "finished"].includes(campaignModel.status)
+    ["paused", "timeout", "processing", "finished"].includes(
+      campaignModel.status
+    )
   ) {
     throw new AppError(
       "ERR_NO_UPDATE_CAMPAIGN_NOT_IN_CANCELED_PROCESSING",
