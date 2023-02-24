@@ -606,6 +606,8 @@ const CampaignModal = ({ open, onClose, campaignId, visualize = false }) => {
 						setTimeout(async () => {
                             if (campaignId && !isRepeatModel) {
                                 handleOnSave(values)
+                            } else if(visualize) {
+                                return
                             } else {
                                 setConfirmationModalOpen(true);
                             }
@@ -699,6 +701,9 @@ const CampaignModal = ({ open, onClose, campaignId, visualize = false }) => {
                                         margin="dense"
                                         style={{ width : "100%"}}
                                         className={classes.textField}
+                                        onKeyDown={(e) => {
+                                            if (e.key === 'Enter') e.preventDefault()
+                                        }}
                                     />
                                 </Box>
                                 <Box className={classes.multipleInput}>
@@ -834,7 +839,7 @@ const CampaignModal = ({ open, onClose, campaignId, visualize = false }) => {
                                 </Box>
                                 <Box sx={{ width: "100%", marginTop: 10 }} className={classes.box}>
                                     <Dialog
-                                        open={openIAModal}
+                                        open={openIAModal && !visualize}
                                         onClose={() => {setOpenIAModal(false)}}
                                         className={classes.dialog}
                                         scroll="paper"
@@ -992,6 +997,9 @@ const CampaignModal = ({ open, onClose, campaignId, visualize = false }) => {
                                                 size="small"
                                                 style={{ width: "100%" }}
                                                 onChange={(e) => setTestNumber(e.target.value)}
+                                                onKeyDown={(e) => {
+                                                    if (e.key === 'Enter') e.preventDefault()
+                                                }}
                                             />
                                             <Button
                                                 color="primary"
