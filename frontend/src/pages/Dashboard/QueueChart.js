@@ -10,7 +10,7 @@ import {
     Legend,
     Tooltip
 } from "recharts"
-import { DatePicker, Space, Radio } from 'antd'
+import { DatePicker, Space, Radio, Select } from 'antd'
 import { 
     InputLabel, 
     Box, 
@@ -20,7 +20,6 @@ import {
     Button 
 } from "@material-ui/core"
 import { OpenWith } from "@material-ui/icons"
-import { Select } from 'antd';
 import BackdropLoading from '../../components/BackdropLoading'
 import dayjs from 'dayjs';
 import useTickets from "../../hooks/useTickets";
@@ -61,13 +60,11 @@ const QueueChart = ({ userQueues }) => {
     }, [tickets, filterQueues])
 
     const handleOnQueuesChange = (e) => {
-        console.log(e)
         if (!e || e.length === 0 ) {
             setFilterQueues(userQueues)
             return
         }
         const queues = userQueues.filter(q => e.includes(q.id))
-        console.log(queues)
         setFilterQueues(queues)
     }
 	return (
