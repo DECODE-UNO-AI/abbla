@@ -3,6 +3,7 @@ import { Client, LocalAuth, DefaultOptions } from "whatsapp-web.js";
 import path from "path";
 import { rm } from "fs/promises";
 import { getIO } from "./socket";
+import Settings from "../models/Setting";
 import Whatsapp from "../models/Whatsapp";
 import AppError from "../errors/AppError";
 import { logger } from "../utils/logger";
@@ -17,9 +18,15 @@ const sessions: Session[] = [];
 const syncUnreadMessages = async (wbot: Session) => {
   const chats = await wbot.getChats();
 
+  const Settingdb = await Settings.findOne({
+    where: { key: "CheckMsgIsGroup" }
+  });
   /* eslint-disable no-restricted-syntax */
   /* eslint-disable no-await-in-loop */
   for (const chat of chats) {
+    if (Settingdb?.value === "enabled" && chat.isGroup) {
+      return;
+    }
     if (chat.unreadCount > 0) {
       const unreadMessages = await chat.fetchMessages({
         limit: chat.unreadCount
