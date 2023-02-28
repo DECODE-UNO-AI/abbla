@@ -10,7 +10,7 @@ import {
     Legend,
     Tooltip
 } from "recharts"
-import { DatePicker, Space, Radio } from 'antd'
+import { DatePicker, Space, Radio, Select } from 'antd'
 import { 
     InputLabel, 
     Box, 
@@ -36,29 +36,37 @@ const QueueChart = ({ userQueues }) => {
     const [queues, setQueues] = useState(
         userQueues.map((e) => ({id: e.id, name: e.name, tickets: 0}))
     )
+    const [filterQueues, setFilterQueues] = useState(userQueues)
     const [date, setDate] = useState([dayjs(dayjs().format("YYYY/MM/DD"), "YYYY/MM/DD"), dayjs(dayjs().format("YYYY/MM/DD"), "YYYY/MM/DD")])
     const [dateOrder, setDateOrder] = useState("createTicket")
     const [isLoading, setIsLoading] = useState(false)
     const [chartModalOpen, setChartModalOpen] = useState(false)
 
-	const { tickets, loading } = useTickets({ queueIds: JSON.stringify(userQueues.map(q => q.id)), date: JSON.stringify(date), dateOrder });
+	const { tickets, loading } = useTickets({ queueIds: JSON.stringify(filterQueues.map(q => q.id)), date: JSON.stringify(date), dateOrder });
 
     useEffect(() => {
         if (!tickets) return
         setIsLoading(true)
         setQueues(prevState => {
-            let aux = userQueues.map((e) => ({id: e.id, name: e.name, tickets: 0}))
+            let aux = filterQueues.map((e) => ({id: e.id, name: e.name, tickets: 0}))
             tickets.forEach(t => {
                 const index = aux.findIndex(a => a.id === t.queueId)
                 if (!aux[index]) return
                 aux[index] = {...aux[index], tickets: aux[index].tickets ?  aux[index].tickets + 1  : 1}
             })
-           
             return aux
         })
         setIsLoading(false)
-    }, [tickets, userQueues])
+    }, [tickets, filterQueues])
 
+    const handleOnQueuesChange = (e) => {
+        if (!e || e.length === 0 ) {
+            setFilterQueues(userQueues)
+            return
+        }
+        const queues = userQueues.filter(q => e.includes(q.id))
+        setFilterQueues(queues)
+    }
 	return (
 		<Box style={{ overflow: 'hidden' }}>
             {
@@ -98,8 +106,21 @@ const QueueChart = ({ userQueues }) => {
                     </Button>
                 </DialogActions>
 		    </Dialog>
-            
-			<Box style={{ marginBottom: 40, marginTop: 20 }}>
+            <Box style={{ marginBottom: 20 }}>
+                <InputLabel style={{ marginBottom: 4 }}>Setor</InputLabel>
+                <Select
+                    optionFilterProp="label"
+                    onChange={handleOnQueuesChange}
+                    // value={}
+                    mode="multiple"
+                    allowClear
+                    size="medium"
+                    style={{ width: '100%' }}
+                    placeholder="Setores"
+                    options={userQueues?.map((queue) => { return {value: queue.id, label: queue.name}})}
+                />
+            </Box>
+			<Box style={{ marginBottom: 20 }}>
                     <InputLabel style={{ marginBottom: 4, display: "flex", justifyContent: "space-between" }}>Data 
                     <Radio.Group name="radiogroup" value={dateOrder}  onChange={(e) => setDateOrder(e.target.value)}>
                       <Radio value={"createTicket"}>Data de criação</Radio>
@@ -116,7 +137,8 @@ const QueueChart = ({ userQueues }) => {
                             format="DD-MM-YYYY"
                         />
                     </Space>
-                </Box>
+            </Box>
+            
 			<ResponsiveContainer height={500} >
             <BarChart margin={{ left: 150 }} legend={{ fontSize: 3 }} width={400} height={500} data={queues} layout="vertical">
                 <CartesianGrid strokeDasharray="3 3" />

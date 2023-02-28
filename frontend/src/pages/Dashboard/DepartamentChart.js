@@ -10,7 +10,7 @@ import {
     Legend,
     Tooltip
 } from "recharts"
-import { DatePicker, Space, Radio } from 'antd'
+import { DatePicker, Space, Radio, Select } from 'antd'
 import { InputLabel, Box } from "@material-ui/core"
 import BackdropLoading from '../../components/BackdropLoading'
 import dayjs from 'dayjs';
@@ -63,7 +63,7 @@ const DepartamentChart = ({ userQueues, userDepartaments, isAdmin }) => {
         if (!tickets) return
         setIsLoading(true)
         setDepartaments(preveState => {
-            let departs = allDepartaments.map((e) => ({id: e.id, name: e.name, tickets: 0, queues: e.queues}))
+            let departs = departaments.map((e) => ({id: e.id, name: e.name, tickets: 0, queues: e.queues}))
             departs.forEach((dep, depIndex) => {
                 dep.queues.forEach(q => {
                     tickets.forEach(t => {
@@ -80,6 +80,22 @@ const DepartamentChart = ({ userQueues, userDepartaments, isAdmin }) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [tickets])
 
+    const handleOnDepartamentChange = (e) => {
+        if (!e || e.length === 0 ) {
+            setDepartaments(allDepartaments.map((e) => ({id: e.id, name: e.name, tickets: 0, queues: e.queues})))
+            return
+        }
+        const filterDepartaments = allDepartaments.filter(dep => e.includes(dep.id))
+        
+        setDepartaments(filterDepartaments.map((e) => ({id: e.id, name: e.name, tickets: 0, queues: e.queues})))
+
+        setQueues((prevState) => {
+            let q = [];
+            filterDepartaments.forEach(dep => dep.queues.forEach((i) => q.push(i)))
+            return q;
+        })
+    }
+
 	return (
 		<React.Fragment>
             {
@@ -88,7 +104,21 @@ const DepartamentChart = ({ userQueues, userDepartaments, isAdmin }) => {
                     <BackdropLoading />
                 </>: ""
             }
-			<Box style={{ marginBottom: 40, marginTop: 20 }}>
+            <Box style={{ marginBottom: 20 }}>
+                <InputLabel style={{ marginBottom: 4 }}>Departamento</InputLabel>
+                <Select
+                    optionFilterProp="label"
+                    onChange={handleOnDepartamentChange}
+                    // value={}
+                    mode="multiple"
+                    allowClear
+                    size="medium"
+                    style={{ width: '100%' }}
+                    placeholder="Departamentos"
+                    options={allDepartaments?.map((dep) => { return {value: dep.id, label: dep.name}})}
+                />
+            </Box>
+			<Box style={{ marginBottom: 40 }}>
                     <InputLabel style={{ marginBottom: 4, display: "flex", justifyContent: "space-between" }}>Data 
                     <Radio.Group name="radiogroup" value={dateOrder}  onChange={(e) => setDateOrder(e.target.value)}>
                       <Radio value={"createTicket"}>Data de criação</Radio>
@@ -101,7 +131,7 @@ const DepartamentChart = ({ userQueues, userDepartaments, isAdmin }) => {
                             onChange={(e) => setDate(e)}
                             value={date}
                             style={{ width: "100%"}}
-                            size="large"
+                            size="medium"
                             format="DD-MM-YYYY"
                         />
                     </Space>
