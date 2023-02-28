@@ -56,7 +56,7 @@ export const initWbot = async (whatsapp: Whatsapp): Promise<Session> => {
         session: sessionCfg,
         authStrategy: new LocalAuth({ clientId: `bd_${whatsapp.id}` }),
         puppeteer: {
-          timeout: 600000,
+          timeout: 5 * 60 * 1000,
           args: [
             "--autoplay-policy=user-gesture-required",
             "--disable-background-networking",
