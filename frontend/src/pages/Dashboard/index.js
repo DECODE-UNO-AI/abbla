@@ -65,7 +65,7 @@ function TabPanel(props) {
 	  >
 		{value === index && (
 		  <Box div={3} style={{ marginTop: -5, height: "auto" }}>
-			<Typography>{children}</Typography>
+			<div>{children}</div>
 		  </Box>
 		)}
 	  </div>

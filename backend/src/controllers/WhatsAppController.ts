@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
 import { getIO } from "../libs/socket";
+import { createSession, deleteSession } from "../libs/wbot-api";
 import { removeWbot } from "../libs/wbot";
 import { StartWhatsAppSession } from "../services/WbotServices/StartWhatsAppSession";
 import AppError from "../errors/AppError";
@@ -12,6 +13,9 @@ import UpdateWhatsAppService from "../services/WhatsappService/UpdateWhatsAppSer
 import ListSupervisorWhatsAppsService from "../services/WhatsappService/ListSupervisorWhatsAppsService";
 import User from "../models/User";
 import Departament from "../models/Departament";
+import CreateWhatsappApiService from "../services/WhasappApiService/CreateWhastappApiService";
+import ShowWhatsappApisService from "../services/WhasappApiService/ShowWhatsappApisService";
+import ShowWhatsappApiService from "../services/WhasappApiService/ShowWhatsappApiService";
 
 interface WhatsappData {
   name: string;
@@ -86,6 +90,52 @@ export const store = async (req: Request, res: Response): Promise<Response> => {
   }
 
   return res.status(200).json(whatsapp);
+};
+
+export const storeapi = async (
+  req: Request,
+  res: Response
+): Promise<Response> => {
+  const { name } = req.body;
+
+  try {
+    const whatsapp = await CreateWhatsappApiService(name);
+    createSession({ whatsapp });
+    return res.status(200).json({ whatsapp });
+  } catch (err) {
+    throw new AppError(err);
+  }
+
+
+};
+
+export const showApis = async (
+  req: Request,
+  res: Response
+): Promise<Response> => {
+
+  try {
+    const whatsapps = await ShowWhatsappApisService();
+    return res.status(200).json({ whatsapps });
+  } catch (err) {
+    throw new AppError(err);
+  }
+
+};
+
+export const showApi = async (
+  req: Request,
+  res: Response
+): Promise<Response> => {
+  const { apiId } = req.params
+
+  try {
+    const whatsapp = await ShowWhatsappApiService(apiId);
+    return res.status(200).json(whatsapp);
+  } catch (err) {
+    throw new AppError(err);
+  }
+
 };
 
 export const show = async (req: Request, res: Response): Promise<Response> => {

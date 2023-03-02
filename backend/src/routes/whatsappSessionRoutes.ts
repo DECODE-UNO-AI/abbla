@@ -11,6 +11,10 @@ whatsappSessionRoutes.post(
   WhatsAppSessionController.store
 );
 
+whatsappSessionRoutes.put("/whatsappapisession/reconect", WhatsAppSessionController.reconectApi);
+
+whatsappSessionRoutes.delete("/whatsappapisession/desconect/:id", WhatsAppSessionController.disconnectApi);
+
 whatsappSessionRoutes.put(
   "/whatsappsession/:whatsappId",
   isAuth,

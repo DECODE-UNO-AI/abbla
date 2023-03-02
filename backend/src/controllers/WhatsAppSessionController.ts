@@ -5,6 +5,8 @@ import { StartWhatsAppSession } from "../services/WbotServices/StartWhatsAppSess
 import { getIO } from "../libs/socket";
 import ResetWhatsappSession from "../services/WhatsappService/ResetWhatsappSession";
 import NotificateOnDisconnected from "../services/WbotServices/NotificateOnDisconnected";
+import { createSession, deleteSession as deleteSessionApi } from "../libs/wbot-api";
+import WhatsappApi from "../models/WhatsappApi";
 
 const store = async (req: Request, res: Response): Promise<Response> => {
   const { whatsappId } = req.params;
@@ -57,4 +59,29 @@ const remove = async (req: Request, res: Response): Promise<Response> => {
   return res.status(200).json({ message: "Session disconnected." });
 };
 
-export default { store, remove, update };
+const reconectApi = async (
+  req: Request,
+  res: Response,
+) => {
+  const { id } = req.body;
+
+  const whatsapp = await WhatsappApi.findByPk(id);
+
+  if(!whatsapp) return
+
+  await deleteSessionApi(whatsapp.sessionId)
+  createSession({ whatsapp });
+}
+
+const disconnectApi = async (
+  req: Request,
+  res: Response,
+) => {
+  const { id } = req.params;
+  const whatsapp = await WhatsappApi.findByPk(id);
+  if(!whatsapp) return
+  await deleteSessionApi(whatsapp.sessionId)
+}
+
+
+export default { store, remove, update, reconectApi, disconnectApi };
