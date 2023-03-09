@@ -191,7 +191,9 @@ const Settings = () => {
 		try {
 			await api.post("/service/restart", {});
 			toast.success("Reiniciando");
-			history.go("/");
+			setTimeout(() => {
+				history.go(0)
+			}, 5 * 1000)
 		} catch (err) {
 			toastError(err);
 		}
