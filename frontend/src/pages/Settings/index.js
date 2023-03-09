@@ -16,6 +16,7 @@ import Tooltip from "@material-ui/core/Tooltip";
 import api from "../../services/api";
 import { i18n } from "../../translate/i18n.js";
 import toastError from "../../errors/toastError";
+import { Button } from "@material-ui/core";
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Switch from '@material-ui/core/Switch';
 
@@ -186,6 +187,18 @@ const Settings = () => {
 		return value;
 	};
 
+	const handleOnRestart = async () => {
+		try {
+			await api.post("/service/restart", {});
+			toast.success("Reiniciando");
+			setTimeout(() => {
+				history.go(0)
+			}, 5 * 1000)
+		} catch (err) {
+			toastError(err);
+		}
+	}
+
 	return (
 		<div className={classes.root}>
 			<Container className={classes.container} maxWidth="sm">
@@ -307,6 +320,7 @@ const Settings = () => {
 						<MoreVertOutlined/>
 					</Paper>
 				</Paper>
+				
 				<Typography variant="body2" gutterBottom></Typography>
 					<Tooltip title={i18n.t("settings.settings.timeCreateNewTicket.note")}>
 					     <Paper className={classes.paper} elevation={3}>
@@ -367,6 +381,24 @@ const Settings = () => {
 						</Select>
 				             </Paper>
 					</Tooltip>
+
+					<Paper className={classes.paper} style={{ marginTop: 20 }}>
+						<Tooltip title={"Reinicia todo o serviço"}>
+							<FormControlLabel
+								control={
+									<Button 
+										variant="contained" 
+										color="secondary" 
+										style={{ marginLeft: 5, marginRight: 5 }}
+										onClick={handleOnRestart}
+									>
+										Reiniciar
+									</Button>
+								}
+								label="Reiniciar aplicação"
+							/>
+						</Tooltip>
+					</Paper>
 			</Container>
 			<SettingModal openModal={openModal} onClose={setOpenModal} settings={settings} getSettingValue={getSettingValue} handleChangeSetting={handleChangeSetting}>
 				<Paper className={classes.paper}>
