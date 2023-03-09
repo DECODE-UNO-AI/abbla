@@ -631,6 +631,14 @@ const messages = {
               disabled: "Deshabilitado",
             },
           },
+          sendQueueChose: {
+            name: "Permitir mensaje de selección de sector",
+            note: "Permitir mensaje de selección de sector",
+            options: {
+              enabled: "Habilitado",
+              disabled: "Deshabilitado",
+            },
+          },
           CheckMsgIsGroup: {
             name: "Ignorar mensajes de grupo",
             note: "Si lo desactivas, recibirás mensajes de grupos.",
