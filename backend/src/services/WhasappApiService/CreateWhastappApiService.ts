@@ -3,6 +3,7 @@ import * as Yup from "yup";
 import crypto from "crypto";
 import AppError from "../../errors/AppError";
 import WhatsappApi from "../../models/WhatsappApi";
+import axios from "axios";
 
 const CreateWhatsappApiService = async (name: string): Promise<WhatsappApi> => {
   const schema = Yup.object().shape({
@@ -35,6 +36,10 @@ const CreateWhatsappApiService = async (name: string): Promise<WhatsappApi> => {
     status: "OPENING",
     sessionId
   });
+
+  const result = await axios.post(`${process.env.BAILEYS_API_HOST}/sessions/add`, { sessionId: newWhatsappApi.sessionId })
+
+  await newWhatsappApi.update({ qrcode: result.data.qr, status: "qrcode" })
 
   return newWhatsappApi;
 };

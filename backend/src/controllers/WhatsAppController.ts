@@ -1,6 +1,5 @@
 import { Request, Response } from "express";
 import { getIO } from "../libs/socket";
-import { createSession, deleteSession } from "../libs/wbot-api";
 import { removeWbot } from "../libs/wbot";
 import { StartWhatsAppSession } from "../services/WbotServices/StartWhatsAppSession";
 import AppError from "../errors/AppError";
@@ -16,6 +15,10 @@ import Departament from "../models/Departament";
 import CreateWhatsappApiService from "../services/WhasappApiService/CreateWhastappApiService";
 import ShowWhatsappApisService from "../services/WhasappApiService/ShowWhatsappApisService";
 import ShowWhatsappApiService from "../services/WhasappApiService/ShowWhatsappApiService";
+import WhatsappApi from "../models/WhatsappApi";
+
+import DeleteWhatsAppApiService from "../services/WhasappApiService/DeleteWhatsAppApiService";
+import axios from "axios";
 
 interface WhatsappData {
   name: string;
@@ -100,12 +103,11 @@ export const storeapi = async (
 
   try {
     const whatsapp = await CreateWhatsappApiService(name);
-    createSession({ whatsapp });
+
     return res.status(200).json({ whatsapp });
   } catch (err) {
     throw new AppError(err);
   }
-
 
 };
 
@@ -190,4 +192,62 @@ export const remove = async (
   });
 
   return res.status(200).json({ message: "Whatsapp deleted." });
+};
+
+export const removeapi = async (
+  req: Request,
+  res: Response
+): Promise<Response> => {
+
+  const { apiId } = req.params;
+
+  try {
+
+    const whatsapp = await WhatsappApi.findByPk(apiId);
+    if(!whatsapp) return res.status(404).json({ message: "Whatsapp not found." });
+
+    await DeleteWhatsAppApiService(whatsapp);
+
+    const io = getIO();
+    io.emit("whatsappapi-update", {
+      action: "DELETE_SESSION",
+      whatsappId: +apiId
+    });
+    await axios.delete(`${process.env.BAILEYS_API_HOST}/sessions/${whatsapp.sessionId}`)
+    return res.status(200).json({ message: "Whatsapp deleted." });
+
+  } catch (err) {
+    throw new AppError(err)
+  }
+
+};
+
+export const updateapi = async (
+  req: Request,
+  res: Response
+): Promise<any> => {
+
+  const { sessionId } = req.params
+  const { qr, status } = req.body;
+
+  const newStatus = status === "CONNECTED" ? "qrcode" : status === "AUTHENTICATED" ? "CONNECTED" : status === "CANCELED" ? "CANCELED" :  "DISCONNECTED"
+  try {
+
+    const whatsapp = await WhatsappApi.findOne({ where: { sessionId }})
+
+    if(!whatsapp) return
+
+    await whatsapp.update({ status: newStatus, qrcode: qr })
+
+    const io = getIO();
+    io.emit("whatsappapi-update", {
+      action: "UPDATE_SESSION",
+      whatsapp: whatsapp
+    });
+    return res.status(200)
+  } catch (err) {
+    return res.status(200)
+  }
+
+
 };

@@ -26,7 +26,9 @@ import {
 	SignalCellularConnectedNoInternet0Bar,
 	SignalCellular4Bar,
 	CropFree,
-	//DeleteOutline,
+	VpnKey,
+	DeleteOutline,
+	Cancel
 } from "@material-ui/icons";
 
 import MainContainer from "../../components/MainContainer";
@@ -35,6 +37,7 @@ import MainHeaderButtonsWrapper from "../../components/MainHeaderButtonsWrapper"
 import Title from "../../components/Title";
 import TableRowSkeleton from "../../components/TableRowSkeleton";
 
+import { toast } from "react-toastify";
 import WhatsAppModal from "../../components/WhatsAppModal";
 import ConfirmationModal from "../../components/ConfirmationModal";
 import QrcodeModal from "../../components/QrcodeModal";
@@ -44,6 +47,8 @@ import toastError from "../../errors/toastError";
 import api from "../../services/api";
 import openSocket from "../../services/socket-io";
 import QrCodeApiModal from "../../components/QrCodeApiModal";
+import WhatsAppApiModal from "../../components/WhatsAppApiModal";
+import ApiKeyModal from "../../components/ApiKeyModal";
 
 const useStyles = makeStyles(theme => ({
 	mainPaper: {
@@ -163,9 +168,8 @@ const reducer = (state, action) => {
 		}
 	}
 
-	if (action.type === "DELETE_WHATSAPPS") {
+	if (action.type === "DELETE_SESSION") {
 		const whatsAppId = action.payload;
-
 		const whatsAppIndex = state.findIndex(s => s.id === whatsAppId);
 		if (whatsAppIndex !== -1) {
 			state.splice(whatsAppIndex, 1);
@@ -190,6 +194,8 @@ const Connections = () => {
 	const [selectedWhatsAppApi, setSelectedWhatsAppApi] = useState(null);
 	const [selectedWhatsApp, setSelectedWhatsApp] = useState(null);
 	const [confirmModalOpen, setConfirmModalOpen] = useState(false);
+	const [whatsAppModalApiOpen, setWhatsAppModalApiOpen] = useState(false);
+	const [keyModalOpen, setKeyModalOpen] = useState(false);
 	const confirmationModalInitialState = {
 		action: "",
 		title: "",
@@ -216,6 +222,10 @@ const Connections = () => {
 			if (data.action === "UPDATE_SESSION") {
 				dispatch({ type: "UPDATE_WHATSAPPS", payload: data.whatsapp });
 			}
+
+			if(data.action === "DELETE_SESSION") {
+				dispatch({ type: "DELETE_SESSION", payload: data.whatsappId })
+			}
 		});
 	}, [])
 
@@ -240,10 +250,20 @@ const Connections = () => {
 		setWhatsAppModalOpen(true);
 	};
 
+	const handleOpenWhatsAppApiModal = () => {
+		setSelectedWhatsApp(null);
+		setWhatsAppModalApiOpen(true);
+	};
+
 	const handleCloseWhatsAppModal = useCallback(() => {
 		setWhatsAppModalOpen(false);
 		setSelectedWhatsApp(null);
 	}, [setSelectedWhatsApp, setWhatsAppModalOpen]);
+
+	const handleCloseWhatsAppApiModal = useCallback(() => {
+		setWhatsAppModalApiOpen(false);
+		setSelectedWhatsAppApi(null);
+	}, [setWhatsAppModalApiOpen, setSelectedWhatsAppApi]);
 
 	const handleOpenQrModal = whatsApp => {
 		setSelectedWhatsApp(whatsApp);
@@ -272,7 +292,17 @@ const Connections = () => {
 
 	const handleApiReconect = async whatsappId => {
 		api.put("/whatsappapisession/reconect", { id: whatsappId})
-	}
+	};
+
+	const handleShowKeyModalOpen = whatsapp => {
+		setSelectedWhatsAppApi(whatsapp)
+		setKeyModalOpen(true)
+	};
+
+	const handleShowKeyModalClose = useCallback(() => {
+		setSelectedWhatsAppApi(null)
+		setKeyModalOpen(false)
+	}, [setSelectedWhatsAppApi, setKeyModalOpen]);
 
 	const handleOpenConfirmationModal = (action, whatsAppId, isApi) => {
 		if (action === "disconnect") {
@@ -285,14 +315,15 @@ const Connections = () => {
 			});
 		}
 
-		/* if (action === "delete") {
+		if (action === "delete") {
 			setConfirmModalInfo({
 				action: action,
 				title: i18n.t("connections.confirmationModal.deleteTitle"),
 				message: i18n.t("connections.confirmationModal.deleteMessage"),
 				whatsAppId: whatsAppId,
+				isApi
 			});
-		} */
+		}
 		setConfirmModalOpen(true);
 	};
 
@@ -309,14 +340,17 @@ const Connections = () => {
 			}
 		}
 
-		/* if (confirmModalInfo.action === "delete") {
+		if (confirmModalInfo.action === "delete") {
 			try {
-				await api.delete(`/whatsapp/${confirmModalInfo.whatsAppId}`);
-				toast.success(i18n.t("connections.toasts.deleted"));
+				if(confirmModalInfo.isApi) {
+					await api.delete(`/whatsappapi/${confirmModalInfo.whatsAppId}`);
+					toast.success(i18n.t("connections.toasts.deleted"));
+					return
+				}
 			} catch (err) {
 				toastError(err);
 			}
-		} */
+		}
 
 		setConfirmModalInfo(confirmationModalInitialState);
 	};
@@ -417,6 +451,14 @@ const Connections = () => {
 						<SignalCellularConnectedNoInternet2Bar color="secondary" />
 					</CustomToolTip>
 				)}
+				{(whatsApp.status === "CANCELED") && (
+					<CustomToolTip
+						title={i18n.t("connections.toolTips.timeout.title")}
+						content={i18n.t("connections.toolTips.timeout.content")}
+					>
+						<Cancel color="secondary" />
+					</CustomToolTip>
+				)}
 			</div>
 		);
 	};
@@ -445,6 +487,16 @@ const Connections = () => {
 				onClose={handleCloseWhatsAppModal}
 				whatsAppId={!qrModalOpen && selectedWhatsApp?.id}
 			/>
+			<WhatsAppApiModal
+				open={whatsAppModalApiOpen}
+				onClose={handleCloseWhatsAppApiModal}
+				whatsAppId={null}
+			/>
+			<ApiKeyModal
+				open={keyModalOpen}
+				onClose={handleShowKeyModalClose}
+				ApiKey={selectedWhatsAppApi?.sessionId}
+			/>
 			<MainHeader>
 				<Title>{i18n.t("connections.title")}</Title>
 				<MainHeaderButtonsWrapper>
@@ -454,6 +506,13 @@ const Connections = () => {
 						onClick={handleOpenWhatsAppModal}
 					>
 						{i18n.t("connections.buttons.add")}
+					</Button>
+					<Button
+						variant="contained"
+						color="primary"
+						onClick={handleOpenWhatsAppApiModal}
+					>
+						{i18n.t("connections.buttons.add")} API
 					</Button>
 				</MainHeaderButtonsWrapper>
 			</MainHeader>
@@ -573,17 +632,12 @@ const Connections = () => {
 								{i18n.t("connections.table.status")}
 							</TableCell>
 							<TableCell align="center">
-								{i18n.t("connections.table.number")}
-							</TableCell>
-							<TableCell align="center">
 								{i18n.t("connections.table.session")}
 							</TableCell>
 							<TableCell align="center">
 								{i18n.t("connections.table.lastUpdate")}
 							</TableCell>
 							<TableCell align="center">
-								{// i18n.t("connections.table.default")
-								}
 								API Key
 							</TableCell>
 							<TableCell align="center">
@@ -609,38 +663,29 @@ const Connections = () => {
 												{renderStatusToolTips(whatsApp)}
 											</TableCell>
 											<TableCell align="center">
-												+{whatsApp.number}
-											</TableCell>
-											<TableCell align="center">
 												{renderActionButtons(whatsApp)}
 											</TableCell>
 											<TableCell align="center">
 												{format(parseISO(whatsApp.updatedAt), "dd/MM/yy HH:mm")}
 											</TableCell>
 											<TableCell align="center">
-												{whatsApp.isDefault && (
-													<div className={classes.customTableCell}>
-														<CheckCircle style={{ color: green[500] }} />
-													</div>
-												)}
+												<IconButton
+													size="small"
+													onClick={() => handleShowKeyModalOpen(whatsApp)}
+													disabled={whatsApp.status !== "CONNECTED"}
+												>
+													<VpnKey color={whatsApp.status !== "CONNECTED"? "black" : "secondary" } />
+												</IconButton>
 											</TableCell>
 											<TableCell align="center">
 												<IconButton
 													size="small"
-													onClick={() => handleEditWhatsApp(whatsApp)}
-													disabled={whatsApp.status === "CONNECTED"}
-												>
-													<Edit color={whatsApp.status === "CONNECTED"? "black" : "secondary" } />
-												</IconButton>
-
-												{/* <IconButton
-													size="small"
 													onClick={e => {
-														handleOpenConfirmationModal("delete", whatsApp.id);
+														handleOpenConfirmationModal("delete", whatsApp.id, true);
 													}}
 												>
 													<DeleteOutline color="secondary" />
-												</IconButton> */}
+												</IconButton>
 											</TableCell>
 										</TableRow>
 									))}
