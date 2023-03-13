@@ -20,6 +20,7 @@ type MessageData = {
   fromMe: boolean;
   read: boolean;
   quotedMsg?: Message;
+  isComment: boolean;
 };
 
 export const index = async (req: Request, res: Response): Promise<Response> => {
@@ -44,7 +45,7 @@ export const index = async (req: Request, res: Response): Promise<Response> => {
 
 export const store = async (req: Request, res: Response): Promise<Response> => {
   const { ticketId } = req.params;
-  const { body, quotedMsg }: MessageData = req.body;
+  const { body, quotedMsg, isComment }: MessageData = req.body;
   const medias = req.files as Express.Multer.File[];
 
   const ticket = await ShowTicketService(ticketId);
@@ -64,7 +65,7 @@ export const store = async (req: Request, res: Response): Promise<Response> => {
       })
     );
   } else {
-    await SendWhatsAppMessage({ body, ticket, quotedMsg });
+    await SendWhatsAppMessage({ body, ticket, quotedMsg, isComment });
   }
 
   return res.send();
@@ -79,10 +80,17 @@ export const remove = async (
   const message = await DeleteWhatsAppMessage(messageId);
 
   const io = getIO();
-  io.to(message.ticketId.toString()).emit("appMessage", {
-    action: "update",
-    message
-  });
+  if (typeof message !== "number") {
+    io.to(message.ticketId.toString()).emit("appMessage", {
+      action: "update",
+      message
+    });
+  } else {
+    io.to(message.toString()).emit("appMessage", {
+      action: "delete",
+      messageId
+    });
+  }
 
   return res.send();
 };

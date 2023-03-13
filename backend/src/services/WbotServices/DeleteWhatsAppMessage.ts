@@ -1,9 +1,12 @@
+/* eslint-disable consistent-return */
 import AppError from "../../errors/AppError";
 import GetWbotMessage from "../../helpers/GetWbotMessage";
 import Message from "../../models/Message";
 import Ticket from "../../models/Ticket";
 
-const DeleteWhatsAppMessage = async (messageId: string): Promise<Message> => {
+const DeleteWhatsAppMessage = async (
+  messageId: string
+): Promise<Message | number> => {
   const message = await Message.findByPk(messageId, {
     include: [
       {
@@ -19,6 +22,10 @@ const DeleteWhatsAppMessage = async (messageId: string): Promise<Message> => {
   }
 
   const { ticket } = message;
+  if (message.isComment) {
+    await message.destroy();
+    return ticket.id;
+  }
 
   const messageToDelete = await GetWbotMessage(ticket, messageId);
 

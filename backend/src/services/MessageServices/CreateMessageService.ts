@@ -12,6 +12,7 @@ interface MessageData {
   read?: boolean;
   mediaType?: string;
   mediaUrl?: string;
+  isComment?: boolean;
 }
 interface Request {
   messageData: MessageData;

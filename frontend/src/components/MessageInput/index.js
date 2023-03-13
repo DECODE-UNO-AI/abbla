@@ -15,6 +15,7 @@ import IconButton from "@material-ui/core/IconButton";
 import MoreVert from "@material-ui/icons/MoreVert";
 import MoodIcon from "@material-ui/icons/Mood";
 import SendIcon from "@material-ui/icons/Send";
+import InsertCommentIcon from '@material-ui/icons/InsertComment';
 import CancelIcon from "@material-ui/icons/Cancel";
 import ClearIcon from "@material-ui/icons/Clear";
 import MicIcon from "@material-ui/icons/Mic";
@@ -337,12 +338,13 @@ const MessageInput = ({ ticketStatus }) => {
     setMedias([]);
   };
 
-  const handleSendMessage = async () => {
+  const handleSendMessage = async (isComment = false) => {
     if (inputMessage.trim() === "") return;
     setLoading(true);
-
+    
     const message = {
       read: 1,
+      isComment: isComment,
       fromMe: true,
       mediaUrl: "",
       body: signMessage
@@ -717,6 +719,7 @@ const MessageInput = ({ ticketStatus }) => {
             )}
           </div>
           {inputMessage ? (
+            <>
             <IconButton
               aria-label="sendMessage"
               component="span"
@@ -725,6 +728,15 @@ const MessageInput = ({ ticketStatus }) => {
             >
               <SendIcon className={classes.sendMessageIcons} />
             </IconButton>
+            <IconButton
+              aria-label="sendMessage"
+              component="span"
+              onClick={() => handleSendMessage(true)}
+              disabled={loading}
+            >
+              <InsertCommentIcon className={classes.sendMessageIcons}/>
+            </IconButton>
+            </>
           ) : recording ? (
             <div className={classes.recorderWrapper}>
               <IconButton

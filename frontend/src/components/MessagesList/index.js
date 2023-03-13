@@ -23,6 +23,7 @@ import {
   DoneAll,
   ExpandMore,
   GetApp,
+  Comment
 } from "@material-ui/icons";
 
 import MarkdownWrapper from "../MarkdownWrapper";
@@ -206,6 +207,13 @@ const useStyles = makeStyles((theme) => ({
     padding: "3px 80px 6px 6px",
   },
 
+  textContentItemComment: {
+    fontStyle: "italic",
+    color: "#D9A118",
+    overflowWrap: "break-word",
+    padding: "3px 80px 6px 6px",
+  },
+
   messageMedia: {
     objectFit: "cover",
     width: 250,
@@ -344,9 +352,20 @@ const reducer = (state, action) => {
     return [...state];
   }
 
+  if (action.type === "DELETE_MESSAGE") {
+    const messageId = action.payload;
+    const messageIndex = state.findIndex((m) => m.id === messageId);
+
+    if (messageIndex !== -1) {
+			state.splice(messageIndex, 1);
+		}
+
+    return [...state]
+  }
   if (action.type === "RESET") {
     return [];
   }
+
 };
 
 const MessagesList = ({ ticketId, isGroup }) => {
@@ -413,6 +432,10 @@ const MessagesList = ({ ticketId, isGroup }) => {
 
       if (data.action === "update") {
         dispatch({ type: "UPDATE_MESSAGE", payload: data.message });
+      }
+
+      if (data.action === "delete") {
+        dispatch({ type: "DELETE_MESSAGE", payload: data.messageId });
       }
     });
 
@@ -803,6 +826,7 @@ const MessagesList = ({ ticketId, isGroup }) => {
                 <div
                   className={clsx(classes.textContentItem, {
                     [classes.textContentItemDeleted]: message.isDeleted,
+                    [classes.textContentItemComment]: message.isComment
                   })}
                 >
                   {message.isDeleted && (
@@ -812,11 +836,18 @@ const MessagesList = ({ ticketId, isGroup }) => {
                       className={classes.deletedIcon}
                     />
                   )}
+                  {message.isComment && (
+                    <Comment
+                      color="#D9A118"
+                      fontSize="small"
+                      className={classes.deletedIcon}
+                    />
+                  )}
                   {message.quotedMsg && renderQuotedMessage(message)}
                   <MarkdownWrapper>{message.body}</MarkdownWrapper>
                   <span className={classes.timestamp}>
                     {format(parseISO(message.createdAt), "HH:mm")}
-                    {renderMessageAck(message)}
+                    {!message.isComment && renderMessageAck(message)}
                   </span>
                 </div>
               </div>
