@@ -209,7 +209,6 @@ const useStyles = makeStyles((theme) => ({
 
   textContentItemComment: {
     fontStyle: "italic",
-    color: "#D9A118",
     overflowWrap: "break-word",
     padding: "3px 80px 6px 6px",
   },
@@ -809,7 +808,7 @@ const MessagesList = ({ ticketId, isGroup }) => {
               {renderDailyTimestamps(message, index)}
               {renderMessageDivider(message, index)}
               {renderNumberTicket(message, index)}
-              <div className={classes.messageRight}>
+              <div className={classes.messageRight} style={{ backgroundColor: message.isComment ? "#ffea1c" : ""}}>
                 <IconButton
                   variant="contained"
                   size="small"

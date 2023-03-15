@@ -13,6 +13,7 @@ import { green } from "@material-ui/core/colors";
 import AttachFileIcon from "@material-ui/icons/AttachFile";
 import IconButton from "@material-ui/core/IconButton";
 import MoreVert from "@material-ui/icons/MoreVert";
+import AccessTimeIcon from '@material-ui/icons/AccessTime';
 import MoodIcon from "@material-ui/icons/Mood";
 import SendIcon from "@material-ui/icons/Send";
 import InsertCommentIcon from '@material-ui/icons/InsertComment';
@@ -44,6 +45,7 @@ import { ReplyMessageContext } from "../../context/ReplyingMessage/ReplyingMessa
 import { AuthContext } from "../../context/Auth/AuthContext";
 import { useLocalStorage } from "../../hooks/useLocalStorage";
 import toastError from "../../errors/toastError";
+
 
 const Mp3Recorder = new MicRecorder({ bitRate: 128 });
 
@@ -113,6 +115,11 @@ const useStyles = makeStyles((theme) => ({
 
   sendMessageIcons: {
     color: "grey",
+  },
+
+  sendMessageOptionsIcons: {
+    color: "grey",
+    fontSize: 15
   },
 
   uploadInput: {
@@ -720,22 +727,36 @@ const MessageInput = ({ ticketStatus }) => {
           </div>
           {inputMessage ? (
             <>
-            <IconButton
-              aria-label="sendMessage"
-              component="span"
-              onClick={handleSendMessage}
-              disabled={loading}
-            >
-              <SendIcon className={classes.sendMessageIcons} />
-            </IconButton>
-            <IconButton
-              aria-label="sendMessage"
-              component="span"
-              onClick={() => handleSendMessage(true)}
-              disabled={loading}
-            >
-              <InsertCommentIcon className={classes.sendMessageIcons}/>
-            </IconButton>
+            <div style={{ display: "flex", alignItems: "center"}}>
+              <IconButton
+                aria-label="sendMessage"
+                component="span"
+                onClick={handleSendMessage}
+                disabled={loading}
+              >
+                <SendIcon className={classes.sendMessageIcons} />
+              </IconButton>
+              <div style={{ display: "flex", flexDirection: "column", alignItems: "center"}}>
+                <IconButton
+                  size="small"
+                  aria-label="sendMessage"
+                  component="span"
+                  onClick={() => handleSendMessage(true)}
+                  disabled={loading}
+                >
+                  <InsertCommentIcon className={classes.sendMessageOptionsIcons}/>
+                </IconButton>
+                <IconButton
+                  size="small"
+                  aria-label="sendMessage"
+                  component="span"
+                  onClick={() => handleSendMessage(true)}
+                  disabled={loading}
+                >
+                  <AccessTimeIcon className={classes.sendMessageOptionsIcons}/>
+                </IconButton>
+              </div>
+            </div>
             </>
           ) : recording ? (
             <div className={classes.recorderWrapper}>
