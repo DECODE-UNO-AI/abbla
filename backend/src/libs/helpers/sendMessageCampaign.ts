@@ -197,27 +197,51 @@ const sendApiMessage = async (
             jid: number,
             type: "number",
             message: {
-              video: { url: `${process.env.BACKEND_URL}/public/${file}`}
+              video: fs.readFileSync(join(
+                __dirname,
+                "..",
+                "..",
+                "..",
+                "public",
+                file
+              )).toString("base64")
             },
-            options: {}
+            options: {},
+            isBufferFiles: true
           })
         } else if ([".jpg", ".jpeg", ".png"].includes(ext)) {
           await axios.post(`${process.env.BAILEYS_API_HOST}/${whatsapp.sessionId}/messages/send`, {
             jid: number,
             type: "number",
             message: {
-              image : { url: `${process.env.BACKEND_URL}/public/${file}`}
+              image : fs.readFileSync(join(
+                __dirname,
+                "..",
+                "..",
+                "..",
+                "public",
+                file
+              )).toString("base64")
             },
-            options: {}
+            options: {},
+            isBufferFiles: true
           })
         } else if ([".ogg", ".mp3", ".mpeg"].includes(ext)) {
           await axios.post(`${process.env.BAILEYS_API_HOST}/${whatsapp.sessionId}/messages/send`, {
             jid: number,
             type: "number",
             message: {
-              audio : { url: `${process.env.BACKEND_URL}/public/${file}`}
+              audio : fs.readFileSync(join(
+                __dirname,
+                "..",
+                "..",
+                "..",
+                "public",
+                file
+              )).toString("base64") // { url: `${process.env.BACKEND_URL}/public/${file}`}
             },
-            options: {}
+            options: {},
+            isBufferFiles: true
           })
         }
       } else {
