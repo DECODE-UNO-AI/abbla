@@ -66,7 +66,7 @@ const WhatsAppLayout = ({ messages, order }) => {
                                                             width={200} 
                                                             height={200} 
                                                             alt="mediaLink" /> : 
-                                                        [".mp4", ".mvk"].some(ext => messages.find(m => m.id === index).value.endsWith(ext)) ?
+                                                        [".mp4", ".mkv"].some(ext => messages.find(m => m.id === index).value.endsWith(ext)) ?
                                                             <video width={250} height={180} controls style={{ zIndex: 222222}}>
                                                                 <source 
                                                                     src={`${process.env.REACT_APP_BACKEND_URL}/public/${messages.find(m => m.id === index).value.replace("file-", "")}`} 
@@ -75,7 +75,7 @@ const WhatsAppLayout = ({ messages, order }) => {
 
                                                                 </source>
                                                             </video> : 
-                                                        [".mp3", ".ogg"].some(ext => messages.find(m => m.id === index).value.endsWith(ext)) ? 
+                                                        [".mp3", ".ogg", ".mpeg"].some(ext => messages.find(m => m.id === index).value.endsWith(ext)) ? 
                                                             <audio controls style={{ width: 230}}>
                                                                 <source 
                                                                     src={`${process.env.REACT_APP_BACKEND_URL}/public/${messages.find(m => m.id === index).value.replace("file-", "")}`} 

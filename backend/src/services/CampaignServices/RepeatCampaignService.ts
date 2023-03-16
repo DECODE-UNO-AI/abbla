@@ -20,7 +20,7 @@ interface CampaignData {
   message4?: string[];
   message5?: string[];
   userId: string;
-  whatsappId: string;
+  whatsappId: string | null;
 }
 
 interface Request {
@@ -112,7 +112,8 @@ const RepeatCampaignService = async ({
       contactsCsv: data.contactsCsv,
       mediaUrl: data.mediaUrl,
       mediaType: data.mediaType,
-      whatsappId: data.whatsappId
+      whatsappId: data.whatsappId?.startsWith("api-") ? null : data.whatsappId,
+      whatsappApiId: data.whatsappId?.startsWith("api-") ? data.whatsappId.slice(4) : null
     });
   } catch (err) {
     logger.error(err);

@@ -15,6 +15,7 @@ import {
 import CampaignContact from "./CampaignContact";
 import User from "./User";
 import Whatsapp from "./Whatsapp";
+import WhatsappApi from "./WhatsappApi";
 
 @Table
 class Campaign extends Model<Campaign> {
@@ -151,6 +152,13 @@ class Campaign extends Model<Campaign> {
 
   @BelongsTo(() => Whatsapp)
   whatsapp: Whatsapp;
+
+  @ForeignKey(() => WhatsappApi)
+  @Column
+  whatsappApiId: number;
+
+  @BelongsTo(() => WhatsappApi)
+  whatsappApi: WhatsappApi;
 
   @HasMany(() => CampaignContact)
   campaignContacts: CampaignContact;
