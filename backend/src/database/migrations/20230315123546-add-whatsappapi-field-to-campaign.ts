@@ -4,7 +4,7 @@ module.exports = {
   up: (queryInterface: QueryInterface) => {
     return queryInterface.addColumn("Campaigns", "whatsappApiId", {
       type: DataTypes.INTEGER,
-      references: { model: "Whatsappapis", key: "id" },
+      references: { model: "WhatsappApis", key: "id" },
       onUpdate: "CASCADE",
       onDelete: "SET NULL",
       allowNull: true
