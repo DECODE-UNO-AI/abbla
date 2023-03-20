@@ -34,9 +34,15 @@ import {
   ListItem,
   ListItemText,
   ListItemAvatar,
-  Avatar
+  Avatar,
+  Dialog,
+  DialogContent,
+  DialogTitle,
+  DialogActions,
+  Button
 } from "@material-ui/core";
 import ClickAwayListener from "@material-ui/core/ClickAwayListener";
+import ScheduleMessage from "./ScheduleMessage";
 
 import { i18n } from "../../translate/i18n";
 import api from "../../services/api";
@@ -254,6 +260,7 @@ const MessageInput = ({ ticketStatus }) => {
   const [recording, setRecording] = useState(false);
   const [quickAnswers, setQuickAnswer] = useState([]);
   const [typeBar, setTypeBar] = useState(false);
+  const [scheduleModalOpen, setScheduledModalOpen] = useState(false);
   const inputRef = useRef();
   const [onDragEnter, setOnDragEnter] = useState(false);
   const [anchorEl, setAnchorEl] = useState(null);
@@ -545,6 +552,34 @@ const MessageInput = ({ ticketStatus }) => {
     );
   else {
     return (
+      <>
+      <Dialog
+            open={scheduleModalOpen}
+            onClose={() => {setScheduledModalOpen(false)}}
+            className={classes.dialog}
+            scroll="paper"
+        >   
+            <DialogTitle id="form-dialog-title">
+                {i18n.t("campaignModal.title.preview")+":"}
+            </DialogTitle>
+            <DialogContent style={{ padding: 40, minHeight: "100px"}}>
+              <ScheduleMessage />
+            </DialogContent>
+            <DialogActions>
+                <Button
+                    onClick={()=>{setScheduledModalOpen(false)}}
+                    variant="outlined"
+                >
+                    {i18n.t("campaignModal.buttons.close")}
+                </Button>
+                <Button
+                    onClick={()=>{setScheduledModalOpen(false)}}
+                    variant="contained"
+                >
+                    Agendar
+                </Button>
+            </DialogActions>
+        </Dialog>
       <Paper 
         square
         elevation={0}
@@ -750,7 +785,7 @@ const MessageInput = ({ ticketStatus }) => {
                   size="small"
                   aria-label="sendMessage"
                   component="span"
-                  onClick={() => handleSendMessage(true)}
+                  onClick={() => setScheduledModalOpen(true)}
                   disabled={loading}
                 >
                   <AccessTimeIcon className={classes.sendMessageOptionsIcons}/>
@@ -798,6 +833,7 @@ const MessageInput = ({ ticketStatus }) => {
           )}
         </div>
       </Paper>
+      </>
     );
   }
 };
