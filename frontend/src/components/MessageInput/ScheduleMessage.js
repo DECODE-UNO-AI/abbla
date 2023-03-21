@@ -6,21 +6,21 @@ const useStyles = makeStyles(theme => ({
 	
 }));
 
-const ScheduleMessage = () => {
+const ScheduleMessage = ({ onSubmit, setDate }) => {
 	const classes = useStyles();
 
 	return (
 		<div >
-			<form noValidate>
+			<form noValidate onSubmit={onSubmit}>
                 <TextField
                     id="datetime-local"
                     label="Data"
                     type="datetime-local"
-                    defaultValue="2017-05-24T10:30"
                     className={classes.textField}
                     InputLabelProps={{
                     shrink: true,
                     }}
+                    onChange={(e)=> { setDate(e.target.value) }}
                 />
                 </form>
 		</div>

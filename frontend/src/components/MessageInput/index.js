@@ -249,7 +249,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const MessageInput = ({ ticketStatus }) => {
+const MessageInput = ({ ticketStatus, ticket }) => {
   const classes = useStyles();
   const { ticketId } = useParams();
 
@@ -263,6 +263,7 @@ const MessageInput = ({ ticketStatus }) => {
   const [scheduleModalOpen, setScheduledModalOpen] = useState(false);
   const inputRef = useRef();
   const [onDragEnter, setOnDragEnter] = useState(false);
+  const [scheduleDate, setScheduledDate] = useState("")
   const [anchorEl, setAnchorEl] = useState(null);
   const { setReplyingMessage, replyingMessage } = useContext(ReplyMessageContext);
   const { user } = useContext(AuthContext);
@@ -377,6 +378,26 @@ const MessageInput = ({ ticketStatus }) => {
     setLoading(false);
     setReplyingMessage(null);
   };
+
+  const handleSheduleMessage = async () => {
+    if (inputMessage.trim() === "") return;
+    setLoading(true);
+
+    const data = {
+      body: signMessage
+        ? `*${user?.name}:*\n${inputMessage.trim()}`
+        : inputMessage.trim(),
+      inicialDate: scheduleDate,
+      contactId: ticket.contact.id,
+      ticketId: +ticketId,
+    }
+
+    try {
+      await api.post(`/scheduleMessage/`, data);
+    } catch (err) {
+      toastError(err);
+    }
+  }
 
   const handleStartRecording = async () => {
     setLoading(true);
@@ -563,7 +584,7 @@ const MessageInput = ({ ticketStatus }) => {
                 {i18n.t("campaignModal.title.preview")+":"}
             </DialogTitle>
             <DialogContent style={{ padding: 40, minHeight: "100px"}}>
-              <ScheduleMessage />
+              <ScheduleMessage onSubmit={handleSheduleMessage} setDate={setScheduledDate}/>
             </DialogContent>
             <DialogActions>
                 <Button
@@ -573,7 +594,7 @@ const MessageInput = ({ ticketStatus }) => {
                     {i18n.t("campaignModal.buttons.close")}
                 </Button>
                 <Button
-                    onClick={()=>{setScheduledModalOpen(false)}}
+                    onClick={()=>{handleSheduleMessage()}}
                     variant="contained"
                 >
                     Agendar

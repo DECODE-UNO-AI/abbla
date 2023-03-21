@@ -20,7 +20,7 @@ restartRoutes.post("/restart", isAuth, (req, res) => {
         if (err) {
           throw new AppError("INTERNAL_ERROR", 500);
         }
-        // pm2.disconnect();
+        pm2.disconnect();
       });
     });
   }

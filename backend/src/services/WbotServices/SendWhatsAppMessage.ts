@@ -32,7 +32,6 @@ const SendWhatsAppMessage = async ({
 
   try {
     if (!isComment) {
-      console.log("rny")
       const sentMessage = await wbot.sendMessage(
         `${ticket.contact.number}@${ticket.isGroup ? "g" : "c"}.us`,
         formatBody(body, ticket),
