@@ -1,4 +1,5 @@
 import schedule from "node-schedule";
+import AppError from "../errors/AppError";
 import ScheduleMessage from "../models/ScheduledMessage";
 import Ticket from "../models/Ticket";
 import SendWhatsAppMessage from "../services/WbotServices/SendWhatsAppMessage";
@@ -15,11 +16,17 @@ export const startScheduledMessageJob = (
   ticket: Ticket
 ): void => {
   const startDate: Date | number = new Date(sheduledMessage.inicialDate);
-  const job = schedule.scheduleJob(startDate, () => {
-    SendWhatsAppMessage({
-      body: sheduledMessage.body,
-      ticket
-    });
+  const job = schedule.scheduleJob(startDate, async () => {
+    try {
+      await SendWhatsAppMessage({
+        body: sheduledMessage.body,
+        ticket
+      });
+      await sheduledMessage.update({ status: "sent" });
+    } catch (err) {
+      await sheduledMessage.update({ status: "failed" });
+      throw new AppError(err);
+    }
   });
   allScheduledMessagejobs.push({ id: sheduledMessage.id, job });
 };

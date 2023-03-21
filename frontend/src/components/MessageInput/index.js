@@ -51,6 +51,7 @@ import { ReplyMessageContext } from "../../context/ReplyingMessage/ReplyingMessa
 import { AuthContext } from "../../context/Auth/AuthContext";
 import { useLocalStorage } from "../../hooks/useLocalStorage";
 import toastError from "../../errors/toastError";
+import { toast } from "react-toastify";
 
 
 const Mp3Recorder = new MicRecorder({ bitRate: 128 });
@@ -380,8 +381,14 @@ const MessageInput = ({ ticketStatus, ticket }) => {
   };
 
   const handleSheduleMessage = async () => {
-    if (inputMessage.trim() === "") return;
+    if (inputMessage.trim() === "" || !scheduleDate) return;
     setLoading(true);
+
+    if(new Date(scheduleDate) < new Date()) {
+      setLoading(false)
+      toast.error("Data inválida.")
+      return
+    }
 
     const data = {
       body: signMessage
@@ -394,8 +401,13 @@ const MessageInput = ({ ticketStatus, ticket }) => {
 
     try {
       await api.post(`/scheduleMessage/`, data);
+      setInputMessage("")
+      setScheduledModalOpen(false);
+      toast.success("Mensagem agendada.")
     } catch (err) {
       toastError(err);
+    } finally {
+      setLoading(false)
     }
   }
 
@@ -581,7 +593,7 @@ const MessageInput = ({ ticketStatus, ticket }) => {
             scroll="paper"
         >   
             <DialogTitle id="form-dialog-title">
-                {i18n.t("campaignModal.title.preview")+":"}
+                Agendar mensagem:
             </DialogTitle>
             <DialogContent style={{ padding: 40, minHeight: "100px"}}>
               <ScheduleMessage onSubmit={handleSheduleMessage} setDate={setScheduledDate}/>
@@ -590,14 +602,22 @@ const MessageInput = ({ ticketStatus, ticket }) => {
                 <Button
                     onClick={()=>{setScheduledModalOpen(false)}}
                     variant="outlined"
+                    disabled={loading}
                 >
                     {i18n.t("campaignModal.buttons.close")}
                 </Button>
                 <Button
                     onClick={()=>{handleSheduleMessage()}}
                     variant="contained"
+                    color="secondary"
                 >
-                    Agendar
+                    { loading ?   
+                      <CircularProgress
+                        className={classes.circleLoading}
+                        disabled={loading}
+                        size={21}
+                      /> : "AGENDAR"
+                    }
                 </Button>
             </DialogActions>
         </Dialog>
