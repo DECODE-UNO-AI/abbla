@@ -8,7 +8,8 @@ import {
   PrimaryKey,
   Default,
   BelongsTo,
-  ForeignKey
+  ForeignKey,
+  AutoIncrement
 } from "sequelize-typescript";
 import Contact from "./Contact";
 import Ticket from "./Ticket";
@@ -17,6 +18,7 @@ import User from "./User";
 @Table
 class ScheduledMessage extends Model<ScheduledMessage> {
   @PrimaryKey
+  @AutoIncrement
   @Column
   id: number;
 
@@ -34,7 +36,7 @@ class ScheduledMessage extends Model<ScheduledMessage> {
   @Column
   inicialDate: Date;
 
-  @Default("pending")
+  @Default("scheduled")
   @Column(DataType.ENUM("scheduled", "sent", "failed"))
   status: string;
 

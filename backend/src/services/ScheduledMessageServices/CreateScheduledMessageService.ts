@@ -27,6 +27,7 @@ const CreateSheduledMessageService = async ({
     });
     const ticket = await ShowTicketService(+ticketId);
     if (!ticket) {
+      await newScheduledMessage.update({ status: "failed" });
       throw new Error("ERR_CREATING_MESSAGE");
     }
     startScheduledMessageJob(newScheduledMessage, ticket);

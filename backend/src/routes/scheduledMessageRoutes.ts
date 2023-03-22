@@ -10,4 +10,16 @@ scheduleMessageRoutes.post(
   ScheduledMessageController.store
 );
 
+scheduleMessageRoutes.get(
+  "/scheduleMessage/:contactId",
+  isAuth,
+  ScheduledMessageController.index
+);
+
+scheduleMessageRoutes.delete(
+  "/scheduleMessage/:scheduleMessageId",
+  isAuth,
+  ScheduledMessageController.remove
+);
+
 export default scheduleMessageRoutes;

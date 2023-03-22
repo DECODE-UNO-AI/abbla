@@ -610,14 +610,9 @@ const MessageInput = ({ ticketStatus, ticket }) => {
                     onClick={()=>{handleSheduleMessage()}}
                     variant="contained"
                     color="secondary"
+                    disabled={loading}
                 >
-                    { loading ?   
-                      <CircularProgress
-                        className={classes.circleLoading}
-                        disabled={loading}
-                        size={21}
-                      /> : "AGENDAR"
-                    }
+                    AGENDAR
                 </Button>
             </DialogActions>
         </Dialog>

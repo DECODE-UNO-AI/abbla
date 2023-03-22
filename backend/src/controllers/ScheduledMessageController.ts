@@ -12,9 +12,9 @@ export const index = async (req: Request, res: Response): Promise<Response> => {
     throw new AppError("ERR_NO_CONTACT_ID");
   }
 
-  const sheduledMessage = await ShowSheduledMessagesService(contactId);
+  const scheduledMessages = await ShowSheduledMessagesService(contactId);
 
-  return res.status(200).json({ sheduledMessage });
+  return res.status(200).json({ scheduledMessages });
 };
 
 export const store = async (req: Request, res: Response): Promise<Response> => {
