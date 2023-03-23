@@ -29,6 +29,10 @@ class Message extends Model<Message> {
 
   @Default(false)
   @Column
+  isComment: boolean;
+
+  @Default(false)
+  @Column
   fromMe: boolean;
 
   @Column(DataType.TEXT)

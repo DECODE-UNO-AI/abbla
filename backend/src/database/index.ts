@@ -17,7 +17,9 @@ import DepartamentQueue from "../models/DepartamentQueue";
 import UserDepartament from "../models/UserDepartament";
 import Campaign from "../models/Campaign";
 import CampaignContact from "../models/CampaignContact";
+import ScheduledMessage from "../models/ScheduledMessage";
 import WhatsappApi from "../models/WhatsappApi";
+
 
 // eslint-disable-next-line
 const dbConfig = require("../config/database");
@@ -44,6 +46,7 @@ const models = [
   UserDepartament,
   Campaign,
   CampaignContact,
+  ScheduledMessage,
   WhatsappApi
 ];
 

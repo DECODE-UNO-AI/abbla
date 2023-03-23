@@ -13,8 +13,10 @@ import { green } from "@material-ui/core/colors";
 import AttachFileIcon from "@material-ui/icons/AttachFile";
 import IconButton from "@material-ui/core/IconButton";
 import MoreVert from "@material-ui/icons/MoreVert";
+import AccessTimeIcon from '@material-ui/icons/AccessTime';
 import MoodIcon from "@material-ui/icons/Mood";
 import SendIcon from "@material-ui/icons/Send";
+import InsertCommentIcon from '@material-ui/icons/InsertComment';
 import CancelIcon from "@material-ui/icons/Cancel";
 import ClearIcon from "@material-ui/icons/Clear";
 import MicIcon from "@material-ui/icons/Mic";
@@ -32,9 +34,15 @@ import {
   ListItem,
   ListItemText,
   ListItemAvatar,
-  Avatar
+  Avatar,
+  Dialog,
+  DialogContent,
+  DialogTitle,
+  DialogActions,
+  Button
 } from "@material-ui/core";
 import ClickAwayListener from "@material-ui/core/ClickAwayListener";
+import ScheduleMessage from "./ScheduleMessage";
 
 import { i18n } from "../../translate/i18n";
 import api from "../../services/api";
@@ -43,6 +51,8 @@ import { ReplyMessageContext } from "../../context/ReplyingMessage/ReplyingMessa
 import { AuthContext } from "../../context/Auth/AuthContext";
 import { useLocalStorage } from "../../hooks/useLocalStorage";
 import toastError from "../../errors/toastError";
+import { toast } from "react-toastify";
+
 
 const Mp3Recorder = new MicRecorder({ bitRate: 128 });
 
@@ -112,6 +122,11 @@ const useStyles = makeStyles((theme) => ({
 
   sendMessageIcons: {
     color: "grey",
+  },
+
+  sendMessageOptionsIcons: {
+    color: "grey",
+    fontSize: 15
   },
 
   uploadInput: {
@@ -235,7 +250,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const MessageInput = ({ ticketStatus }) => {
+const MessageInput = ({ ticketStatus, ticket }) => {
   const classes = useStyles();
   const { ticketId } = useParams();
 
@@ -246,8 +261,10 @@ const MessageInput = ({ ticketStatus }) => {
   const [recording, setRecording] = useState(false);
   const [quickAnswers, setQuickAnswer] = useState([]);
   const [typeBar, setTypeBar] = useState(false);
+  const [scheduleModalOpen, setScheduledModalOpen] = useState(false);
   const inputRef = useRef();
   const [onDragEnter, setOnDragEnter] = useState(false);
+  const [scheduleDate, setScheduledDate] = useState("")
   const [anchorEl, setAnchorEl] = useState(null);
   const { setReplyingMessage, replyingMessage } = useContext(ReplyMessageContext);
   const { user } = useContext(AuthContext);
@@ -337,12 +354,13 @@ const MessageInput = ({ ticketStatus }) => {
     setMedias([]);
   };
 
-  const handleSendMessage = async () => {
+  const handleSendMessage = async (isComment = false) => {
     if (inputMessage.trim() === "") return;
     setLoading(true);
-
+    
     const message = {
       read: 1,
+      isComment: isComment,
       fromMe: true,
       mediaUrl: "",
       body: signMessage
@@ -361,6 +379,37 @@ const MessageInput = ({ ticketStatus }) => {
     setLoading(false);
     setReplyingMessage(null);
   };
+
+  const handleSheduleMessage = async () => {
+    if (inputMessage.trim() === "" || !scheduleDate) return;
+    setLoading(true);
+
+    if(new Date(scheduleDate) < new Date()) {
+      setLoading(false)
+      toast.error("Data inválida.")
+      return
+    }
+
+    const data = {
+      body: signMessage
+        ? `*${user?.name}:*\n${inputMessage.trim()}`
+        : inputMessage.trim(),
+      inicialDate: scheduleDate,
+      contactId: ticket.contact.id,
+      ticketId: +ticketId,
+    }
+
+    try {
+      await api.post(`/scheduleMessage/`, data);
+      setInputMessage("")
+      setScheduledModalOpen(false);
+      toast.success("Mensagem agendada.")
+    } catch (err) {
+      toastError(err);
+    } finally {
+      setLoading(false)
+    }
+  }
 
   const handleStartRecording = async () => {
     setLoading(true);
@@ -536,6 +585,37 @@ const MessageInput = ({ ticketStatus }) => {
     );
   else {
     return (
+      <>
+      <Dialog
+            open={scheduleModalOpen}
+            onClose={() => {setScheduledModalOpen(false)}}
+            className={classes.dialog}
+            scroll="paper"
+        >   
+            <DialogTitle id="form-dialog-title">
+                Agendar mensagem:
+            </DialogTitle>
+            <DialogContent style={{ padding: 40, minHeight: "100px"}}>
+              <ScheduleMessage onSubmit={handleSheduleMessage} setDate={setScheduledDate}/>
+            </DialogContent>
+            <DialogActions>
+                <Button
+                    onClick={()=>{setScheduledModalOpen(false)}}
+                    variant="outlined"
+                    disabled={loading}
+                >
+                    {i18n.t("campaignModal.buttons.close")}
+                </Button>
+                <Button
+                    onClick={()=>{handleSheduleMessage()}}
+                    variant="contained"
+                    color="secondary"
+                    disabled={loading}
+                >
+                    AGENDAR
+                </Button>
+            </DialogActions>
+        </Dialog>
       <Paper 
         square
         elevation={0}
@@ -717,14 +797,38 @@ const MessageInput = ({ ticketStatus }) => {
             )}
           </div>
           {inputMessage ? (
-            <IconButton
-              aria-label="sendMessage"
-              component="span"
-              onClick={handleSendMessage}
-              disabled={loading}
-            >
-              <SendIcon className={classes.sendMessageIcons} />
-            </IconButton>
+            <>
+            <div style={{ display: "flex", alignItems: "center"}}>
+              <IconButton
+                aria-label="sendMessage"
+                component="span"
+                onClick={handleSendMessage}
+                disabled={loading}
+              >
+                <SendIcon className={classes.sendMessageIcons} />
+              </IconButton>
+              <div style={{ display: "flex", flexDirection: "column", alignItems: "center"}}>
+                <IconButton
+                  size="small"
+                  aria-label="sendMessage"
+                  component="span"
+                  onClick={() => handleSendMessage(true)}
+                  disabled={loading}
+                >
+                  <InsertCommentIcon className={classes.sendMessageOptionsIcons}/>
+                </IconButton>
+                <IconButton
+                  size="small"
+                  aria-label="sendMessage"
+                  component="span"
+                  onClick={() => setScheduledModalOpen(true)}
+                  disabled={loading}
+                >
+                  <AccessTimeIcon className={classes.sendMessageOptionsIcons}/>
+                </IconButton>
+              </div>
+            </div>
+            </>
           ) : recording ? (
             <div className={classes.recorderWrapper}>
               <IconButton
@@ -765,6 +869,7 @@ const MessageInput = ({ ticketStatus }) => {
           )}
         </div>
       </Paper>
+      </>
     );
   }
 };
