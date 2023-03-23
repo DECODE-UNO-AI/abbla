@@ -105,14 +105,15 @@ const useStyles = makeStyles(theme => ({
     },
     variableContent: {
         display: "flex",
-        width: "100%",
-
+        maxWidth: 800,
+        justifyContent: "left",
+        alignItems: "center"
     },
     chipBox: {
         display: "flex",
         alignItems: "center",
         flexWrap: "wrap",
-        gap: 2
+        gap: 2,
     },
     testContainer: {
         width: "100%",

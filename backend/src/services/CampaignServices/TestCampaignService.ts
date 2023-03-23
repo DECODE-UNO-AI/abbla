@@ -103,6 +103,7 @@ const sendApiMessage = async (
   let number;
   try {
     const fiveFiveNumber = contactNumber.startsWith("55") ? contactNumber : `55${contactNumber}`
+    console.log(fiveFiveNumber);
     const { data } = await axios.get(`${process.env.BAILEYS_API_HOST}/${whatsapp.sessionId}/contacts/${fiveFiveNumber}`);
     if (data.exists) {
       number = data.exists.resultjid
