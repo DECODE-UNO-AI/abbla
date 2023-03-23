@@ -101,11 +101,9 @@ const sendApiMessage = async (
   // Verify if number is valid
   let number;
   try {
-    const numberWithout55 = contactNumber.startsWith("55") ? contactNumber.slice(2) : contactNumber
-    const { data } = await axios.get(`${process.env.BAILEYS_API_HOST}/${whatsapp.sessionId}/contacts/${numberWithout55}`);
+    const { data } = await axios.get(`${process.env.BAILEYS_API_HOST}/${whatsapp.sessionId}/contacts/${contactNumber}`);
     if (data.exists) {
       number = data.exists.resultjid
-
     }
   } catch (err) {
     logger.error(err);
@@ -211,7 +209,7 @@ const TestCampaignService = async ({
       throw new AppError("ERR_WAPP_NOT_INITIALIZED", 400);
     }
     await sendApiMessage(message, apiCon, number, medias)
-
+    return;
   } catch(err) {
     throw new AppError(err.message, 500);
   }

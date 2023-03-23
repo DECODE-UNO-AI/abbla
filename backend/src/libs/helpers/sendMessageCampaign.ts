@@ -139,10 +139,9 @@ const sendApiMessage = async (
   // Verify if number is valid
   let number;
   try {
-    const { data } = await axios.get(`${process.env.BAILEYS_API_HOST}/${whatsapp.sessionId}/contacts/${contact.number.slice(2)}`);
+    const { data } = await axios.get(`${process.env.BAILEYS_API_HOST}/${whatsapp.sessionId}/contacts/${contact.number}`);
     if (data.exists) {
-      number = data.exists.resultjid
-
+      number = data.exists.resultjid;
     }
   } catch (err) {
 
