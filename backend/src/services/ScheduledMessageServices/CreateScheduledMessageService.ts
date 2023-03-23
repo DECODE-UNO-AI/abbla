@@ -33,6 +33,7 @@ const CreateSheduledMessageService = async ({
     startScheduledMessageJob(newScheduledMessage, ticket);
     return newScheduledMessage;
   } catch (err) {
+    console.log(err);
     throw new Error("ERR_CREATING_MESSAGE");
   }
 };
