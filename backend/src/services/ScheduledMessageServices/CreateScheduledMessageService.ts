@@ -1,6 +1,7 @@
 import ScheduledMessage from "../../models/ScheduledMessage";
 import { startScheduledMessageJob } from "../../libs/scheduledMessageQueue";
 import ShowTicketService from "../TicketServices/ShowTicketService";
+import { logger } from "../../utils/logger";
 
 interface MessageData {
   body: string;
@@ -33,7 +34,7 @@ const CreateSheduledMessageService = async ({
     startScheduledMessageJob(newScheduledMessage, ticket);
     return newScheduledMessage;
   } catch (err) {
-    console.log(err);
+    logger.error(err)
     throw new Error("ERR_CREATING_MESSAGE");
   }
 };
