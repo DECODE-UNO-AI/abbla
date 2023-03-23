@@ -35,7 +35,8 @@ interface CampaignData {
   message5?: string[];
   contactsCsv: string;
   userId: string;
-  whatsappId: string;
+  whatsappId: string | null;
+  whatsappApiId: string | null;
 }
 
 type IndexQuery = {
@@ -212,7 +213,9 @@ export const update = async (
     message4: req.body.message4 ? JSON.parse(req.body.message4) : [],
     message5: req.body.message5 ? JSON.parse(req.body.message5) : [],
     sendTime: req.body.sendTime ? JSON.parse(req.body.sendTime) : [],
-    userId: id
+    userId: id,
+    whatsappId: req.body.whatsappId.startsWith("api-") ? null : req.body.whatsappId,
+    whatsappApiId: req.body.whatsappId.startsWith("api-") ? req.body.whatsappId.slice(4) : null
   };
 
   if (
@@ -264,7 +267,7 @@ export const update = async (
       message2,
       message3,
       message4,
-      message5
+      message5,
     };
   });
 
@@ -279,7 +282,7 @@ export const update = async (
     message4: Yup.array(),
     message5: Yup.array(),
     userId: Yup.string().required(),
-    whatsappId: Yup.string().required()
+    whatsappId: Yup.string().nullable()
   });
 
   try {

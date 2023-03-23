@@ -19,7 +19,7 @@ interface CampaignData {
   message4?: string[];
   message5?: string[];
   userId: string;
-  whatsappId: string;
+  whatsappId: string | null;
 }
 
 interface Request {

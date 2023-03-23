@@ -45,5 +45,11 @@
     "import/resolver": {
       "typescript": {}
     }
-  }
+  },
+  "import/no-extraneous-dependencies": [
+    "error",
+    {
+      "projectDependencies": false
+    }
+  ]
 }

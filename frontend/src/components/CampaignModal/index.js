@@ -105,14 +105,15 @@ const useStyles = makeStyles(theme => ({
     },
     variableContent: {
         display: "flex",
-        width: "100%",
-
+        maxWidth: 800,
+        justifyContent: "left",
+        alignItems: "center"
     },
     chipBox: {
         display: "flex",
         alignItems: "center",
         flexWrap: "wrap",
-        gap: 2
+        gap: 2,
     },
     testContainer: {
         width: "100%",
@@ -251,6 +252,7 @@ const CampaignModal = ({ open, onClose, campaignId, visualize = false }) => {
     const [sendTime, setSendTime] = useState(initialState.sendTime);
     const [delay, setDelay] = useState("15")
     const [tabValue, setTabValue] = useState(0);
+    const [whatsappsApis, setWhatsappsApis] = useState([]);
     const [startNow, setStartNow] = useState(false);
     const [csvFile, setCsvFile] = useState(null)
     const [csvColumns, setCsvColumns] = useState([])
@@ -318,6 +320,12 @@ const CampaignModal = ({ open, onClose, campaignId, visualize = false }) => {
 					return { ...prevState, ...data, inicialDate: settedDate};
 				});
 
+                if(data.whatsappApiId) {
+                    setCapaignForm(prevState => {
+                        return { ...prevState, whatsappId: `api-${data.whatsappApiId}`};
+                    });
+                }
+
                 setAllMessagesInputs({
                     message1Inputs: data.message1.map((message, index) => {
                         if(message.startsWith("file-")) {
@@ -375,8 +383,19 @@ const CampaignModal = ({ open, onClose, campaignId, visualize = false }) => {
             setAllMessagesInputs([]);
 		};
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [campaignId])
+    }, [campaignId])    
 
+    useEffect(() => {
+        (async () => {
+			try {
+                const response = await api.get("/whatsappapi")
+                const wtsapps = response.data.whatsapps
+                setWhatsappsApis(wtsapps)
+			} catch (err) {
+				toastError(err);
+			}
+		})();
+    }, [])
 
     const handleOnSendTimeInputChange = (event, value) => {
         setSendTime(value);
@@ -755,6 +774,9 @@ const CampaignModal = ({ open, onClose, campaignId, visualize = false }) => {
 											{whatsApps?.map((whatsapp) => (
 												<MenuItem key={whatsapp.id} value={`${whatsapp.id}`}>{whatsapp.name}</MenuItem>
 											))}
+                                            {whatsappsApis.map((whatsapp) => (
+                                                <MenuItem key={whatsapp.id} value={`api-${whatsapp.id}`}>{whatsapp?.name}</MenuItem>
+                                            ))}
 										</Field>
                                     </Box>
                                 </Box>
