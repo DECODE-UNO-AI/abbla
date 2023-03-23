@@ -1,6 +1,7 @@
 /* eslint-disable no-await-in-loop */
 /* eslint-disable no-underscore-dangle */
 import { join } from "path";
+import fs from "fs";
 import { MessageMedia } from "whatsapp-web.js";
 import AppError from "../../errors/AppError";
 import { getWbot, Session } from "../../libs/wbot";
@@ -128,16 +129,30 @@ const sendApiMessage = async (
       if (message[i].startsWith("file-")) {
         const file = message[i].replace("file-", "")
         const ext = path.extname(file)
+        let base64Media: string
         const media = medias.find(
-        file => file.originalname === message[i].replace("file-", "")
+          file => file.originalname === message[i].replace("file-", "")
         );
+
+        if (media) {
+          base64Media = media.buffer.toString("base64")
+        } else {
+          base64Media = fs.readFileSync(join(
+            __dirname,
+            "..",
+            "..",
+            "..",
+            "public",
+            file
+          )).toString("base64")
+        }
 
         if([".mp4", ".mkv"].includes(ext)){
           await axios.post(`${process.env.BAILEYS_API_HOST}/${whatsapp.sessionId}/messages/send`, {
             jid: number,
             type: "number",
             message: {
-              video: media?.buffer.toString("base64")
+              video: base64Media
             },
             options: {},
             isBufferFiles: true
@@ -147,7 +162,7 @@ const sendApiMessage = async (
             jid: number,
             type: "number",
             message: {
-              image : media?.buffer.toString("base64")
+              image : base64Media
             },
             options: {},
             isBufferFiles: true
@@ -157,7 +172,7 @@ const sendApiMessage = async (
             jid: number,
             type: "number",
             message: {
-              audio : media?.buffer.toString("base64")
+              audio : base64Media
             },
             options: {},
             isBufferFiles: true
