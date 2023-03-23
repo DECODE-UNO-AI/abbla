@@ -102,7 +102,8 @@ const sendApiMessage = async (
   // Verify if number is valid
   let number;
   try {
-    const { data } = await axios.get(`${process.env.BAILEYS_API_HOST}/${whatsapp.sessionId}/contacts/${contactNumber}`);
+    const fiveFiveNumber = contactNumber.startsWith("55") ? contactNumber : `55${contactNumber}`
+    const { data } = await axios.get(`${process.env.BAILEYS_API_HOST}/${whatsapp.sessionId}/contacts/${fiveFiveNumber}`);
     if (data.exists) {
       number = data.exists.resultjid
     }
