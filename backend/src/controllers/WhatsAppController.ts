@@ -12,6 +12,13 @@ import UpdateWhatsAppService from "../services/WhatsappService/UpdateWhatsAppSer
 import ListSupervisorWhatsAppsService from "../services/WhatsappService/ListSupervisorWhatsAppsService";
 import User from "../models/User";
 import Departament from "../models/Departament";
+import CreateWhatsappApiService from "../services/WhasappApiService/CreateWhastappApiService";
+import ShowWhatsappApisService from "../services/WhasappApiService/ShowWhatsappApisService";
+import ShowWhatsappApiService from "../services/WhasappApiService/ShowWhatsappApiService";
+import WhatsappApi from "../models/WhatsappApi";
+
+import DeleteWhatsAppApiService from "../services/WhasappApiService/DeleteWhatsAppApiService";
+import axios from "axios";
 
 interface WhatsappData {
   name: string;
@@ -88,6 +95,51 @@ export const store = async (req: Request, res: Response): Promise<Response> => {
   return res.status(200).json(whatsapp);
 };
 
+export const storeapi = async (
+  req: Request,
+  res: Response
+): Promise<Response> => {
+  const { name } = req.body;
+
+  try {
+    const whatsapp = await CreateWhatsappApiService(name);
+
+    return res.status(200).json({ whatsapp });
+  } catch (err) {
+    throw new AppError(err);
+  }
+
+};
+
+export const showApis = async (
+  req: Request,
+  res: Response
+): Promise<Response> => {
+
+  try {
+    const whatsapps = await ShowWhatsappApisService();
+    return res.status(200).json({ whatsapps });
+  } catch (err) {
+    throw new AppError(err);
+  }
+
+};
+
+export const showApi = async (
+  req: Request,
+  res: Response
+): Promise<Response> => {
+  const { apiId } = req.params
+
+  try {
+    const whatsapp = await ShowWhatsappApiService(apiId);
+    return res.status(200).json(whatsapp);
+  } catch (err) {
+    throw new AppError(err);
+  }
+
+};
+
 export const show = async (req: Request, res: Response): Promise<Response> => {
   const { whatsappId } = req.params;
 
@@ -140,4 +192,62 @@ export const remove = async (
   });
 
   return res.status(200).json({ message: "Whatsapp deleted." });
+};
+
+export const removeapi = async (
+  req: Request,
+  res: Response
+): Promise<Response> => {
+
+  const { apiId } = req.params;
+
+  try {
+
+    const whatsapp = await WhatsappApi.findByPk(apiId);
+    if(!whatsapp) return res.status(404).json({ message: "Whatsapp not found." });
+
+    await DeleteWhatsAppApiService(whatsapp);
+
+    const io = getIO();
+    io.emit("whatsappapi-update", {
+      action: "DELETE_SESSION",
+      whatsappId: +apiId
+    });
+    await axios.delete(`${process.env.BAILEYS_API_HOST}/sessions/${whatsapp.sessionId}`)
+    return res.status(200).json({ message: "Whatsapp deleted." });
+
+  } catch (err) {
+    throw new AppError(err)
+  }
+
+};
+
+export const updateapi = async (
+  req: Request,
+  res: Response
+): Promise<any> => {
+
+  const { sessionId } = req.params
+  const { qr, status } = req.body;
+
+  const newStatus = status === "CONNECTED" ? "qrcode" : status === "AUTHENTICATED" ? "CONNECTED" : status === "CANCELED" ? "CANCELED" :  "DISCONNECTED"
+  try {
+
+    const whatsapp = await WhatsappApi.findOne({ where: { sessionId }})
+
+    if(!whatsapp) return
+
+    await whatsapp.update({ status: newStatus, qrcode: qr })
+
+    const io = getIO();
+    io.emit("whatsappapi-update", {
+      action: "UPDATE_SESSION",
+      whatsapp: whatsapp
+    });
+    return res.status(200)
+  } catch (err) {
+    return res.status(200)
+  }
+
+
 };

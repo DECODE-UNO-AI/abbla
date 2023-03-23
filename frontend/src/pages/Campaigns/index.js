@@ -145,10 +145,20 @@ const getWhatsAppName = (whatsapps, id) => {
 	return whatsapps[whatsIndex].name
 }
 
+const getApiName = (whatsapps, id) => {
+	const whatsIndex = whatsapps.findIndex((w) => w.id === id)
+	if(whatsIndex === -1){
+		return "-"
+	}
+	return whatsapps[whatsIndex].name
+}
+
+
 const Campaigns = () => {
 	const classes = useStyles();
 	const [modalOpen, setModalOpen] = useState(false)
 	const [loading, setLoading] = useState(false)
+	const [whatsappsApis, setWhatsappsApis] = useState([])
 	const [campaigns, dispatch] = useReducer(reducer, []);
 	const [confirmModalOpen, setConfirmModalOpen] = useState(false)
 	const [selectedCampaign, setSelectedCampaign] = useState(null)
@@ -195,6 +205,18 @@ const Campaigns = () => {
 			}
 		  })();
 	}, [searchParam, filterOptions])
+
+	useEffect(() => {
+        (async () => {
+			try {
+                const response = await api.get("/whatsappapi")
+                const wtsapps = response.data.whatsapps
+                setWhatsappsApis(wtsapps)
+			} catch (err) {
+				toastError(err);
+			}
+		})();
+    }, [])
 
 	useEffect(() => {
 		const socket = openSocket();
@@ -439,7 +461,7 @@ const Campaigns = () => {
 							<TableRow key={campaign.id}>
 								<TableCell align="center">{campaign.id}</TableCell>
 								<TableCell align="left">{campaign.name}</TableCell>
-								<TableCell align="center">{getWhatsAppName(whatsApps, campaign.whatsappId)}</TableCell>
+								<TableCell align="center">{campaign.whatsappId ? getWhatsAppName(whatsApps, campaign.whatsappId) : getApiName(whatsappsApis, campaign.whatsappApiId)}</TableCell>
 								<TableCell align="left">{new Date(campaign.createdAt).toLocaleString()}</TableCell>
 								<TableCell align="left">{new Date(campaign.inicialDate).toLocaleString()}</TableCell>
 								<TableCell align="center">{campaign.delay.split("-")[1]} seg</TableCell>

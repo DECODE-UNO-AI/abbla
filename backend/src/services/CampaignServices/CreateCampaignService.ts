@@ -18,7 +18,7 @@ interface CampaignRequest {
   message4?: string[];
   message5?: string[];
   userId: string;
-  whatsappId: string;
+  whatsappId: string | null;
 }
 
 interface Request {
@@ -92,7 +92,8 @@ const CreateCampaignService = async ({
     userId: campaign.userId,
     delay: delayValue,
     contactsCsv: contacts?.filename,
-    whatsappId: campaign.whatsappId
+    whatsappId: campaign.whatsappId?.startsWith("api-") ? null : campaign.whatsappId,
+    whatsappApiId: campaign.whatsappId?.startsWith("api-") ? campaign.whatsappId.slice(4) : null
   };
   const campaignData = await Campaign.create(data);
 
