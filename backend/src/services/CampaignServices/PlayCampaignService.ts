@@ -9,7 +9,7 @@ const PlayCampaignService = async (
   if (!campaign) {
     throw new AppError("ERR_CAMPAIGN_NOT_FOUND", 404);
   }
-  if (campaign.status !== "paused") {
+  if (!["paused", "failed"].includes(campaign.status)) {
     throw new AppError("ERR_CAMPAIGN_CANT_BE_PLAYED", 403);
   }
 

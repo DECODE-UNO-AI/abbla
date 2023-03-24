@@ -456,7 +456,44 @@ const sendMessageCampaign = async (campaign: Campaign): Promise<void> => {
     await setDelay(randomDelay * 1000);
     if (!(whatsapp instanceof WhatsappApi)){
       await sendMessage(penddingContacts[i], randomMessages, whatsapp, io, campaign);
+      const state = await whatsapp.getState();
+      if (state !== "CONNECTED") {
+        await campaign.update({
+          status: "failed"
+        });
+        await campaign.reload();
+        io.emit("campaigns", {
+          action: "update",
+          campaign
+        });
+        break;
+      }
     } else {
+      try {
+        const { status: statusApi }: {status: string} = await axios.get(`${process.env.BAILEYS_API_HOST}/${whatsapp.sessionId}/status`)
+        if (statusApi !== "AUTHENTICATED") {
+          await campaign.update({
+            status: "failed"
+          });
+          await campaign.reload();
+          io.emit("campaigns", {
+            action: "update",
+            campaign
+          });
+          break;
+        }
+      } catch(err) {
+        await campaign.update({
+          status: "failed"
+        });
+        await campaign.reload();
+        io.emit("campaigns", {
+          action: "update",
+          campaign
+        });
+        logger.info("Api error");
+        break;
+      }
       await sendApiMessage(penddingContacts[i], randomMessages, whatsapp, io, campaign);
     }
     if (i + 1 === penddingContacts.length) {

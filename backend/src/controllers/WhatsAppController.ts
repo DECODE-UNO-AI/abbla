@@ -106,7 +106,7 @@ export const storeapi = async (
 
     return res.status(200).json({ whatsapp });
   } catch (err) {
-    throw new AppError(err);
+    throw new AppError("INTERNAL_ERR", 500);
   }
 
 };
@@ -120,7 +120,7 @@ export const showApis = async (
     const whatsapps = await ShowWhatsappApisService();
     return res.status(200).json({ whatsapps });
   } catch (err) {
-    throw new AppError(err);
+    throw new AppError("INTERNAL_ERR", 500);
   }
 
 };
@@ -135,7 +135,7 @@ export const showApi = async (
     const whatsapp = await ShowWhatsappApiService(apiId);
     return res.status(200).json(whatsapp);
   } catch (err) {
-    throw new AppError(err);
+    throw new AppError("INTERNAL_ERR", 500);;
   }
 
 };
@@ -217,7 +217,7 @@ export const removeapi = async (
     return res.status(200).json({ message: "Whatsapp deleted." });
 
   } catch (err) {
-    throw new AppError(err)
+    throw new AppError("INTERNAL_ERR", 500);
   }
 
 };

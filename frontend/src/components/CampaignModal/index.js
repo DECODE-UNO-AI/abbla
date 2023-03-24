@@ -312,7 +312,7 @@ const CampaignModal = ({ open, onClose, campaignId, visualize = false }) => {
                 } catch(err) {
                     toastError(err)
                 }
-                setIsRepeatModel(["finished", "archived", "canceled"].includes(data.status))
+                setIsRepeatModel(["finished", "archived", "canceled", "failed"].includes(data.status))
 				setCapaignForm(prevState => {
                     if (["finished", "archived", "canceled"].includes(data.status)){
                         return { ...prevState, ...data, inicialDate: getFirstDate()};
