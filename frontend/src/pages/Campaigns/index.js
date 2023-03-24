@@ -555,7 +555,7 @@ const Campaigns = () => {
 								</TableCell>
 								<TableCell align="right">
 									{
-									["paused"].includes(campaign.status) ? 
+									["paused", "failed"].includes(campaign.status) ? 
 										<IconButton
 											size="small"
 											onClick={() => {
