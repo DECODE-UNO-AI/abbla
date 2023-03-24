@@ -491,7 +491,7 @@ const sendMessageCampaign = async (campaign: Campaign): Promise<void> => {
           action: "update",
           campaign
         });
-        logger.error(err);
+        logger.info("Api error");
         break;
       }
       await sendApiMessage(penddingContacts[i], randomMessages, whatsapp, io, campaign);
