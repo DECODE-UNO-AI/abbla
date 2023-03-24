@@ -15,6 +15,8 @@ import { DatePicker, Space, Divider, Select, Radio } from 'antd';
 import { TagsFilter } from "../TagsFilter";
 
 import api from "../../services/api";
+import { useContext } from "react";
+import { AuthContext } from "../../context/Auth/AuthContext";
 
 const useStyles = makeStyles((theme) => ({
   container: {
@@ -106,6 +108,8 @@ const FilterComponent = ({ user, onSubmit, status = '' }) => {
     const [dateOrder, setDateOrder] = useState("createTicket")
 
     const [filters, dispatch] = useReducer(reducer, {});
+
+    const { user: currentUser } = useContext(AuthContext);
 
     useEffect(() => {
         const queuesChildren =  user?.queues.map((queue) => { return {value: `${queue.id}`, label: queue.name}})
@@ -293,7 +297,7 @@ const FilterComponent = ({ user, onSubmit, status = '' }) => {
                         allowClear
                         style={{ width: '100%' }}
                         placeholder="Atendentes"
-                        options={atendentes}
+                        options={currentUser.id === 1 ? atendentes : atendentes.filter(a => a.value !== 1)}
                     />
                 </div>
                     <Divider style={{ padding: 0, marginBottom: 0 }}/>

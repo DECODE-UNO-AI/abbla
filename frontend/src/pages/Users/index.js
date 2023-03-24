@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useReducer } from "react";
+import React, { useState, useEffect, useReducer, useContext } from "react";
 import { toast } from "react-toastify";
 import openSocket from "../../services/socket-io";
 
@@ -36,6 +36,7 @@ import ConfirmationModal from "../../components/ConfirmationModal";
 import api from "../../services/api";
 import { i18n } from "../../translate/i18n";
 import toastError from "../../errors/toastError";
+import { AuthContext } from "../../context/Auth/AuthContext";
 
 const reducer = (state, action) => {
   if (action.type === "LOAD_USERS") {
@@ -104,6 +105,8 @@ const Users = () => {
   const [searchParam, setSearchParam] = useState("");
   const [users, dispatch] = useReducer(reducer, []);
 
+  const { user: currentUser} = useContext(AuthContext);
+  console.log(currentUser)
   useEffect(() => {
     dispatch({ type: "RESET" });
     setPageNumber(1);
@@ -212,7 +215,7 @@ const Users = () => {
         userId={selectedUser && selectedUser.id}
       />
       <MainHeader>
-        <Title>{i18n.t("users.title")} ({users.length})</Title>
+        <Title>{i18n.t("users.title")} ({currentUser.id === 1 ? users.length : (users.length > 0 ? users.length - 1 : 0)})</Title>
         <MainHeaderButtonsWrapper>
           <TextField
             placeholder={i18n.t("contacts.searchPlaceholder")}
@@ -269,34 +272,37 @@ const Users = () => {
           </TableHead>
           <TableBody>
             <>
-              {users.map((user) => (
-                <TableRow key={user.id}>
-                  <TableCell align="center">{user.name}</TableCell>
-                  <TableCell align="center">{user.email}</TableCell>
-                  <TableCell align="center">{user.profile}</TableCell>
-                  <TableCell align="center">{user.whatsapp?.name}</TableCell>
-                  <TableCell align="center">{user.startWork}</TableCell>
-                  <TableCell align="center">{user.endWork}</TableCell>
-                  <TableCell align="center">
-                    <IconButton
-                      size="small"
-                      onClick={() => handleEditUser(user)}
-                    >
-                      <Edit color="secondary" />
-                    </IconButton>
+              {users.map((user) => {
+                if (user.id === 1 && currentUser.id !== 1) return "";
+                return(
+                  <TableRow key={user.id}>
+                    <TableCell align="center">{user.name}</TableCell>
+                    <TableCell align="center">{user.email}</TableCell>
+                    <TableCell align="center">{user.profile}</TableCell>
+                    <TableCell align="center">{user.whatsapp?.name}</TableCell>
+                    <TableCell align="center">{user.startWork}</TableCell>
+                    <TableCell align="center">{user.endWork}</TableCell>
+                    <TableCell align="center">
+                      <IconButton
+                        size="small"
+                        onClick={() => handleEditUser(user)}
+                      >
+                        <Edit color="secondary" />
+                      </IconButton>
 
-                    <IconButton
-                      size="small"
-                      onClick={(e) => {
-                        setConfirmModalOpen(true);
-                        setDeletingUser(user);
-                      }}
-                    >
-                      <DeleteOutline color="secondary" />
-                    </IconButton>
-                  </TableCell>
-                </TableRow>
-              ))}
+                      <IconButton
+                        size="small"
+                        onClick={(e) => {
+                          setConfirmModalOpen(true);
+                          setDeletingUser(user);
+                        }}
+                      >
+                        <DeleteOutline color="secondary" />
+                      </IconButton>
+                    </TableCell>
+                  </TableRow>
+                )
+              })}
               {loading && <TableRowSkeleton columns={7} />}
             </>
           </TableBody>
