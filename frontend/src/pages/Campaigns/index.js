@@ -474,7 +474,7 @@ const Campaigns = () => {
 								<TableCell align="center"><span style={{ fontWeight: "bold", color: "#ff0038"}}>{campaign.contactsFailed}</span></TableCell>
 								<TableCell align="center">
 									{
-										["canceled", "failed"].includes(campaign.status) ?
+										["canceled"].includes(campaign.status) ?
 										<span style={{ fontWeight: "bold", color: "#979797"}}>
 											{ campaign.contactsNumber - campaign.contactsSent + campaign.contactsFailed}
 										</span>
