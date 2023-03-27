@@ -19,6 +19,7 @@ interface CampaignRequest {
   message5?: string[];
   userId: string;
   whatsappId: string | null;
+  contactsIds?: number[];
 }
 
 interface Request {
@@ -74,7 +75,7 @@ const CreateCampaignService = async ({
     throw new AppError("ERR_INVALID_DATE", 403);
   }
 
-  if (!contacts) {
+  if (!contacts && !campaign.contactsIds) {
     throw new AppError("ERR_NO_CONTACTS_FILE", 403);
   }
 
@@ -91,7 +92,7 @@ const CreateCampaignService = async ({
     message5: campaign.message5,
     userId: campaign.userId,
     delay: delayValue,
-    contactsCsv: contacts?.filename,
+    contactsCsv: campaign.contactsIds ? null : contacts!.filename,
     whatsappId: campaign.whatsappId?.startsWith("api-") ? null : campaign.whatsappId,
     whatsappApiId: campaign.whatsappId?.startsWith("api-") ? campaign.whatsappId.slice(4) : null
   };

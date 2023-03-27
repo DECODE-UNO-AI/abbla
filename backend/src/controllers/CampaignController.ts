@@ -37,6 +37,7 @@ interface CampaignData {
   userId: string;
   whatsappId: string | null;
   whatsappApiId: string | null;
+  contactsIds?: number[];
 }
 
 type IndexQuery = {
@@ -58,6 +59,7 @@ export const store = async (req: Request, res: Response): Promise<Response> => {
     message4: req.body.message4 ? JSON.parse(req.body.message4) : [],
     message5: req.body.message5 ? JSON.parse(req.body.message5) : [],
     sendTime: req.body.sendTime ? JSON.parse(req.body.sendTime) : [],
+    contactsIds: req.body.contactsIds ? JSON.parse(req.body.contactsIds) : [],
     userId: id
   };
 

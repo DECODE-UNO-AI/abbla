@@ -10,7 +10,8 @@ import {
   CreatedAt,
   UpdatedAt,
   Default,
-  HasMany
+  HasMany,
+  AllowNull
 } from "sequelize-typescript";
 import CampaignContact from "./CampaignContact";
 import User from "./User";
@@ -137,6 +138,7 @@ class Campaign extends Model<Campaign> {
   columnName: string;
 
   @Column
+  @AllowNull
   contactsCsv: string;
 
   @ForeignKey(() => User)
