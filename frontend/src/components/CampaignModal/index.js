@@ -220,7 +220,7 @@ function getColumns(file, setCsvColumns) {
       reader.onload = (e) => {
         const csvFile = e.target.result
         const firstLine = csvFile.slice(0, csvFile.indexOf('\n'))
-        setCsvColumns(firstLine.trim().split(/[;\\.\\,\-\\/\\|_]+/))
+        setCsvColumns(firstLine.trim().split(/[,]+/))
       }
       reader.readAsText(file)
 }
@@ -786,6 +786,7 @@ const CampaignModal = ({ open, onClose, campaignId, visualize = false }) => {
                                             <Typography variant="h6">
                                                 {i18n.t("campaignModal.form.csvMedia")}
                                             </Typography>
+                                            <InputLabel style={{ display: "flex", alignItems: "center", marginRight: 2}}>Utilize o delimitador " , "</InputLabel>
                                             <Box style={{ display: "flex", flexDirection: "column", alignItems: "start", marginTop: 15}}>
                                                 {
                                                     campaignId ? 

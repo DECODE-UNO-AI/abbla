@@ -11,9 +11,12 @@ import Campaign from "../../models/Campaign";
 import CampaignContact from "../../models/CampaignContact";
 
 const csvFileToArray = async (csvPathFile: string): Promise<any> => {
-  return csv({ delimiter: [";", ".", ",", "-", "/", "|", "_"] }).fromFile(
+  return csv({ delimiter: [","] }).fromFile(
     csvPathFile
   );
+  // return csv({ delimiter: [";", ".", ",", "-", "/", "|", "_"] }).fromFile(
+  // csvPathFile
+  // );
 };
 
 const CreateCampaignContactsService = async (
