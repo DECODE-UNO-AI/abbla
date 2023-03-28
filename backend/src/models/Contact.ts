@@ -64,7 +64,7 @@ class Contact extends Model<Contact> {
   @BelongsToMany(() => Tag, () => ContactTag)
   tags: Tag[];
 
-  @BelongsToMany(() => CampaignContactsListAssociate, () => CampaignContactsList)
+  @BelongsToMany(() => CampaignContactsList, () => CampaignContactsListAssociate)
   contactslist: CampaignContactsList[];
 }
 

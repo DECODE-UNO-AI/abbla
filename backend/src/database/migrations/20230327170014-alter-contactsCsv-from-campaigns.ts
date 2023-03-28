@@ -11,7 +11,7 @@ module.exports = {
   down: (queryInterface: QueryInterface) => {
     return queryInterface.changeColumn("Campaigns", "contactsCsv", {
       type: DataTypes.STRING,
-        allowNull: false
+      allowNull: false
     });
   }
 };

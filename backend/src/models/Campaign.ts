@@ -138,7 +138,6 @@ class Campaign extends Model<Campaign> {
   columnName: string;
 
   @Column
-  @AllowNull
   contactsCsv: string;
 
   @ForeignKey(() => User)
