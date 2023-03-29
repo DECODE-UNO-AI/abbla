@@ -106,7 +106,6 @@ const Users = () => {
   const [users, dispatch] = useReducer(reducer, []);
 
   const { user: currentUser} = useContext(AuthContext);
-  console.log(currentUser)
   useEffect(() => {
     dispatch({ type: "RESET" });
     setPageNumber(1);

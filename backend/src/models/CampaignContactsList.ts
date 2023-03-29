@@ -30,9 +30,6 @@ class CampaignContactsList extends Model<CampaignContactsList> {
   @UpdatedAt
   updatedAt: Date;
 
-  @HasMany(() => CampaignContactsListAssociate)
-  campaignContactsListAssociate: CampaignContactsListAssociate[];
-
   @BelongsToMany(() => Contact, () => CampaignContactsListAssociate)
   contacts: Contact[];
 }

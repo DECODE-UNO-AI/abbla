@@ -16,6 +16,7 @@ import departamentRoutes from "./departamentRoutes";
 import campaignRoutes from "./campaignRoutes";
 import restartRoutes from "./restartRoutes";
 import scheduleMessageRoutes from "./scheduledMessageRoutes";
+import CampaignContactsListRoutes from "./campaignContactsListRoutes";
 
 const routes = Router();
 
@@ -34,6 +35,7 @@ routes.use(tagRoutes);
 routes.use(departamentRoutes);
 routes.use("/service", restartRoutes);
 routes.use(scheduleMessageRoutes);
+routes.use("/campaigncontactslist", CampaignContactsListRoutes);
 if (process.env.CAMPAIGN_FUNCTION === "true") {
   routes.use(campaignRoutes);
 }

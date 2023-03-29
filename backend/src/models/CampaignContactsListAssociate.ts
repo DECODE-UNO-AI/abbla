@@ -10,7 +10,7 @@ import Contact from "./Contact";
 import CampaignContactsList from "./CampaignContactsList";
 
 @Table({
-  tableName: "ContactTags"
+  tableName: "CampaignContactsListAssociates"
 })
 class CampaignContactsListAssociate extends Model<CampaignContactsListAssociate> {
   @ForeignKey(() => Contact)

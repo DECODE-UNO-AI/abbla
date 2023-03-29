@@ -9,7 +9,9 @@ import {
   DataType,
   CreatedAt,
   UpdatedAt,
-  Default
+  Default,
+  BelongsToMany,
+  HasMany
 } from "sequelize-typescript";
 import Campaign from "./Campaign";
 
@@ -62,6 +64,7 @@ class CampaignContact extends Model<CampaignContact> {
 
   @UpdatedAt
   updatedAt: Date;
+
 }
 
 export default CampaignContact;
