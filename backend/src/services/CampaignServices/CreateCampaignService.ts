@@ -75,7 +75,7 @@ const CreateCampaignService = async ({
     throw new AppError("ERR_INVALID_DATE", 403);
   }
 
-  if (!contacts && !campaign.contactsIds) {
+  if (!contacts && (!campaign.contactsIds || campaign.contactsIds.length <= 0) ) {
     throw new AppError("ERR_NO_CONTACTS_FILE", 403);
   }
 
@@ -92,7 +92,7 @@ const CreateCampaignService = async ({
     message5: campaign.message5,
     userId: campaign.userId,
     delay: delayValue,
-    contactsCsv: campaign.contactsIds ? null : contacts!.filename,
+    contactsCsv: campaign.contactsIds!.length ? null : contacts!.filename,
     whatsappId: campaign.whatsappId?.startsWith("api-") ? null : campaign.whatsappId,
     whatsappApiId: campaign.whatsappId?.startsWith("api-") ? campaign.whatsappId.slice(4) : null
   };

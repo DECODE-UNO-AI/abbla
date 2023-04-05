@@ -35,8 +35,8 @@ routes.use(tagRoutes);
 routes.use(departamentRoutes);
 routes.use("/service", restartRoutes);
 routes.use(scheduleMessageRoutes);
-routes.use("/campaigncontactslist", CampaignContactsListRoutes);
 if (process.env.CAMPAIGN_FUNCTION === "true") {
+  routes.use("/campaigncontactslist", CampaignContactsListRoutes);
   routes.use(campaignRoutes);
 }
 

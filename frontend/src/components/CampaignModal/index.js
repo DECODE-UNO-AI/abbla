@@ -24,10 +24,16 @@ import {
     Checkbox,
     Typography,
     Box,
+    FormControl,
+    RadioGroup,
+    FormControlLabel,
+    Radio,
+    IconButton
 } from '@material-ui/core';
 import NearMeIcon from '@material-ui/icons/NearMe';
 import SaveIcon from '@material-ui/icons/Save';
 import Reddit from '@material-ui/icons/Reddit';
+import RemoveRedEye from '@material-ui/icons/RemoveRedEye';
 import { green } from "@material-ui/core/colors";
 
 
@@ -41,6 +47,7 @@ import SpeedMessageCards from "../SpeedMessageCards";
 import WhatsAppLayout from "../WhatsappLayout";
 import ConfirmationModal from "../ConfirmationModal";
 import MessagesTabs from "../MessagesTabs";
+import ViewContactList from "../ViewContactList";
 // import Papa from 'papaparse';
 
 
@@ -197,7 +204,7 @@ const marks = [
         value: 24,
         label: '23:59',
     },
-  ];
+];
 
 function getFirstDate(){
     const currentDate = new Date();
@@ -220,7 +227,7 @@ function getColumns(file, setCsvColumns) {
       reader.onload = (e) => {
         const csvFile = e.target.result
         const firstLine = csvFile.slice(0, csvFile.indexOf('\n'))
-        setCsvColumns(firstLine.trim().split(/[;\\.\\,\-\\/\\|_]+/))
+        setCsvColumns(firstLine.trim().split(","))
       }
       reader.readAsText(file)
 }
@@ -265,7 +272,10 @@ const CampaignModal = ({ open, onClose, campaignId, visualize = false }) => {
     const [prompt, setPrompt] = useState("")
     const [IAModalInput, setModalInput] = useState(null)
     const [IAMessage, setIAMessage] = useState("")
+    const [campaignContactsLists, setCampaignContactsLists] = useState([])
     const [isGeneratingIAMessage, setIsGeneratingIAMessage] = useState(false)
+    const [haveCsvFile, setHaveCsvFile] = useState(true)
+    const [showContactsList, setShowContactsList] = useState(false)
     const [inputsOrder, setInputsOrder] = useState({
         message1InputOrder: [],
         message2InputOrder: [],
@@ -308,6 +318,9 @@ const CampaignModal = ({ open, onClose, campaignId, visualize = false }) => {
                     if (blobFile) {
                         const file = new File([blobFile], "text.csv", { type: "text/csv"})
                         getColumns(file, setCsvColumns)
+                        setHaveCsvFile(true)
+                    } else {
+                        setHaveCsvFile(false)
                     }
                 } catch(err) {
                     toastError(err)
@@ -391,6 +404,18 @@ const CampaignModal = ({ open, onClose, campaignId, visualize = false }) => {
                 const response = await api.get("/whatsappapi")
                 const wtsapps = response.data.whatsapps
                 setWhatsappsApis(wtsapps)
+			} catch (err) {
+				toastError(err);
+			}
+		})();
+    }, [])
+
+    useEffect(() => {
+        (async () => {
+			try {
+                const response = await api.get("/campaigncontactslist")
+                const contactsList = response.data.lists
+                setCampaignContactsLists(contactsList)
 			} catch (err) {
 				toastError(err);
 			}
@@ -602,6 +627,12 @@ const CampaignModal = ({ open, onClose, campaignId, visualize = false }) => {
         onClose()
     }
 
+    const handleShowListContacts = () => {
+        setShowContactsList(true);
+    }
+
+    const campaignContactsListFiltered = visualize || campaignId || isRepeatModel ? campaignContactsLists : campaignContactsLists.filter(list => list.actived === true)
+
 	return (
 
 			<Dialog
@@ -671,7 +702,7 @@ const CampaignModal = ({ open, onClose, campaignId, visualize = false }) => {
                             </>
                         
                         </ConfirmationModal>
-                        
+                        <ViewContactList isOpen={showContactsList} setIsOpen={setShowContactsList} selectedListId={values.campaignContactsList || null} />
 						<Form>
 							<DialogContent dividers style={{ widht: 800, display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center"}}>
                                 <Box sx={{ width: "100%" }}  className={classes.box}>
@@ -784,8 +815,20 @@ const CampaignModal = ({ open, onClose, campaignId, visualize = false }) => {
                                     <Box className={classes.multipleInput}>
                                         <Box style={{ width: "50%"}}>
                                             <Typography variant="h6">
-                                                {i18n.t("campaignModal.form.csvMedia")}
+                                                Contatos
                                             </Typography>
+                                            <FormControl component="fieldset" >
+                                                <RadioGroup 
+                                                    aria-label="contact-type"
+                                                    name="contact-type" 
+                                                    value={haveCsvFile} 
+                                                    onChange={visualize ? () => {} : e => setHaveCsvFile(e.target.value === "true") }
+                                                    style={{ display: "flex", flexDirection: "row" }}
+                                                >
+                                                    <FormControlLabel disabled={visualize || campaignId} value={true} control={<Radio />} label="Arquivo .csv" />
+                                                    <FormControlLabel disabled={visualize || campaignId} value={false} control={<Radio />} label="Importar contatos" />
+                                                </RadioGroup>
+                                            </FormControl>
                                             <Box style={{ display: "flex", flexDirection: "column", alignItems: "start", marginTop: 15}}>
                                                 {
                                                     campaignId ? 
@@ -800,13 +843,37 @@ const CampaignModal = ({ open, onClose, campaignId, visualize = false }) => {
                                                         </Button>
                                                     : ""
                                                 }
-                                                { !visualize && (
+                                                { !visualize && !campaignId  && (
+                                                    haveCsvFile ?
                                                     <input 
                                                         style={{ marginTop: 5, cursor: "pointer" }}
                                                         onChange={handleOnCsvFileChange}
                                                         accept=".csv"
                                                         type="file" 
-                                                    />
+                                                    /> :
+                                                    <Box style={{ width: "100%", paddingRight: 20, display: "flex", alignItems: "center"}}>
+                                                        <Field
+                                                            as={Select}
+                                                            name="campaignContactsList"
+                                                            id="campaignContactsList"
+                                                            disabled={visualize || campaignId || isRepeatModel}
+                                                            variant="outlined"
+                                                            margin="dense"
+                                                            style={{ width: "100%", paddingRight: 10}}
+                                                        >
+                                                            {campaignContactsListFiltered?.map((conlist) => (
+                                                                <MenuItem key={conlist.id} value={`${conlist.id}`}>{conlist.name}</MenuItem>
+                                                            ))}
+                                                        </Field>
+                                                        <IconButton
+                                                            size="medium"
+                                                            onClick={() => {
+                                                                handleShowListContacts()
+                                                            }}
+                                                        >
+                                                            <RemoveRedEye color="primary" />
+                                                        </IconButton>
+                                                    </Box>
                                                 )}
                                             </Box>
                                         </Box>
@@ -854,9 +921,18 @@ const CampaignModal = ({ open, onClose, campaignId, visualize = false }) => {
                                 <Box className={classes.variableContent}>
                                     <InputLabel style={{ display: "flex", alignItems: "center", marginRight: 2}}>{i18n.t("campaignModal.form.variables")}</InputLabel>
                                     <Box className={classes.chipBox}>
-                                        {csvColumns.map((col, index) => 
-                                            <Chip key={index} label={col} />
-                                        )}
+                                        {
+                                            haveCsvFile ? (
+                                                csvColumns.map((col, index) =>
+                                                    <Chip key={index} label={col} />
+                                                )
+                                            ) : 
+                                            (   <>
+                                                    <Chip label={"name"} />
+                                                    <Chip label={"number"} />
+                                                </>
+                                            )
+                                        }
                                     </Box>
                                 </Box>
                                 <Box sx={{ width: "100%", marginTop: 10 }} className={classes.box}>

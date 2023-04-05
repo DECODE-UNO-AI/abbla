@@ -11,7 +11,7 @@ import Campaign from "../../models/Campaign";
 import CampaignContact from "../../models/CampaignContact";
 
 const csvFileToArray = async (csvPathFile: string): Promise<any> => {
-  return csv({ delimiter: [";", ".", ",", "-", "/", "|", "_"] }).fromFile(
+  return csv({ delimiter: [","] }).fromFile(
     csvPathFile
   );
 };
@@ -29,6 +29,7 @@ const CreateCampaignContactsService = async (
   try {
     csvArray = await csvFileToArray(csvPathFile);
   } catch (err) {
+    console.log(err)
     logger.error("ERR_NO_CONTACTS_FILE");
     return;
   }

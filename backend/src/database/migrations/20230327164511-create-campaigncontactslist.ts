@@ -13,6 +13,10 @@ module.exports = {
         type: DataTypes.STRING,
         allowNull: false
       },
+      actived: {
+        type: DataTypes.BOOLEAN,
+        defaultValue: true
+      },
       createdAt: {
         type: DataTypes.DATE,
         allowNull: false

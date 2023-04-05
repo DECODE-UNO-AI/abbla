@@ -3,6 +3,7 @@ import {
   BelongsToMany,
   Column,
   CreatedAt,
+  Default,
   HasMany,
   Model,
   PrimaryKey,
@@ -23,6 +24,9 @@ class CampaignContactsList extends Model<CampaignContactsList> {
 
   @Column
   name: string;
+
+  @Column
+  actived: boolean;
 
   @CreatedAt
   createdAt: Date;
