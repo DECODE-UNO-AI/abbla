@@ -64,7 +64,8 @@ const WhatsAppModal = ({ open, onClose, whatsAppId }) => {
 		greetingMessage: "",
 		farewellMessage: "",
 		isDefault: false,
-		isDisplay: false
+		isDisplay: false,
+		isActived: true,
 	};
 	const [whatsApp, setWhatsApp] = useState(initialState);
 	const [selectedQueueIds, setSelectedQueueIds] = useState([]);
@@ -169,6 +170,17 @@ const WhatsAppModal = ({ open, onClose, whatsAppId }) => {
 										}
 										label={i18n.t("whatsappModal.form.display")}
 									/>
+									<FormControlLabel
+										control={
+											<Field
+												as={Switch}
+												color="primary"
+												name="isActived"
+												checked={values.isActived}
+											/>
+										}
+										label={"Iniciar conexão"}
+									/>
 								</div>
 								<div>
 									<Field
@@ -212,6 +224,7 @@ const WhatsAppModal = ({ open, onClose, whatsAppId }) => {
 									selectedQueueIds={selectedQueueIds}
 									onChange={selectedIds => setSelectedQueueIds(selectedIds)}
 								/>
+								
 							</DialogContent>
 							<DialogActions>
 								<Button
