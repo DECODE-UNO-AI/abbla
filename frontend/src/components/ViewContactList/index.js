@@ -84,7 +84,7 @@ const ViewContactList = ({isOpen, setIsOpen, selectedListId}) => {
             <DialogTitle id="form-dialog-title">
                 Contatos
             </DialogTitle>
-            <DialogContent style={{ padding: 0, height: "500px" }}>
+            <DialogContent style={{ padding: 0, height: "500px"}}>
                 <InputLabel style={{ width: "100%", textAlign: "center", marginTop: 20 }}>Total: {count} </InputLabel>
                 <Table size="small" style={{ marginTop: 40 }}>
                     <TableHead >

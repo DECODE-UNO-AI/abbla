@@ -32,7 +32,8 @@ import {
   DnsOutlined,
   PhonelinkRing,
   ListAlt,
-  ExpandMore
+  ExpandMore,
+  QueuePlayNext
 } from "@material-ui/icons";
 
 import { i18n } from "../translate/i18n";
@@ -188,7 +189,7 @@ const MainListItems = (props) => {
                   >
                     <li className={classes.li}>
                       <ListItem>
-                        <ListItemIcon className={classes.icon}><ExpandMore /></ListItemIcon>
+                        <ListItemIcon className={classes.icon}><QueuePlayNext /></ListItemIcon>
                         <ListItemText primary={"Campanhas"} />
                       </ListItem>
                     </li>
@@ -196,7 +197,7 @@ const MainListItems = (props) => {
                   <AccordionDetails style={{ padding: 0 }}>
                     <ListItemLink
                       to="/campaigns"
-                      primary={i18n.t("mainDrawer.listItems.campaigns")}
+                      primary={"Lista campanhas"}
                       icon={<PhonelinkRing />}
                       style={{ width: "100%", paddingLeft: 20 }}
                     />
@@ -204,7 +205,7 @@ const MainListItems = (props) => {
                   <AccordionDetails style={{ padding: 0 }}>
                       <ListItemLink
                         to="/contactslists"
-                        primary={"Lista de contatos"}
+                        primary={"Lista contatos"}
                         icon={<ListAlt />}
                         style={{ width: "100%", paddingLeft: 20 }}
                       />

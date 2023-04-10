@@ -238,7 +238,12 @@ const CampaignSchema = Yup.object().shape({
 		.max(50, i18n.t("campaignModal.errors.tooLong"))
 		.required(" "),
     whatsappId: Yup.string().required("Required"),
-    columnName: Yup.string().required(" "),
+    columnName: Yup.string().when("contactsListId", {
+        is: (val) => !val,
+        not: Yup.string().required(" "),
+        then: Yup.string().required(" "),
+        otherwise: Yup.string(),
+    }),
 });
 
 const CampaignModal = ({ open, onClose, campaignId, visualize = false }) => {
@@ -253,6 +258,7 @@ const CampaignModal = ({ open, onClose, campaignId, visualize = false }) => {
         startNow: false,
         whatsappId: "",
         columnName: "",
+        contactsListId: ""
     };
 
     const [campaignForm, setCapaignForm] = useState(initialState)
@@ -551,7 +557,7 @@ const CampaignModal = ({ open, onClose, campaignId, visualize = false }) => {
         medias.forEach((file) => {
             if(typeof file !== "string") formData.append("medias", file)
         })
-        if (csvFile) formData.append("medias", csvFile)
+        if (csvFile && haveCsvFile) formData.append("medias", csvFile)
 
         Object.keys(form).forEach((key) => {
             formData.append(key, form[key])
@@ -702,7 +708,7 @@ const CampaignModal = ({ open, onClose, campaignId, visualize = false }) => {
                             </>
                         
                         </ConfirmationModal>
-                        <ViewContactList isOpen={showContactsList} setIsOpen={setShowContactsList} selectedListId={values.campaignContactsList || null} />
+                        <ViewContactList isOpen={showContactsList} setIsOpen={setShowContactsList} selectedListId={values.contactsListId || null} />
 						<Form>
 							<DialogContent dividers style={{ widht: 800, display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center"}}>
                                 <Box sx={{ width: "100%" }}  className={classes.box}>
@@ -822,7 +828,13 @@ const CampaignModal = ({ open, onClose, campaignId, visualize = false }) => {
                                                     aria-label="contact-type"
                                                     name="contact-type" 
                                                     value={haveCsvFile} 
-                                                    onChange={visualize ? () => {} : e => setHaveCsvFile(e.target.value === "true") }
+                                                    onChange={visualize ? 
+                                                        () => {} : 
+                                                        e => {
+                                                                setHaveCsvFile(e.target.value === "true")
+                                                                if (e.target.value === "true") setValues(e => { return {...e, contactsListId: null}})
+                                                            } 
+                                                    }
                                                     style={{ display: "flex", flexDirection: "row" }}
                                                 >
                                                     <FormControlLabel disabled={visualize || campaignId} value={true} control={<Radio />} label="Arquivo .csv" />
@@ -854,12 +866,13 @@ const CampaignModal = ({ open, onClose, campaignId, visualize = false }) => {
                                                     <Box style={{ width: "100%", paddingRight: 20, display: "flex", alignItems: "center"}}>
                                                         <Field
                                                             as={Select}
-                                                            name="campaignContactsList"
-                                                            id="campaignContactsList"
+                                                            name="contactsListId"
+                                                            id="contactsListId"
                                                             disabled={visualize || campaignId || isRepeatModel}
                                                             variant="outlined"
                                                             margin="dense"
                                                             style={{ width: "100%", paddingRight: 10}}
+                                                            error={touched.columnName && Boolean(errors.columnName)}
                                                         >
                                                             {campaignContactsListFiltered?.map((conlist) => (
                                                                 <MenuItem key={conlist.id} value={`${conlist.id}`}>{conlist.name}</MenuItem>
@@ -877,7 +890,7 @@ const CampaignModal = ({ open, onClose, campaignId, visualize = false }) => {
                                                 )}
                                             </Box>
                                         </Box>
-                                        <Box style={{ width: "50%"}}>
+                                        <Box style={ haveCsvFile ? { width: "50%"} : { display: "none"}}>
                                             <Typography variant="h6">
                                                 {i18n.t("campaignModal.form.columnName")}
                                             </Typography> 

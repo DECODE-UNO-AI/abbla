@@ -57,6 +57,9 @@ class Campaign extends Model<Campaign> {
   @Column
   contactsFailed: number;
 
+  @Column
+  contactsListId: number;
+
   @Default("pending")
   @Column(
     DataType.ENUM(
