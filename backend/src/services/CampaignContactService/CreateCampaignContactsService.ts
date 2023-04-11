@@ -34,7 +34,6 @@ const CreateCampaignContactsService = async (
     try {
       csvArray = await csvFileToArray(csvPathFile);
     } catch (err) {
-      console.log(err)
       logger.error("ERR_NO_CONTACTS_FILE");
       return;
     }

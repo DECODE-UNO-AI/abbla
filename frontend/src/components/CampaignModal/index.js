@@ -318,18 +318,23 @@ const CampaignModal = ({ open, onClose, campaignId, visualize = false }) => {
                     : null;
                 setDelay(delayValue);
                 const settedDate = data.inicialDate.substring(0,16)
-                try {
-                    const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/public/${data.contactsCsv}`)
-                    const blobFile = await response.blob()
-                    if (blobFile) {
-                        const file = new File([blobFile], "text.csv", { type: "text/csv"})
-                        getColumns(file, setCsvColumns)
-                        setHaveCsvFile(true)
-                    } else {
-                        setHaveCsvFile(false)
+                if (data.contactsCsv) {
+                    try {
+                        const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/public/${data.contactsCsv}`)
+                        const blobFile = await response.blob()
+                        if (blobFile) {
+                            const file = new File([blobFile], "text.csv", { type: "text/csv"})
+                            getColumns(file, setCsvColumns)
+                            setHaveCsvFile(true)
+
+                        } else {
+                            setHaveCsvFile(false)
+                        }
+                    } catch(err) {
+                        toastError(err)
                     }
-                } catch(err) {
-                    toastError(err)
+                } else {
+                    setHaveCsvFile(false)
                 }
                 setIsRepeatModel(["finished", "archived", "canceled", "failed"].includes(data.status))
 				setCapaignForm(prevState => {
@@ -630,6 +635,7 @@ const CampaignModal = ({ open, onClose, campaignId, visualize = false }) => {
         setIsRepeatModel(false);
         setInputsOrder([])
         setAllMessagesInputs([])
+        setHaveCsvFile(true)
         onClose()
     }
 
@@ -832,7 +838,7 @@ const CampaignModal = ({ open, onClose, campaignId, visualize = false }) => {
                                                         () => {} : 
                                                         e => {
                                                                 setHaveCsvFile(e.target.value === "true")
-                                                                if (e.target.value === "true") setValues(e => { return {...e, contactsListId: null}})
+                                                                if (e.target.value === "true") setValues(e => { return {...e, contactsListId: ""}})
                                                             } 
                                                     }
                                                     style={{ display: "flex", flexDirection: "row" }}
@@ -843,7 +849,7 @@ const CampaignModal = ({ open, onClose, campaignId, visualize = false }) => {
                                             </FormControl>
                                             <Box style={{ display: "flex", flexDirection: "column", alignItems: "start", marginTop: 15}}>
                                                 {
-                                                    campaignId ? 
+                                                    campaignId && haveCsvFile ? 
                                                         <Button
                                                             style={{ marginBottom: 10 }}
                                                             onClick={() => handleDownload(true)}
@@ -862,32 +868,35 @@ const CampaignModal = ({ open, onClose, campaignId, visualize = false }) => {
                                                         onChange={handleOnCsvFileChange}
                                                         accept=".csv"
                                                         type="file" 
-                                                    /> :
-                                                    <Box style={{ width: "100%", paddingRight: 20, display: "flex", alignItems: "center"}}>
-                                                        <Field
-                                                            as={Select}
-                                                            name="contactsListId"
-                                                            id="contactsListId"
-                                                            disabled={visualize || campaignId || isRepeatModel}
-                                                            variant="outlined"
-                                                            margin="dense"
-                                                            style={{ width: "100%", paddingRight: 10}}
-                                                            error={touched.columnName && Boolean(errors.columnName)}
-                                                        >
-                                                            {campaignContactsListFiltered?.map((conlist) => (
-                                                                <MenuItem key={conlist.id} value={`${conlist.id}`}>{conlist.name}</MenuItem>
-                                                            ))}
-                                                        </Field>
-                                                        <IconButton
-                                                            size="medium"
-                                                            onClick={() => {
-                                                                handleShowListContacts()
-                                                            }}
-                                                        >
-                                                            <RemoveRedEye color="primary" />
-                                                        </IconButton>
-                                                    </Box>
+                                                    /> : ""
                                                 )}
+                                                {   
+                                                    !haveCsvFile ?
+                                                    <Box style={{ width: "100%", paddingRight: 20, display: "flex", alignItems: "center"}}>
+                                                    <Field
+                                                        as={Select}
+                                                        name="contactsListId"
+                                                        id="contactsListId"
+                                                        disabled={visualize || campaignId || isRepeatModel}
+                                                        variant="outlined"
+                                                        margin="dense"
+                                                        style={{ width: "100%", paddingRight: 10}}
+                                                        error={touched.columnName && Boolean(errors.columnName)}
+                                                    >
+                                                        {campaignContactsListFiltered?.map((conlist) => (
+                                                            <MenuItem key={conlist.id} value={`${conlist.id}`}>{conlist.name}</MenuItem>
+                                                        ))}
+                                                    </Field>
+                                                    <IconButton
+                                                        size="medium"
+                                                        onClick={() => {
+                                                            handleShowListContacts()
+                                                        }}
+                                                    >
+                                                        <RemoveRedEye color="primary" />
+                                                    </IconButton>
+                                                </Box> : ""
+                                                }
                                             </Box>
                                         </Box>
                                         <Box style={ haveCsvFile ? { width: "50%"} : { display: "none"}}>
