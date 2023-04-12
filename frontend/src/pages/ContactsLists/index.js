@@ -71,9 +71,8 @@ const reducer = (state, action) => {
     if (listIndex !== -1) {
       state[listIndex] = list;
       return [...state];
-    } else {
-      return [list, ...state];
     }
+    return [list, ...state];
   }
 
   if (action.type === "DELETE_LIST") {

@@ -13,7 +13,7 @@ const CreateCampaignContactsListService = async (listData: ListData) => {
 
   const contactsIds = contacts.map(c => c.id)
 
-  const newList = await CampaignContactsList.create({ name: listData.name }, { include: ["contacts"] })
+  const newList = await CampaignContactsList.create({ name: listData.name, actived: true }, { include: ["contacts"] })
 
   await newList.$set("contacts", contactsIds);
 

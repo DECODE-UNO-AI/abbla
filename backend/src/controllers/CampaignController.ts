@@ -115,8 +115,6 @@ export const store = async (req: Request, res: Response): Promise<Response> => {
     };
   });
 
-  console.log(campaign);
-
   const schema = Yup.object().shape({
     name: Yup.string().required(),
     inicialDate: Yup.string().required(),
@@ -277,7 +275,7 @@ export const update = async (
   const schema = Yup.object().shape({
     name: Yup.string().required(),
     inicialDate: Yup.string().required(),
-    columnName: Yup.string().required(),
+    // columnName: Yup.string().required(),
     sendTime: Yup.array().required(),
     message1: Yup.array(),
     message2: Yup.array(),
@@ -545,7 +543,7 @@ export const repeatCampaign = async (
   const schema = Yup.object().shape({
     name: Yup.string().required(),
     inicialDate: Yup.string().required(),
-    columnName: Yup.string().required(),
+    // columnName: Yup.string().required(),
     sendTime: Yup.array().required(),
     message1: Yup.array(),
     message2: Yup.array(),
