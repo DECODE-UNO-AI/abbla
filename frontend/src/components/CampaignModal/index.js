@@ -6,7 +6,7 @@ import {
 	Form,
 	Field,
 } from "formik";
-
+import { useHistory } from 'react-router-dom';
 import {
 	Button,
 	Dialog,
@@ -34,6 +34,7 @@ import NearMeIcon from '@material-ui/icons/NearMe';
 import SaveIcon from '@material-ui/icons/Save';
 import Reddit from '@material-ui/icons/Reddit';
 import RemoveRedEye from '@material-ui/icons/RemoveRedEye';
+import { ListSharp } from "@material-ui/icons";
 import { green } from "@material-ui/core/colors";
 
 
@@ -297,6 +298,7 @@ const CampaignModal = ({ open, onClose, campaignId, visualize = false }) => {
         message5Inputs: [],
     })
     
+    const history = useHistory();
 
     useEffect(() => {
         (async () => {
@@ -436,6 +438,10 @@ const CampaignModal = ({ open, onClose, campaignId, visualize = false }) => {
     const handleOnSendTimeInputChange = (event, value) => {
         setSendTime(value);
     };
+
+    const handleOnRedirectToContactsList = () => {
+        history.push('/contactslists');
+    }
 
     const handleTabChange = (event, newValue) => {
         setTabValue(newValue);
@@ -894,6 +900,14 @@ const CampaignModal = ({ open, onClose, campaignId, visualize = false }) => {
                                                         }}
                                                     >
                                                         <RemoveRedEye color="primary" />
+                                                    </IconButton>
+                                                    <IconButton
+                                                        size="medium"
+                                                        onClick={() => {
+                                                            handleOnRedirectToContactsList()
+                                                        }}
+                                                    >
+                                                        <ListSharp color="primary" />
                                                     </IconButton>
                                                 </Box> : ""
                                                 }
