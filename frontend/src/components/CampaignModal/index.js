@@ -243,7 +243,7 @@ const CampaignModal = ({ open, onClose, campaignId, visualize = false }) => {
         sendTime: [0, 24],
         delay: "15",
         inicialDate: getFirstDate(),
-        startNow: false,
+        startNow: true,
         whatsappId: "",
         columnName: "",
     };
@@ -253,7 +253,7 @@ const CampaignModal = ({ open, onClose, campaignId, visualize = false }) => {
     const [delay, setDelay] = useState("15")
     const [tabValue, setTabValue] = useState(0);
     const [whatsappsApis, setWhatsappsApis] = useState([]);
-    const [startNow, setStartNow] = useState(false);
+    const [startNow, setStartNow] = useState(true);
     const [csvFile, setCsvFile] = useState(null)
     const [csvColumns, setCsvColumns] = useState([])
     const [submittingForm, setSubmittingForm] = useState(false)
@@ -731,18 +731,22 @@ const CampaignModal = ({ open, onClose, campaignId, visualize = false }) => {
                                             {i18n.t("campaignModal.form.start")}
                                         </Typography> 
                                         <Box className={classes.inputBox }>
-                                            <Field
-                                                as={TextField}
-                                                id="inicialDate"
-                                                name="inicialDate"
-                                                type="datetime-local"
-                                                variant="outlined"
-                                                disabled={startNow || visualize}
-                                                className={classes.dateInput}
-                                                InputLabelProps={{
-                                                    shrink: true,
-                                                }}
-                                            />
+                                            {
+                                                !startNow && (
+                                                    <Field
+                                                        as={TextField}
+                                                        id="inicialDate"
+                                                        name="inicialDate"
+                                                        type="datetime-local"
+                                                        variant="outlined"
+                                                        disabled={startNow || visualize}
+                                                        className={classes.dateInput}
+                                                        InputLabelProps={{
+                                                            shrink: true,
+                                                        }}
+                                                    />
+                                                )
+                                            }
                                             <Box style={{ display: "flex", alignItems: "center" }}>
                                                 <Checkbox
                                                   checked={startNow}
