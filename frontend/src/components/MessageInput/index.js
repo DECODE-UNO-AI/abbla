@@ -807,34 +807,6 @@ const MessageInput = ({ ticketStatus, ticket }) => {
           {inputMessage ? (
             <>
             <div style={{ display: "flex", alignItems: "center"}}>
-              {/* <IconButton
-                aria-label="sendMessage"
-                component="span"
-                onClick={handleSendMessage}
-                disabled={loading}
-              >
-                <SendIcon className={classes.sendMessageIcons} />
-              </IconButton>
-              <div style={{ display: "flex", flexDirection: "column", alignItems: "center"}}>
-                <IconButton
-                  size="small"
-                  aria-label="sendMessage"
-                  component="span"
-                  onClick={() => handleSendMessage(true)}
-                  disabled={loading}
-                >
-                  <InsertCommentIcon className={classes.sendMessageOptionsIcons}/>
-                </IconButton>
-                <IconButton
-                  size="small"
-                  aria-label="sendMessage"
-                  component="span"
-                  onClick={() => setScheduledModalOpen(true)}
-                  disabled={loading}
-                >
-                  <AccessTimeIcon className={classes.sendMessageOptionsIcons}/>
-                </IconButton>
-              </div> */}
                <ButtonGroup variant="contained" ref={anchorRef} aria-label="split button">
                   <Button
                     onClick={() => handleSendMessage()}
