@@ -7,8 +7,8 @@ import CloseIcon from "@material-ui/icons/Close";
 import Drawer from "@material-ui/core/Drawer";
 import Link from "@material-ui/core/Link";
 import InputLabel from "@material-ui/core/InputLabel";
-import { Tabs, Tab, Box, Dialog, DialogTitle, DialogContent, DialogActions } from "@material-ui/core"
-import { CancelOutlined, RemoveRedEye, DoneAll, ScheduleOutlined } from "@material-ui/icons";
+import { Tabs, Tab, Box, Dialog, DialogTitle, DialogContent, DialogActions, CircularProgress } from "@material-ui/core"
+import { CancelOutlined, RemoveRedEye, DoneAll, ScheduleOutlined, RefreshOutlined } from "@material-ui/icons";
 //import Avatar from "@material-ui/core/Avatar";
 import Button from "@material-ui/core/Button";
 import Paper from "@material-ui/core/Paper";
@@ -183,14 +183,18 @@ const ContactDrawer = ({ open, handleDrawerClose, contact, loading }) => {
 	const [scheduledMessages, setScheduledMessages] = useState([]);
 	const [tabValue, setTabValue] = useState(0);
 	const [selectedMessage, setSelectedMessage] = useState(null);
+	const [messagesLoading, setMessagesLoading] = useState(false)
 
 	useEffect(() => {
 		(async () => {
+			setMessagesLoading(true)
 			try {
 				const { data } = await api.get(`/scheduleMessage/${contact.id}`);
 				setScheduledMessages(data.scheduledMessages);
 			} catch (err) {
 				toast.error("Erro interno.")
+			} finally {
+				setMessagesLoading(false)
 			}
 		})()
 
@@ -208,6 +212,18 @@ const ContactDrawer = ({ open, handleDrawerClose, contact, loading }) => {
 			return setScheduledMessages([...scheduledMessages])
 		} catch (err) {
 			toastError(err)
+		}
+	}
+
+	const refreshMessages = async() => {
+		setMessagesLoading(true)
+		try {
+			const { data } = await api.get(`/scheduleMessage/${contact.id}`);
+			setScheduledMessages(data.scheduledMessages);
+		} catch (err) {
+			toast.error("Erro interno.")
+		} finally {
+			setMessagesLoading(false)
 		}
 	}
 
@@ -345,6 +361,20 @@ const ContactDrawer = ({ open, handleDrawerClose, contact, loading }) => {
 						<TabPanel value={tabValue} index={1}>
 							<MessagesList messages={allFailedAndSentMessages || []} setSelectedMessage={setSelectedMessage} onCancelMessage={() => {}} />
 						</TabPanel>
+					</div>
+					<div style={{ marginTop: 20, width: "100%", display: "flex", justifyContent: "center" }}>
+						<IconButton
+							size="small"
+							onClick={() => {
+								refreshMessages()
+							}}
+						>
+							{	messagesLoading ? 
+								<CircularProgress color="secondary" size={20}/> 
+								:
+								<RefreshOutlined color="secondary" />
+							}
+						</IconButton>
 					</div>
 				
 				</div>
