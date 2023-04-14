@@ -853,6 +853,7 @@ const CampaignModal = ({ open, onClose, campaignId, visualize = false }) => {
                                                     <FormControlLabel disabled={visualize || campaignId} value={false} control={<Radio />} label="Importar contatos" />
                                                 </RadioGroup>
                                             </FormControl>
+
                                             <Box style={{ display: "flex", flexDirection: "column", alignItems: "start", marginTop: 15}}>
                                                 {
                                                     campaignId && haveCsvFile ? 
@@ -869,12 +870,16 @@ const CampaignModal = ({ open, onClose, campaignId, visualize = false }) => {
                                                 }
                                                 { !visualize && !campaignId  && (
                                                     haveCsvFile ?
-                                                    <input 
-                                                        style={{ marginTop: 5, cursor: "pointer" }}
-                                                        onChange={handleOnCsvFileChange}
-                                                        accept=".csv"
-                                                        type="file" 
-                                                    /> : ""
+                                                    <>
+                                                      <InputLabel style={{ display: "flex", alignItems: "center", marginRight: 2}}>Utilize o delimitador " , "</InputLabel>
+                                                      <input 
+                                                          style={{ marginTop: 5, cursor: "pointer" }}
+                                                          onChange={handleOnCsvFileChange}
+                                                          accept=".csv"
+                                                          type="file" 
+                                                      />
+                                                    </>
+                                                    : ""
                                                 )}
                                                 {   
                                                     !haveCsvFile ?

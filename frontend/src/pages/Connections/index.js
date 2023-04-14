@@ -28,7 +28,8 @@ import {
 	CropFree,
 	VpnKey,
 	DeleteOutline,
-	Cancel
+	Cancel,
+	PauseCircleFilled
 } from "@material-ui/icons";
 
 import MainContainer from "../../components/MainContainer";
@@ -429,6 +430,14 @@ const Connections = () => {
 				)}
 				{whatsApp.status === "OPENING" && (
 					<CircularProgress size={24} className={classes.buttonProgress} />
+				)}
+				{whatsApp.status === "PAUSED" && (
+					<CustomToolTip
+						title={"Conexão pausada"}
+						content={"Conexão pausada, entre em contato com o suporte para mais informações"}
+					>
+						<PauseCircleFilled />
+					</CustomToolTip>
 				)}
 				{whatsApp.status === "qrcode" && (
 					<CustomToolTip

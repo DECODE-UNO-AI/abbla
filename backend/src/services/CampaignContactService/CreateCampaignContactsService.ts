@@ -15,6 +15,9 @@ const csvFileToArray = async (csvPathFile: string): Promise<any> => {
   return csv({ delimiter: [","] }).fromFile(
     csvPathFile
   );
+  // return csv({ delimiter: [";", ".", ",", "-", "/", "|", "_"] }).fromFile(
+  // csvPathFile
+  // );
 };
 
 const CreateCampaignContactsService = async (

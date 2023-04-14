@@ -36,6 +36,9 @@ class Whatsapp extends Model<Whatsapp> {
   qrcode: string;
 
   @Column
+  isActived: boolean;
+
+  @Column
   status: string;
 
   @Column
