@@ -9,7 +9,11 @@ import {
   ListItemIcon,
   ListItemText,
   ListSubheader,
-  makeStyles
+  makeStyles,
+  Accordion,
+  AccordionSummary,
+  AccordionDetails
+
 } from "@material-ui/core";
 
 import {
@@ -27,6 +31,9 @@ import {
   WhatsApp,
   DnsOutlined,
   PhonelinkRing,
+  ListAlt,
+  ExpandMore,
+  QueuePlayNext
 } from "@material-ui/icons";
 
 import { i18n } from "../translate/i18n";
@@ -41,7 +48,8 @@ const useStyles = makeStyles(theme => ({
     color: theme.palette.secondary.main
   },
   li: {
-    backgroundColor: theme.palette.menuItens.main
+    backgroundColor: theme.palette.menuItens.main,
+    width: "100%"
   },
   sub: {
     backgroundColor: theme.palette.sub.main
@@ -54,6 +62,12 @@ const useStyles = makeStyles(theme => ({
     justifyContent: "center",
     opacity: 0.5,
     fontSize: 12
+  },
+
+  "@global" : {
+    ".MuiAccordion-root:before": {
+      display: "none"
+    }
   }
 }));
 
@@ -162,20 +176,44 @@ const MainListItems = (props) => {
         yes={() => (
           <>
             <Divider className={classes.divider}/>
+            <ListSubheader inset className={classes.sub}>
+              {i18n.t("mainDrawer.listItems.administration")}
+            </ListSubheader>
             {
-              process.env.REACT_APP_CAMPAIGN_FUNCTION === "true" && (
-                <>
-                <ListSubheader inset className={classes.sub}>
-                  {i18n.t("mainDrawer.listItems.administration")}
-                </ListSubheader>
-                <ListItemLink
-                  to="/campaigns"
-                  primary={i18n.t("mainDrawer.listItems.campaigns")}
-                  icon={<PhonelinkRing />}
-                />
-                </>
+               process.env.REACT_APP_CAMPAIGN_FUNCTION === "true" && (
+                <Accordion style={{ boxShadow: "none", width: "100%", margin: 0 }}>
+                  <AccordionSummary
+                    aria-controls="panel1a-content"
+                    id="panel1a-header"
+                    style={{ transition: "none", padding: 0, display: "block"}}
+                  >
+                    <li className={classes.li}>
+                      <ListItem>
+                        <ListItemIcon className={classes.icon}><QueuePlayNext /></ListItemIcon>
+                        <ListItemText primary={"Campanhas"} />
+                      </ListItem>
+                    </li>
+                  </AccordionSummary>
+                  <AccordionDetails style={{ padding: 0 }}>
+                    <ListItemLink
+                      to="/campaigns"
+                      primary={"Lista campanhas"}
+                      icon={<PhonelinkRing />}
+                      style={{ width: "100%", paddingLeft: 20 }}
+                    />
+                  </AccordionDetails>
+                  <AccordionDetails style={{ padding: 0 }}>
+                      <ListItemLink
+                        to="/contactslists"
+                        primary={"Lista contatos"}
+                        icon={<ListAlt />}
+                        style={{ width: "100%", paddingLeft: 20 }}
+                      />
+                  </AccordionDetails>
+                </Accordion>
               )
             }
+
             <ListItemLink
               to="/connections"
               primary={i18n.t("mainDrawer.listItems.connections")}

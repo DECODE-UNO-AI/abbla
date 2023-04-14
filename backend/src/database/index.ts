@@ -19,6 +19,8 @@ import Campaign from "../models/Campaign";
 import CampaignContact from "../models/CampaignContact";
 import ScheduledMessage from "../models/ScheduledMessage";
 import WhatsappApi from "../models/WhatsappApi";
+import CampaignContactsList from "../models/CampaignContactsList";
+import CampaignContactsListAssociate from "../models/CampaignContactsListAssociate";
 
 
 // eslint-disable-next-line
@@ -47,7 +49,9 @@ const models = [
   Campaign,
   CampaignContact,
   ScheduledMessage,
-  WhatsappApi
+  WhatsappApi,
+  CampaignContactsList,
+  CampaignContactsListAssociate,
 ];
 
 sequelize.addModels(models);

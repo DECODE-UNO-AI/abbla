@@ -37,6 +37,7 @@ interface CampaignData {
   userId: string;
   whatsappId: string | null;
   whatsappApiId: string | null;
+  contactsListId?: number | string;
 }
 
 type IndexQuery = {
@@ -117,7 +118,7 @@ export const store = async (req: Request, res: Response): Promise<Response> => {
   const schema = Yup.object().shape({
     name: Yup.string().required(),
     inicialDate: Yup.string().required(),
-    columnName: Yup.string().required(),
+    // columnName: Yup.string().required(),
     sendTime: Yup.array().required(),
     message1: Yup.array(),
     message2: Yup.array(),
@@ -143,7 +144,7 @@ export const store = async (req: Request, res: Response): Promise<Response> => {
   try {
     await CreateCampaignContactsService(newCampaign);
   } catch (err) {
-    throw new AppError("ERR_NO_CONTACTS_FILE");
+    throw new AppError("ERR_NO_CONTACTS");
   }
   await newCampaign.reload();
   startJob(newCampaign);
@@ -274,7 +275,7 @@ export const update = async (
   const schema = Yup.object().shape({
     name: Yup.string().required(),
     inicialDate: Yup.string().required(),
-    columnName: Yup.string().required(),
+    // columnName: Yup.string().required(),
     sendTime: Yup.array().required(),
     message1: Yup.array(),
     message2: Yup.array(),
@@ -542,7 +543,7 @@ export const repeatCampaign = async (
   const schema = Yup.object().shape({
     name: Yup.string().required(),
     inicialDate: Yup.string().required(),
-    columnName: Yup.string().required(),
+    // columnName: Yup.string().required(),
     sendTime: Yup.array().required(),
     message1: Yup.array(),
     message2: Yup.array(),

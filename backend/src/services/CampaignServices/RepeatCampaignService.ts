@@ -13,6 +13,7 @@ interface CampaignData {
   columnName: string;
   delay?: string;
   contactsCsv: string;
+  contactsListId?: number | string;
   sendTime: string[];
   message1?: string[];
   message2?: string[];
@@ -109,7 +110,8 @@ const RepeatCampaignService = async ({
       message5: data.message5,
       userId: data.userId,
       delay: delayValue,
-      contactsCsv: data.contactsCsv,
+      contactsCsv: data.contactsListId ? null : contacts?.filename,
+      contactsListId: data.contactsListId ? +data.contactsListId : null,
       mediaUrl: data.mediaUrl,
       mediaType: data.mediaType,
       whatsappId: data.whatsappId?.startsWith("api-") ? null : data.whatsappId,
@@ -119,7 +121,7 @@ const RepeatCampaignService = async ({
     logger.error(err);
     throw new AppError("INTERNAL_ERR", 500);
   }
-  if (contacts) {
+  if (contacts && !data.contactsListId) {
     await CreateCampaignContactsService(campaignModel);
   } else {
     await CloneCampaignContactsService(campaignModel, campaignId);

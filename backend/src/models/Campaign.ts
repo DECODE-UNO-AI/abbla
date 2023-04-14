@@ -10,7 +10,8 @@ import {
   CreatedAt,
   UpdatedAt,
   Default,
-  HasMany
+  HasMany,
+  AllowNull
 } from "sequelize-typescript";
 import CampaignContact from "./CampaignContact";
 import User from "./User";
@@ -55,6 +56,9 @@ class Campaign extends Model<Campaign> {
   @Default(0)
   @Column
   contactsFailed: number;
+
+  @Column
+  contactsListId: number;
 
   @Default("pending")
   @Column(

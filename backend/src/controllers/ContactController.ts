@@ -14,6 +14,7 @@ import CheckIsValidContact from "../services/WbotServices/CheckIsValidContact";
 import GetProfilePicUrl from "../services/WbotServices/GetProfilePicUrl";
 import AppError from "../errors/AppError";
 import GetContactService from "../services/ContactServices/GetContactService";
+import ListFilteredContatsService from "../services/ContactServices/ListFilteredContatsService";
 
 type IndexQuery = {
   searchParam: string;
@@ -29,13 +30,14 @@ type IndexGetContactQuery = {
 interface ExtraInfo {
   name: string;
   value: string;
-}
+};
+
 interface ContactData {
   name: string;
   number: string;
   email?: string;
   extraInfo?: ExtraInfo[];
-}
+};
 
 export const index = async (req: Request, res: Response): Promise<Response> => {
   const { searchParam, pageNumber } = req.query as IndexQuery;
@@ -177,4 +179,18 @@ export const removeAll = async (
   await DeleteAllContactService();
 
   return res.send();
+};
+
+export const getFilteredContacts = async (req: Request, res: Response): Promise<Response> => {
+  const { pageNumber, filterOptions } = req.body;
+  try {
+    const {contacts, count, hasMore} = await ListFilteredContatsService({
+      pageNumber,
+      filterOptions,
+      allContacts: false
+    });
+    return res.json({ contacts, count, hasMore });
+  } catch(err) {
+    throw new AppError(err);
+  }
 };

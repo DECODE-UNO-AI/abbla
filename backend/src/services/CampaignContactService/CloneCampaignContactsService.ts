@@ -21,7 +21,7 @@ const CloneCampaignContactsService = async (
   let numberAllContacts = 0;
   for (let i = 0; i < contacts.length; i += 1) {
     const contact = contacts[i];
-    let contactNumber: string = contact.details[campaignModel.columnName];
+    let contactNumber: string = contact.number;
     if (!contactNumber) {
       continue;
     }

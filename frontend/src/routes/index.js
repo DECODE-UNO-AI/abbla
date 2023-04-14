@@ -20,6 +20,7 @@ import Tags from "../pages/Tags";
 import Departaments from "../pages/Departaments";
 import Campaigns from "../pages/Campaigns";
 import Campaign from '../pages/Campaign';
+import ContactsLists from "../pages/ContactsLists";
 
 import { AuthProvider } from "../context/Auth/AuthContext";
 import { WhatsAppsProvider } from "../context/WhatsApp/WhatsAppsContext";
@@ -42,6 +43,7 @@ const Routes = () => {
                   <>
                   <Route exact path="/campaigns" component={Campaigns} isPrivate />
                   <Route exact path="/campaign/:campaignId" component={Campaign} isPrivate />
+                  <Route exact path="/contactslists" component={ContactsLists} isPrivate />
                   </>
                 )
               }

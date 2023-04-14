@@ -6,7 +6,7 @@ import {
 	Form,
 	Field,
 } from "formik";
-
+import { useHistory } from 'react-router-dom';
 import {
 	Button,
 	Dialog,
@@ -24,10 +24,17 @@ import {
     Checkbox,
     Typography,
     Box,
+    FormControl,
+    RadioGroup,
+    FormControlLabel,
+    Radio,
+    IconButton
 } from '@material-ui/core';
 import NearMeIcon from '@material-ui/icons/NearMe';
 import SaveIcon from '@material-ui/icons/Save';
 import Reddit from '@material-ui/icons/Reddit';
+import RemoveRedEye from '@material-ui/icons/RemoveRedEye';
+import { ListSharp } from "@material-ui/icons";
 import { green } from "@material-ui/core/colors";
 
 
@@ -41,6 +48,7 @@ import SpeedMessageCards from "../SpeedMessageCards";
 import WhatsAppLayout from "../WhatsappLayout";
 import ConfirmationModal from "../ConfirmationModal";
 import MessagesTabs from "../MessagesTabs";
+import ViewContactList from "../ViewContactList";
 // import Papa from 'papaparse';
 
 
@@ -197,7 +205,7 @@ const marks = [
         value: 24,
         label: '23:59',
     },
-  ];
+];
 
 function getFirstDate(){
     const currentDate = new Date();
@@ -220,7 +228,7 @@ function getColumns(file, setCsvColumns) {
       reader.onload = (e) => {
         const csvFile = e.target.result
         const firstLine = csvFile.slice(0, csvFile.indexOf('\n'))
-        setCsvColumns(firstLine.trim().split(/[,]+/))
+        setCsvColumns(firstLine.trim().split(","))
       }
       reader.readAsText(file)
 }
@@ -231,7 +239,12 @@ const CampaignSchema = Yup.object().shape({
 		.max(50, i18n.t("campaignModal.errors.tooLong"))
 		.required(" "),
     whatsappId: Yup.string().required("Required"),
-    columnName: Yup.string().required(" "),
+    columnName: Yup.string().when("contactsListId", {
+        is: (val) => !val,
+        not: Yup.string().required(" "),
+        then: Yup.string().required(" "),
+        otherwise: Yup.string(),
+    }),
 });
 
 const CampaignModal = ({ open, onClose, campaignId, visualize = false }) => {
@@ -246,6 +259,7 @@ const CampaignModal = ({ open, onClose, campaignId, visualize = false }) => {
         startNow: false,
         whatsappId: "",
         columnName: "",
+        contactsListId: ""
     };
 
     const [campaignForm, setCapaignForm] = useState(initialState)
@@ -265,7 +279,10 @@ const CampaignModal = ({ open, onClose, campaignId, visualize = false }) => {
     const [prompt, setPrompt] = useState("")
     const [IAModalInput, setModalInput] = useState(null)
     const [IAMessage, setIAMessage] = useState("")
+    const [campaignContactsLists, setCampaignContactsLists] = useState([])
     const [isGeneratingIAMessage, setIsGeneratingIAMessage] = useState(false)
+    const [haveCsvFile, setHaveCsvFile] = useState(true)
+    const [showContactsList, setShowContactsList] = useState(false)
     const [inputsOrder, setInputsOrder] = useState({
         message1InputOrder: [],
         message2InputOrder: [],
@@ -281,6 +298,7 @@ const CampaignModal = ({ open, onClose, campaignId, visualize = false }) => {
         message5Inputs: [],
     })
     
+    const history = useHistory();
 
     useEffect(() => {
         (async () => {
@@ -302,15 +320,23 @@ const CampaignModal = ({ open, onClose, campaignId, visualize = false }) => {
                     : null;
                 setDelay(delayValue);
                 const settedDate = data.inicialDate.substring(0,16)
-                try {
-                    const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/public/${data.contactsCsv}`)
-                    const blobFile = await response.blob()
-                    if (blobFile) {
-                        const file = new File([blobFile], "text.csv", { type: "text/csv"})
-                        getColumns(file, setCsvColumns)
+                if (data.contactsCsv) {
+                    try {
+                        const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/public/${data.contactsCsv}`)
+                        const blobFile = await response.blob()
+                        if (blobFile) {
+                            const file = new File([blobFile], "text.csv", { type: "text/csv"})
+                            getColumns(file, setCsvColumns)
+                            setHaveCsvFile(true)
+
+                        } else {
+                            setHaveCsvFile(false)
+                        }
+                    } catch(err) {
+                        toastError(err)
                     }
-                } catch(err) {
-                    toastError(err)
+                } else {
+                    setHaveCsvFile(false)
                 }
                 setIsRepeatModel(["finished", "archived", "canceled", "failed"].includes(data.status))
 				setCapaignForm(prevState => {
@@ -397,9 +423,25 @@ const CampaignModal = ({ open, onClose, campaignId, visualize = false }) => {
 		})();
     }, [])
 
+    useEffect(() => {
+        (async () => {
+			try {
+                const response = await api.get("/campaigncontactslist")
+                const contactsList = response.data.lists
+                setCampaignContactsLists(contactsList)
+			} catch (err) {
+				toastError(err);
+			}
+		})();
+    }, [])
+
     const handleOnSendTimeInputChange = (event, value) => {
         setSendTime(value);
     };
+
+    const handleOnRedirectToContactsList = () => {
+        history.push('/contactslists');
+    }
 
     const handleTabChange = (event, newValue) => {
         setTabValue(newValue);
@@ -526,7 +568,7 @@ const CampaignModal = ({ open, onClose, campaignId, visualize = false }) => {
         medias.forEach((file) => {
             if(typeof file !== "string") formData.append("medias", file)
         })
-        if (csvFile) formData.append("medias", csvFile)
+        if (csvFile && haveCsvFile) formData.append("medias", csvFile)
 
         Object.keys(form).forEach((key) => {
             formData.append(key, form[key])
@@ -599,8 +641,15 @@ const CampaignModal = ({ open, onClose, campaignId, visualize = false }) => {
         setIsRepeatModel(false);
         setInputsOrder([])
         setAllMessagesInputs([])
+        setHaveCsvFile(true)
         onClose()
     }
+
+    const handleShowListContacts = () => {
+        setShowContactsList(true);
+    }
+
+    const campaignContactsListFiltered = visualize || campaignId || isRepeatModel ? campaignContactsLists : campaignContactsLists.filter(list => list.actived === true)
 
 	return (
 
@@ -671,7 +720,7 @@ const CampaignModal = ({ open, onClose, campaignId, visualize = false }) => {
                             </>
                         
                         </ConfirmationModal>
-                        
+                        <ViewContactList isOpen={showContactsList} setIsOpen={setShowContactsList} selectedListId={values.contactsListId || null} />
 						<Form>
 							<DialogContent dividers style={{ widht: 800, display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center"}}>
                                 <Box sx={{ width: "100%" }}  className={classes.box}>
@@ -784,12 +833,30 @@ const CampaignModal = ({ open, onClose, campaignId, visualize = false }) => {
                                     <Box className={classes.multipleInput}>
                                         <Box style={{ width: "50%"}}>
                                             <Typography variant="h6">
-                                                {i18n.t("campaignModal.form.csvMedia")}
+                                                Contatos
                                             </Typography>
-                                            <InputLabel style={{ display: "flex", alignItems: "center", marginRight: 2}}>Utilize o delimitador " , "</InputLabel>
+                                            <FormControl component="fieldset" >
+                                                <RadioGroup 
+                                                    aria-label="contact-type"
+                                                    name="contact-type" 
+                                                    value={haveCsvFile} 
+                                                    onChange={visualize ? 
+                                                        () => {} : 
+                                                        e => {
+                                                                setHaveCsvFile(e.target.value === "true")
+                                                                if (e.target.value === "true") setValues(e => { return {...e, contactsListId: ""}})
+                                                            } 
+                                                    }
+                                                    style={{ display: "flex", flexDirection: "row" }}
+                                                >
+                                                    <FormControlLabel disabled={visualize || campaignId} value={true} control={<Radio />} label="Arquivo .csv" />
+                                                    <FormControlLabel disabled={visualize || campaignId} value={false} control={<Radio />} label="Importar contatos" />
+                                                </RadioGroup>
+                                            </FormControl>
+
                                             <Box style={{ display: "flex", flexDirection: "column", alignItems: "start", marginTop: 15}}>
                                                 {
-                                                    campaignId ? 
+                                                    campaignId && haveCsvFile ? 
                                                         <Button
                                                             style={{ marginBottom: 10 }}
                                                             onClick={() => handleDownload(true)}
@@ -801,17 +868,57 @@ const CampaignModal = ({ open, onClose, campaignId, visualize = false }) => {
                                                         </Button>
                                                     : ""
                                                 }
-                                                { !visualize && (
-                                                    <input 
-                                                        style={{ marginTop: 5, cursor: "pointer" }}
-                                                        onChange={handleOnCsvFileChange}
-                                                        accept=".csv"
-                                                        type="file" 
-                                                    />
+                                                { !visualize && !campaignId  && (
+                                                    haveCsvFile ?
+                                                    <>
+                                                      <InputLabel style={{ display: "flex", alignItems: "center", marginRight: 2}}>Utilize o delimitador " , "</InputLabel>
+                                                      <input 
+                                                          style={{ marginTop: 5, cursor: "pointer" }}
+                                                          onChange={handleOnCsvFileChange}
+                                                          accept=".csv"
+                                                          type="file" 
+                                                      />
+                                                    </>
+                                                    : ""
                                                 )}
+                                                {   
+                                                    !haveCsvFile ?
+                                                    <Box style={{ width: "100%", paddingRight: 20, display: "flex", alignItems: "center"}}>
+                                                    <Field
+                                                        as={Select}
+                                                        name="contactsListId"
+                                                        id="contactsListId"
+                                                        disabled={visualize || campaignId || isRepeatModel}
+                                                        variant="outlined"
+                                                        margin="dense"
+                                                        style={{ width: "100%", paddingRight: 10}}
+                                                        error={touched.columnName && Boolean(errors.columnName)}
+                                                    >
+                                                        {campaignContactsListFiltered?.map((conlist) => (
+                                                            <MenuItem key={conlist.id} value={`${conlist.id}`}>{conlist.name}</MenuItem>
+                                                        ))}
+                                                    </Field>
+                                                    <IconButton
+                                                        size="medium"
+                                                        onClick={() => {
+                                                            handleShowListContacts()
+                                                        }}
+                                                    >
+                                                        <RemoveRedEye color="primary" />
+                                                    </IconButton>
+                                                    <IconButton
+                                                        size="medium"
+                                                        onClick={() => {
+                                                            handleOnRedirectToContactsList()
+                                                        }}
+                                                    >
+                                                        <ListSharp color="primary" />
+                                                    </IconButton>
+                                                </Box> : ""
+                                                }
                                             </Box>
                                         </Box>
-                                        <Box style={{ width: "50%"}}>
+                                        <Box style={ haveCsvFile ? { width: "50%"} : { display: "none"}}>
                                             <Typography variant="h6">
                                                 {i18n.t("campaignModal.form.columnName")}
                                             </Typography> 
@@ -855,9 +962,18 @@ const CampaignModal = ({ open, onClose, campaignId, visualize = false }) => {
                                 <Box className={classes.variableContent}>
                                     <InputLabel style={{ display: "flex", alignItems: "center", marginRight: 2}}>{i18n.t("campaignModal.form.variables")}</InputLabel>
                                     <Box className={classes.chipBox}>
-                                        {csvColumns.map((col, index) => 
-                                            <Chip key={index} label={col} />
-                                        )}
+                                        {
+                                            haveCsvFile ? (
+                                                csvColumns.map((col, index) =>
+                                                    <Chip key={index} label={col} />
+                                                )
+                                            ) : 
+                                            (   <>
+                                                    <Chip label={"name"} />
+                                                    <Chip label={"number"} />
+                                                </>
+                                            )
+                                        }
                                     </Box>
                                 </Box>
                                 <Box sx={{ width: "100%", marginTop: 10 }} className={classes.box}>

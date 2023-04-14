@@ -9,6 +9,7 @@ const contactRoutes = express.Router();
 contactRoutes.post("/contacts/import", isAuth, ImportPhoneContactsController.store);
 contactRoutes.get("/contacts", isAuth, ContactController.index);
 contactRoutes.get("/contacts/:contactId", isAuth, ContactController.show);
+contactRoutes.post("/filtercontacts", isAuth, ContactController.getFilteredContacts)
 contactRoutes.post("/contacts", isAuth, ContactController.store);
 contactRoutes.post("/contact", isAuth, ContactController.getContact);
 contactRoutes.put("/contacts/:contactId", isAuth, ContactController.update);

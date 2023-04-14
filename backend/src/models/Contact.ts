@@ -16,6 +16,8 @@ import ContactCustomField from "./ContactCustomField";
 import Ticket from "./Ticket";
 import Tag from "./Tag";
 import ContactTag from "./ContactTag";
+import CampaignContactsListAssociate from "./CampaignContactsListAssociate";
+import CampaignContactsList from "./CampaignContactsList";
 
 @Table
 class Contact extends Model<Contact> {
@@ -61,6 +63,9 @@ class Contact extends Model<Contact> {
 
   @BelongsToMany(() => Tag, () => ContactTag)
   tags: Tag[];
+
+  @BelongsToMany(() => CampaignContactsList, () => CampaignContactsListAssociate)
+  campaignContactsList: CampaignContactsList[];
 }
 
 export default Contact;
