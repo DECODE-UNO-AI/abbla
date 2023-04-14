@@ -82,7 +82,7 @@ const CreateCampaignService = async ({
     name: campaign.name.trim(),
     inicialDate: startDate,
     sendTime: campaign.sendTime,
-    columnName: campaign.columnName.trim(),
+    columnName: campaign.columnName.trim().replace(/^"(.*)"$/, '$1'),
     status: "scheduled",
     message1: campaign.message1,
     message2: campaign.message2,
