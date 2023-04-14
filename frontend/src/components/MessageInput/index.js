@@ -8,15 +8,15 @@ import clsx from "clsx";
 import { makeStyles } from "@material-ui/core/styles";
 import Paper from "@material-ui/core/Paper";
 import InputBase from "@material-ui/core/InputBase";
-import CircularProgress from "@material-ui/core/CircularProgress";
 import { green } from "@material-ui/core/colors";
 import AttachFileIcon from "@material-ui/icons/AttachFile";
 import IconButton from "@material-ui/core/IconButton";
 import MoreVert from "@material-ui/icons/MoreVert";
+import InsertCommentIcon from "@material-ui/icons/InsertComment"
 import AccessTimeIcon from '@material-ui/icons/AccessTime';
 import MoodIcon from "@material-ui/icons/Mood";
 import SendIcon from "@material-ui/icons/Send";
-import InsertCommentIcon from '@material-ui/icons/InsertComment';
+import { ArrowDropDown } from '@material-ui/icons';
 import CancelIcon from "@material-ui/icons/Cancel";
 import ClearIcon from "@material-ui/icons/Clear";
 import MicIcon from "@material-ui/icons/Mic";
@@ -39,7 +39,12 @@ import {
   DialogContent,
   DialogTitle,
   DialogActions,
-  Button
+  Button,
+  MenuList,
+  CircularProgress,
+  Popper,
+  ButtonGroup,
+  Grow
 } from "@material-ui/core";
 import ClickAwayListener from "@material-ui/core/ClickAwayListener";
 import ScheduleMessage from "./ScheduleMessage";
@@ -126,7 +131,8 @@ const useStyles = makeStyles((theme) => ({
 
   sendMessageOptionsIcons: {
     color: "grey",
-    fontSize: 15
+    fontSize: 20,
+    marginRight: 5,
   },
 
   uploadInput: {
@@ -266,6 +272,8 @@ const MessageInput = ({ ticketStatus, ticket }) => {
   const [onDragEnter, setOnDragEnter] = useState(false);
   const [scheduleDate, setScheduledDate] = useState("")
   const [anchorEl, setAnchorEl] = useState(null);
+  const [openSendMenu, setOpenSendMenu] = useState(false);
+  const anchorRef = useRef(null);
   const { setReplyingMessage, replyingMessage } = useContext(ReplyMessageContext);
   const { user } = useContext(AuthContext);
 
@@ -713,7 +721,7 @@ const MessageInput = ({ ticketStatus, ticket }) => {
               <MenuItem onClick={handleMenuItemClick}>
                 <input
                   multiple
-                  type="file"
+                  type="file" 
                   id="upload-button"
                   disabled={loading || recording || ticketStatus !== "open"}
                   className={classes.uploadInput}
@@ -799,34 +807,60 @@ const MessageInput = ({ ticketStatus, ticket }) => {
           {inputMessage ? (
             <>
             <div style={{ display: "flex", alignItems: "center"}}>
-              <IconButton
-                aria-label="sendMessage"
-                component="span"
-                onClick={handleSendMessage}
-                disabled={loading}
-              >
-                <SendIcon className={classes.sendMessageIcons} />
-              </IconButton>
-              <div style={{ display: "flex", flexDirection: "column", alignItems: "center"}}>
-                <IconButton
-                  size="small"
-                  aria-label="sendMessage"
-                  component="span"
-                  onClick={() => handleSendMessage(true)}
-                  disabled={loading}
-                >
-                  <InsertCommentIcon className={classes.sendMessageOptionsIcons}/>
-                </IconButton>
-                <IconButton
-                  size="small"
-                  aria-label="sendMessage"
-                  component="span"
-                  onClick={() => setScheduledModalOpen(true)}
-                  disabled={loading}
-                >
-                  <AccessTimeIcon className={classes.sendMessageOptionsIcons}/>
-                </IconButton>
-              </div>
+               <ButtonGroup variant="contained" ref={anchorRef} aria-label="split button">
+                  <Button
+                    onClick={() => handleSendMessage()}
+                    aria-label="sendMessage"
+                    component="span"
+                  >
+                    <SendIcon className={classes.sendMessageIcons} />
+                  </Button>
+                  <Button
+                    size="small"
+                    aria-controls={openSendMenu ? 'split-button-menu' : undefined}
+                    aria-expanded={openSendMenu ? 'true' : undefined}
+                    aria-label="select merge strategy"
+                    aria-haspopup="menu"
+                    onClick={() => setOpenSendMenu(e => !e)}
+                  >
+                    <ArrowDropDown className={classes.sendMessageIcons} style={{ transform: "rotate(180deg)"}}/>
+                  </Button>
+                </ButtonGroup>
+                <Popper open={openSendMenu} anchorEl={anchorRef.current} role={undefined} transition disablePortal>
+                  {({ TransitionProps, placement }) => (
+                    <Grow
+                      {...TransitionProps}
+                      style={{
+                        transformOrigin: placement === 'bottom' ? 'center top' : 'center bottom',
+                      }}
+                    >
+                      <Paper>
+                        <ClickAwayListener onClickAway={() => setOpenSendMenu(false)}>
+                          <MenuList id="split-button-menu">
+                              <MenuItem
+                                onClick={() => {
+                                  setScheduledModalOpen(true)
+                                  setOpenSendMenu(false)
+                                  }
+                                }
+                                style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}
+                              >
+                                <AccessTimeIcon className={classes.sendMessageOptionsIcons}/>Agendar
+                              </MenuItem>
+                              <MenuItem
+                                onClick={
+                                  () => handleSendMessage(true)
+                                }
+                                style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}
+                              >
+                                <InsertCommentIcon className={classes.sendMessageOptionsIcons}/>Comentar
+                              </MenuItem>
+                          </MenuList>
+                        </ClickAwayListener>
+                      </Paper>
+                    </Grow>
+                  )}
+                </Popper>
             </div>
             </>
           ) : recording ? (
