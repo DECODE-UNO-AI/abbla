@@ -169,7 +169,7 @@ const ContactListModal = ({ open, onClose }) => {
                             <TagsFilter style={{ padding: 0}} onFiltered={() => {}} selecteds={filterOptions.tags} setSelecteds={handleOnTagsChange}/>
                         </div>
                         <div style={{ marginTop: 20 }}>
-                            <InputLabel style={{ marginBottom: 4 }}>Data</InputLabel>
+                            <InputLabel style={{ marginBottom: 4 }}>Data da criação do contato</InputLabel>
                             <Space direction="vertical" style={{ width: "100%"}}>
                                 <RangePicker
                                     placeholder={["Data inicial", "Data final"]}
