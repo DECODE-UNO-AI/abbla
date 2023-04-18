@@ -108,12 +108,16 @@ const ContactModal = ({ open, onClose, contactId, initialValues, onSave }) => {
 	};
 
 	const handleSaveContact = async values => {
+		const contactData = {
+			...values,
+			number: values.number?.replace(/[+\- ]/g, "")
+		}
 		try {
 			if (contactId) {
-				await api.put(`/contacts/${contactId}`, values);
+				await api.put(`/contacts/${contactId}`, contactData);
 				handleClose();
 			} else {
-				const { data } = await api.post("/contacts", values);
+				const { data } = await api.post("/contacts", contactData);
 				if (onSave) {
 					onSave(data);
 				}
