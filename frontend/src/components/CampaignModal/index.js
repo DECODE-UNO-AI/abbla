@@ -403,7 +403,7 @@ const CampaignModal = ({ open, onClose, campaignId, visualize = false }) => {
             setSendTime(initialState.sendTime);
             setDelay("15");
             setCsvFile(null);
-            setStartNow(false);
+            setStartNow(true);
             setIsRepeatModel(false);
             setInputsOrder([]);
             setAllMessagesInputs([]);
@@ -637,7 +637,7 @@ const CampaignModal = ({ open, onClose, campaignId, visualize = false }) => {
         setCsvColumns([]);
         setDelay("15")
         setCsvFile(null);
-        setStartNow(false);
+        setStartNow(true);
         setIsRepeatModel(false);
         setInputsOrder([])
         setAllMessagesInputs([])
