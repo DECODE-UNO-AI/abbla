@@ -416,10 +416,12 @@ const Connections = () => {
 						<Button
 							size="small"
 							variant="outlined"
-							color="primary"
-							onClick={() => handleStartWhatsAppSession(whatsApp.id)}
+							color="secondary"
+							onClick={() => {
+								handleOpenConfirmationModal("disconnect", whatsApp.id, whatsApp.sessionId ? true : false);
+							}}
 						>
-							{i18n.t("connections.buttons.tryAgain")}
+							{i18n.t("connections.buttons.disconnect")}
 						</Button>
 					</>
 				)}
