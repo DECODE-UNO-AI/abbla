@@ -105,11 +105,12 @@ export const initWbot = async (whatsapp: Whatsapp): Promise<Session> => {
       const timeoutId = setTimeout(() => {
         wbot.destroy();
         StartWhatsAppSession(whatsapp);
-      }, 20 * 60 * 1000);
+      }, 15 * 60 * 1000);
 
       wbot.initialize();
 
       wbot.on("qr", async qr => {
+        clearTimeout(timeoutId);
         if (whatsapp.status === "CONNECTED") return;
         logger.info("Session:", sessionName);
         qrCode.generate(qr, { small: true });
