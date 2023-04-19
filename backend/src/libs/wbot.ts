@@ -105,7 +105,7 @@ export const initWbot = async (whatsapp: Whatsapp): Promise<Session> => {
       const timeoutId = setTimeout(() => {
         wbot.destroy();
         StartWhatsAppSession(whatsapp);
-      }, 5 * 60 * 1000);
+      }, 20 * 60 * 1000);
 
       wbot.initialize();
 
