@@ -409,9 +409,19 @@ const Connections = () => {
 						</Button>
 					)}
 				{whatsApp.status === "OPENING" && (
-					<Button size="small" variant="outlined" disabled color="default">
-						{i18n.t("connections.buttons.connecting")}
-					</Button>
+					<>
+						<Button size="small" variant="outlined" disabled color="default">
+							{i18n.t("connections.buttons.connecting")}
+						</Button>
+						<Button
+							size="small"
+							variant="outlined"
+							color="primary"
+							onClick={() => handleStartWhatsAppSession(whatsApp.id)}
+						>
+							{i18n.t("connections.buttons.tryAgain")}
+						</Button>
+					</>
 				)}
 			</>
 		);
