@@ -409,21 +409,9 @@ const Connections = () => {
 						</Button>
 					)}
 				{whatsApp.status === "OPENING" && (
-					<>
-						<Button size="small" variant="outlined" disabled color="default">
-							{i18n.t("connections.buttons.connecting")}
-						</Button>
-						<Button
-							size="small"
-							variant="outlined"
-							color="secondary"
-							onClick={() => {
-								handleOpenConfirmationModal("disconnect", whatsApp.id, whatsApp.sessionId ? true : false);
-							}}
-						>
-							{i18n.t("connections.buttons.disconnect")}
-						</Button>
-					</>
+					<Button size="small" variant="outlined" disabled color="default">
+						{i18n.t("connections.buttons.connecting")}
+					</Button>
 				)}
 			</>
 		);
