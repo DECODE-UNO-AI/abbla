@@ -8,6 +8,7 @@ import Whatsapp from "../models/Whatsapp";
 import AppError from "../errors/AppError";
 import { logger } from "../utils/logger";
 import { handleMessage } from "../services/WbotServices/wbotMessageListener";
+import { StartWhatsAppSession } from "../services/WbotServices/StartWhatsAppSession";
 
 export interface Session extends Client {
   id?: number;
@@ -100,7 +101,14 @@ export const initWbot = async (whatsapp: Whatsapp): Promise<Session> => {
         }
       });
       wbot.id = whatsapp.id;
+
+      const timeoutId = setTimeout(() => {
+        wbot.destroy();
+        StartWhatsAppSession(whatsapp);
+      }, 5 * 60 * 1000);
+
       wbot.initialize();
+
       wbot.on("qr", async qr => {
         if (whatsapp.status === "CONNECTED") return;
         logger.info("Session:", sessionName);
@@ -175,6 +183,7 @@ export const initWbot = async (whatsapp: Whatsapp): Promise<Session> => {
         wbot.sendPresenceAvailable();
         await syncUnreadMessages(wbot);
 
+        clearTimeout(timeoutId);
         resolve(wbot);
       });
     } catch (err: any) {
