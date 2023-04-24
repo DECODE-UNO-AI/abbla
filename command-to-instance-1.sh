@@ -1,7 +1,7 @@
 echo "Executando script command-to-instance-1.sh"
 cd 4thd-abbla
 echo "Diretório atual: $(pwd)"
-./UPDATE.sh
+sh UPDATE.sh ${{ secrets.INSTANCE_1_SSH_PASSWORD }}
 echo "UPDATE.sh executado com sucesso"
 cd ..
 echo "Diretório atual: $(pwd)"
