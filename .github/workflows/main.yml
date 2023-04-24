@@ -22,6 +22,6 @@ jobs:
           INSTANCE_1_SSH_HOST: ${{ secrets.INSTANCE_1_SSH_HOST }}
           INSTANCE_1_SSH_USER: ${{ secrets.INSTANCE_1_SSH_USER }}
           INSTANCE_1_SSH_PASSWORD: ${{ secrets.INSTANCE_1_SSH_PASSWORD }}
-        run: echo $INSTANCE_1_SSH_PASSWORD | sudo -S sshpass -p $INSTANCE_1_SSH_PASSWORD ssh -tt -o StrictHostKeyChecking=no -x $INSTANCE_1_SSH_USER@$INSTANCE_1_SSH_HOST < command-to-instance-1.sh
+        run: echo "$INSTANCE_1_SSH_PASSWORD" | sudo -S sshpass -p $INSTANCE_1_SSH_PASSWORD ssh -tt -o StrictHostKeyChecking=no -x $INSTANCE_1_SSH_USER@$INSTANCE_1_SSH_HOST < command-to-instance-1.sh
 
         # sshpass -p $INSTANCE_1_SSH_PASSWORD ssh -t -o StrictHostKeyChecking=no -x $INSTANCE_1_SSH_USER@$INSTANCE_1_SSH_HOST "sudo -s < command-to-instance-1.sh"
