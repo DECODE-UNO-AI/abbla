@@ -6,7 +6,9 @@ on:
 
 jobs:
   deploy:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-18.04
+    env:
+      AWS_DEFAULT_REGION: us-west-2
 
     steps:
       - name: Checkout code
