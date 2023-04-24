@@ -39,7 +39,7 @@ echo " "
 
 sleep 2
 
-sudo rm -rf node_modules
+sudo rm -rf node_modules $1
 npm install
 sudo rm -rf dist
 npm run build
