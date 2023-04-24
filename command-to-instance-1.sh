@@ -1,7 +1,7 @@
 echo "Executando script command-to-instance-1.sh"
 cd 4thd-abbla
 echo "Diretório atual: $(pwd)"
-echo $1 | sudo -S ./UPDATE.sh
+./UPDATE.sh
 echo "UPDATE.sh executado com sucesso"
 cd ..
 echo "Diretório atual: $(pwd)"
