@@ -17,7 +17,7 @@ jobs:
 
       - name: Execute command on remote server
         env:
-          SSH_HOST: ${{ secrets.INSTANCE_1_SSH_HOST }}
-          SSH_USER: ${{ secrets.INSTANCE_1_SSH_USER }}
-          SSH_PASSWORD: ${{ secrets.INSTANCE_1_SSH_PASSWORD }}
-        run: sshpass -p '$SSH_PASSWORD' ssh -tt $SSH_USER@$SSH_HOST < command-to-instance-1.txt # maybe has to remove this '' of ssh_password
+          INSTANCE_1_SSH_HOST: ${{ secrets.INSTANCE_1_SSH_HOST }}
+          INSTANCE_1_SSH_USER: ${{ secrets.INSTANCE_1_SSH_USER }}
+          INSTANCE_1_SSH_PASSWORD: ${{ secrets.INSTANCE_1_SSH_PASSWORD }}
+        run: sshpass -p '$INSTANCE_1_SSH_PASSWORD' ssh -tt $INSTANCE_1_SSH_USER@$INSTANCE_1_SSH_HOST < command-to-instance-1.txt # maybe has to remove this '' of ssh_password
