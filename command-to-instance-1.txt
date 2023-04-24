@@ -1,1 +1,1 @@
-cd 4thd-abbla && ./UPDATE.sh
+cd 4thd-abbla && ./UPDATE.sh && cd .. && pm2 restart 4thd-backend && pm2 restart 4thd-frontend
