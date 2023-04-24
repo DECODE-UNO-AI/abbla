@@ -17,11 +17,16 @@ jobs:
       - name: Install sshpass
         run: sudo apt-get install sshpass
 
-      - name: Execute command on remote server
+      - name: Execute updates to instance of contabo 1
         env:
           INSTANCE_1_SSH_HOST: ${{ secrets.INSTANCE_1_SSH_HOST }}
           INSTANCE_1_SSH_USER: ${{ secrets.INSTANCE_1_SSH_USER }}
           INSTANCE_1_SSH_PASSWORD: ${{ secrets.INSTANCE_1_SSH_PASSWORD }}
         run: echo "$INSTANCE_1_SSH_PASSWORD" | sudo -S sshpass -p $INSTANCE_1_SSH_PASSWORD ssh -tt -o StrictHostKeyChecking=no -x -t $INSTANCE_1_SSH_USER@$INSTANCE_1_SSH_HOST -S sudo < command-to-instance-1.sh
 
-        # sshpass -p $INSTANCE_1_SSH_PASSWORD ssh -t -o StrictHostKeyChecking=no -x $INSTANCE_1_SSH_USER@$INSTANCE_1_SSH_HOST "sudo -s < command-to-instance-1.sh"
+      - name: Execute updates to instance of contabo 2
+        env:
+          INSTANCE_2_SSH_HOST: ${{ secrets.INSTANCE_2_SSH_HOST }}
+          INSTANCE_2_SSH_USER: ${{ secrets.INSTANCE_2_SSH_USER }}
+          INSTANCE_2_SSH_PASSWORD: ${{ secrets.INSTANCE_2_SSH_PASSWORD }}
+        run: echo "$INSTANCE_2_SSH_PASSWORD" | sudo -S sshpass -p $INSTANCE_2_SSH_PASSWORD ssh -tt -o StrictHostKeyChecking=no -x -t $INSTANCE_2_SSH_USER@$INSTANCE_2_SSH_HOST -S sudo < command-to-instance-2.sh
