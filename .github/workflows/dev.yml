@@ -1,0 +1,25 @@
+name: Pipeline update demo101 by SSH
+
+on:
+  push:
+    branches: [dev]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    env:
+      AWS_DEFAULT_REGION: us-west-2
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Install sshpass
+        run: sudo apt-get install sshpass
+
+      - name: Execute updates to demo101 of contabo 2
+        env:
+          INSTANCE_2_SSH_HOST: ${{ secrets.INSTANCE_2_SSH_HOST }}
+          INSTANCE_2_SSH_USER: ${{ secrets.INSTANCE_2_SSH_USER }}
+          INSTANCE_2_SSH_PASSWORD: ${{ secrets.INSTANCE_2_SSH_PASSWORD }}
+        run: echo "$INSTANCE_2_SSH_PASSWORD" | sudo -S sshpass -p $INSTANCE_2_SSH_PASSWORD ssh -tt -o StrictHostKeyChecking=no -x -t $INSTANCE_2_SSH_USER@$INSTANCE_2_SSH_HOST -S sudo < demo101-update.sh
