@@ -17,9 +17,23 @@ jobs:
       - name: Install sshpass
         run: sudo apt-get install sshpass
 
+      - name: Send messages about pipeline status on Discord
+        if: always()
+        env:
+          DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
+        run: |
+          curl -H "Content-Type: application/json" -X POST -d '{"content":"Iniciando processo de atualização da instancia demo101 contabo2"}' $DISCORD_WEBHOOK_URL
+
       - name: Execute updates to demo101 of contabo 2
         env:
           INSTANCE_2_SSH_HOST: ${{ secrets.INSTANCE_2_SSH_HOST }}
           INSTANCE_2_SSH_USER: ${{ secrets.INSTANCE_2_SSH_USER }}
           INSTANCE_2_SSH_PASSWORD: ${{ secrets.INSTANCE_2_SSH_PASSWORD }}
         run: echo "$INSTANCE_2_SSH_PASSWORD" | sudo -S sshpass -p $INSTANCE_2_SSH_PASSWORD ssh -tt -o StrictHostKeyChecking=no -x -t $INSTANCE_2_SSH_USER@$INSTANCE_2_SSH_HOST -S sudo < demo101-update.sh
+
+      - name: Send messages about pipeline status on Discord
+        if: always()
+        env:
+          DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
+        run: |
+          curl -H "Content-Type: application/json" -X POST -d '{"content":"Processo de atualização da instancia demo101 completo"}' $DISCORD_WEBHOOK_URL
