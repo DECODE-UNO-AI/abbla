@@ -1,24 +1,12 @@
-echo "Executando script command-to-instance-2.sh"
+echo "Executando script demo101-update.sh"
 
 pm2 stop all
 
 cd abbla
 
-echo "Iniciando atualização na instancia da Plincred"
+echo "Iniciando atualização na instancia da demo101"
 
-cd plincred
-
-echo "Diretório atual: $(pwd)"
-
-./UPDATE.sh
-
-echo "UPDATE.sh executado com sucesso"
-
-cd ..
-
-echo "Iniciando atualização na instancia da qwer"
-
-cd qwer
+cd demo101
 
 echo "Diretório atual: $(pwd)"
 
@@ -28,29 +16,15 @@ echo "UPDATE.sh executado com sucesso"
 
 cd ..
 
-echo "Iniciando atualização na instancia da rtyu"
-
-cd rtyu
-
 echo "Diretório atual: $(pwd)"
 
-./UPDATE.sh
+pm2 restart demo101-backend
 
-echo "UPDATE.sh executado com sucesso"
+echo "Processo demo101-backend reiniciado com sucesso"
 
-cd ..
+pm2 restart demo101-frontend
 
-echo "Iniciando atualização na instancia da wert"
-
-cd wert
-
-echo "Diretório atual: $(pwd)"
-
-./UPDATE.sh
-
-echo "UPDATE.sh executado com sucesso"
-
-cd ..
+echo "Processo demo101-frontend reiniciado com sucesso"
 
 pm2 restart plincred-backend
 
@@ -83,7 +57,3 @@ echo "Processo wert-backend reiniciado com sucesso"
 pm2 restart wert-frontend
 
 echo "Processo wert-frontend reiniciado com sucesso"
-
-
-
-

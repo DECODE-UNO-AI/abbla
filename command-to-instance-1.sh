@@ -1,5 +1,7 @@
 echo "Executando script command-to-instance-1.sh"
 
+pm2 stop all
+
 echo "Iniciando atualização na instancia da 4th"
 
 cd 4thd-abbla
@@ -11,16 +13,6 @@ echo "Diretório atual: $(pwd)"
 echo "UPDATE.sh executado com sucesso"
 
 cd ..
-
-echo "Diretório atual: $(pwd)"
-
-pm2 restart 4thd-backend
-
-echo "Processo 4thd-backend reiniciado com sucesso"
-
-pm2 restart 4thd-frontend
-
-echo "Processo 4thd-frontend reiniciado com sucesso"
 
 echo "Iniciando atualização na instancia da Gemeos"
 
@@ -34,7 +26,13 @@ echo "UPDATE.sh executado com sucesso"
 
 cd ..
 
-echo "Diretório atual: $(pwd)"
+pm2 restart 4thd-backend
+
+echo "Processo 4thd-backend reiniciado com sucesso"
+
+pm2 restart 4thd-frontend
+
+echo "Processo 4thd-frontend reiniciado com sucesso"
 
 pm2 restart Gemeos-backend
 
