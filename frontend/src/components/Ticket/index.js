@@ -168,10 +168,11 @@ const Ticket = () => {
         </TicketHeader>
         <ReplyMessageProvider>
           <MessagesList
+            contactId={contact.id}
             ticketId={ticketId}
             isGroup={ticket.isGroup}
           ></MessagesList>
-          <MessageInput ticketStatus={ticket.status} ticket={ticket}/>
+          <MessageInput ticketStatus={ticket.status} ticket={ticket} />
         </ReplyMessageProvider>
       </Paper>
       <ContactDrawer
