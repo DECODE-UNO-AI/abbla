@@ -10,9 +10,11 @@ import ShowTicketService from "../services/TicketServices/ShowTicketService";
 import DeleteWhatsAppMessage from "../services/WbotServices/DeleteWhatsAppMessage";
 import SendWhatsAppMedia from "../services/WbotServices/SendWhatsAppMedia";
 import SendWhatsAppMessage from "../services/WbotServices/SendWhatsAppMessage";
+import getContactMessages from "../services/MessageServices/getContactMessages";
 
 type IndexQuery = {
   pageNumber: string;
+  contactId: string;
 };
 
 type MessageData = {
@@ -25,12 +27,16 @@ type MessageData = {
 
 export const index = async (req: Request, res: Response): Promise<Response> => {
   const { ticketId } = req.params;
-  const { pageNumber } = req.query as IndexQuery;
+  const { pageNumber, contactId } = req.query as IndexQuery;
 
   const { count, messages, ticket, hasMore } = await ListMessagesService({
     pageNumber,
     ticketId
   });
+
+  const allContactMessages = await getContactMessages({ contactId });
+
+  const allMessages = [...allContactMessages, ...messages];
 
   // Setting vizualizeMessage
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -40,7 +46,7 @@ export const index = async (req: Request, res: Response): Promise<Response> => {
   const option = listSettingsService?.dataValues.value;
   if (option === "disabled") await SetTicketMessagesAsRead(ticket);
 
-  return res.json({ count, messages, ticket, hasMore });
+  return res.json({ count, messages: allMessages, ticket, hasMore });
 };
 
 export const store = async (req: Request, res: Response): Promise<Response> => {
