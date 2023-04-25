@@ -57,3 +57,7 @@ echo "Processo wert-backend reiniciado com sucesso"
 pm2 restart wert-frontend
 
 echo "Processo wert-frontend reiniciado com sucesso"
+
+pm2 restart baileys-api
+
+echo "Processo baileys-api reiniciado com sucesso"
