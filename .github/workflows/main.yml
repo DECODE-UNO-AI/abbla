@@ -22,7 +22,7 @@ jobs:
         env:
           DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
         run: |
-          curl -H "Content-Type: application/json" -X POST -d '{"content":"Iniciando processo de atualização das instancias do Contabo1."}' $DISCORD_WEBHOOK_URL
+          curl -H "Content-Type: application/json" -X POST -d '{"content":"Iniciando processo de atualização das instancias do Contabo1.\n\n===================="}' $DISCORD_WEBHOOK_URL
 
       - name: Execute updates to instance of contabo 1
         env:
@@ -36,14 +36,14 @@ jobs:
         env:
           DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
         run: |
-          curl -H "Content-Type: application/json" -X POST -d '{"content":"Processo de atualização das instancias do Contabo1 completo."}' $DISCORD_WEBHOOK_URL
+          curl -H "Content-Type: application/json" -X POST -d '{"content":"Processo de atualização das instancias do Contabo1 completo.\n\n===================="}' $DISCORD_WEBHOOK_URL
 
       - name: Send messages about pipeline status on Discord
         if: always()
         env:
           DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
         run: |
-          curl -H "Content-Type: application/json" -X POST -d '{"content":"Iniciando processo de atualização das instancias do Contabo2."}' $DISCORD_WEBHOOK_URL
+          curl -H "Content-Type: application/json" -X POST -d '{"content":"Iniciando processo de atualização das instancias do Contabo2.\n\n===================="}' $DISCORD_WEBHOOK_URL
 
       - name: Execute updates to instance of contabo 2
         env:
@@ -57,4 +57,4 @@ jobs:
         env:
           DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
         run: |
-          curl -H "Content-Type: application/json" -X POST -d '{"content":"Processo de atualização das instancias do Contabo2 completo."}' $DISCORD_WEBHOOK_URL
+          curl -H "Content-Type: application/json" -X POST -d '{"content":"Processo de atualização das instancias do Contabo2 completo.\n\n===================="}' $DISCORD_WEBHOOK_URL
