@@ -54,8 +54,6 @@ export const initWbot = async (whatsapp: Whatsapp): Promise<Session> => {
         sessionCfg = JSON.parse(whatsapp.session);
       }
 
-      let qrcodeTimeoutId: NodeJS.Timeout;
-
       const wbot: Session = new Client({
         session: sessionCfg,
         authStrategy: new LocalAuth({ clientId: `bd_${whatsapp.id}` }),
@@ -116,23 +114,6 @@ export const initWbot = async (whatsapp: Whatsapp): Promise<Session> => {
       wbot.on("qr", async qr => {
         clearTimeout(timeoutId);
 
-        qrcodeTimeoutId = setTimeout(async () => {
-          await wbot.destroy();
-          removeWbot(whatsapp.id);
-
-          await whatsapp.update({
-            status: "DISCONNECTED",
-            session: "",
-            qrcode: null,
-            retries: 0
-          });
-
-          io.emit("whatsappSession", {
-            action: "update",
-            session: whatsapp
-          });
-        }, 1 * 60 * 1000);
-
         if (
           whatsapp.status === "CONNECTED" ||
           whatsapp.status === "DISCONNECTED"
@@ -183,7 +164,6 @@ export const initWbot = async (whatsapp: Whatsapp): Promise<Session> => {
       });
 
       wbot.on("ready", async () => {
-        clearTimeout(qrcodeTimeoutId);
         logger.info(`Session: ${sessionName} READY`);
 
         console.log("WbotON", wbot.info.wid._serialized.split("@")[0]);
