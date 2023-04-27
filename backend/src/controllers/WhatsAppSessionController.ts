@@ -38,7 +38,6 @@ const remove = async (req: Request, res: Response): Promise<Response> => {
   const whatsapp = await ShowWhatsAppService(whatsappId);
   const wbot = getWbot(whatsapp.id);
 
-  // await wbot.logout() -> Method with bugs, does not provides a stable disconnection
   await wbot.destroy();
   removeWbot(whatsapp.id);
 
@@ -60,43 +59,40 @@ const remove = async (req: Request, res: Response): Promise<Response> => {
   return res.status(200).json({ message: "Session disconnected." });
 };
 
-const reconectApi = async (
-  req: Request,
-  res: Response,
-) => {
+const reconectApi = async (req: Request, res: Response) => {
   const { id } = req.body;
 
   try {
     const whatsapp = await WhatsappApi.findByPk(id);
 
-    if(!whatsapp) return
-    await whatsapp.update({ status: "OPENING"})
-    await axios.post(`${process.env.BAILEYS_API_HOST}/sessions/add`, { sessionId: whatsapp.sessionId })
+    if (!whatsapp) return;
+    await whatsapp.update({ status: "OPENING" });
+    await axios.post(`${process.env.BAILEYS_API_HOST}/sessions/add`, {
+      sessionId: whatsapp.sessionId
+    });
     const io = getIO();
     io.emit("whatsappapi-update", {
       action: "UPDATE_SESSION",
       whatsapp: whatsapp
     });
-    return res.status(200)
+    return res.status(200);
   } catch (e) {
     throw new AppError(e);
   }
-}
+};
 
-const disconnectApi = async (
-  req: Request,
-  res: Response,
-) => {
+const disconnectApi = async (req: Request, res: Response) => {
   const { id } = req.params;
 
   try {
     const whatsapp = await WhatsappApi.findByPk(id);
-    if(!whatsapp) return
-    await axios.delete(`${process.env.BAILEYS_API_HOST}/sessions/${whatsapp.sessionId}`)
-  } catch(e) {
+    if (!whatsapp) return;
+    await axios.delete(
+      `${process.env.BAILEYS_API_HOST}/sessions/${whatsapp.sessionId}`
+    );
+  } catch (e) {
     throw new AppError(e);
   }
-}
-
+};
 
 export default { store, remove, update, disconnectApi, reconectApi };
