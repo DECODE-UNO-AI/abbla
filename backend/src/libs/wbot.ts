@@ -54,6 +54,8 @@ export const initWbot = async (whatsapp: Whatsapp): Promise<Session> => {
         sessionCfg = JSON.parse(whatsapp.session);
       }
 
+      let qrcodeTimeoutId: NodeJS.Timeout;
+
       const wbot: Session = new Client({
         session: sessionCfg,
         authStrategy: new LocalAuth({ clientId: `bd_${whatsapp.id}` }),
@@ -103,10 +105,9 @@ export const initWbot = async (whatsapp: Whatsapp): Promise<Session> => {
       });
       wbot.id = whatsapp.id;
 
-      let qrTimeoutId: NodeJS.Timeout;
-
-      const timeoutId = setTimeout(() => {
-        wbot.destroy();
+      const timeoutId = setTimeout(async () => {
+        await wbot.destroy();
+        removeWbot(whatsapp.id);
         StartWhatsAppSession(whatsapp);
       }, fifteenMinutes);
 
@@ -115,20 +116,28 @@ export const initWbot = async (whatsapp: Whatsapp): Promise<Session> => {
       wbot.on("qr", async qr => {
         clearTimeout(timeoutId);
 
-        qrTimeoutId = setTimeout(async () => {
+        qrcodeTimeoutId = setTimeout(async () => {
+          await wbot.destroy();
+          removeWbot(whatsapp.id);
+
           await whatsapp.update({
-            status: "DISCONNECTED"
+            status: "DISCONNECTED",
+            session: "",
+            qrcode: null,
+            retries: 0
           });
 
           io.emit("whatsappSession", {
             action: "update",
             session: whatsapp
           });
-
-          wbot.destroy();
         }, 1 * 60 * 1000);
 
-        if (whatsapp.status === "CONNECTED") return;
+        if (
+          whatsapp.status === "CONNECTED" ||
+          whatsapp.status === "DISCONNECTED"
+        )
+          return;
 
         logger.info("Session:", sessionName);
         qrCode.generate(qr, { small: true });
@@ -174,7 +183,7 @@ export const initWbot = async (whatsapp: Whatsapp): Promise<Session> => {
       });
 
       wbot.on("ready", async () => {
-        clearTimeout(qrTimeoutId);
+        clearTimeout(qrcodeTimeoutId);
         logger.info(`Session: ${sessionName} READY`);
 
         console.log("WbotON", wbot.info.wid._serialized.split("@")[0]);
@@ -221,6 +230,7 @@ export const getWbot = (whatsappId: number): Session => {
 export const removeWbot = (whatsappId: number): void => {
   try {
     const sessionIndex = sessions.findIndex(s => s.id === whatsappId);
+
     if (sessionIndex !== -1) {
       sessions[sessionIndex].destroy();
       sessions.splice(sessionIndex, 1);
