@@ -16,6 +16,9 @@ export interface Session extends Client {
 
 const sessions: Session[] = [];
 
+const fiveMinutes = 5 * 60 * 1000;
+const fifteenMinutes = 15 * 60 * 1000;
+
 const syncUnreadMessages = async (wbot: Session) => {
   const chats = await wbot.getChats();
 
@@ -36,8 +39,6 @@ const syncUnreadMessages = async (wbot: Session) => {
       for (const msg of unreadMessages) {
         await handleMessage(msg, wbot);
       }
-
-      // await chat.sendSeen();
     }
   }
 };
@@ -57,7 +58,7 @@ export const initWbot = async (whatsapp: Whatsapp): Promise<Session> => {
         session: sessionCfg,
         authStrategy: new LocalAuth({ clientId: `bd_${whatsapp.id}` }),
         puppeteer: {
-          timeout: 5 * 60 * 1000,
+          timeout: fiveMinutes,
           args: [
             "--autoplay-policy=user-gesture-required",
             "--disable-background-networking",
@@ -102,16 +103,23 @@ export const initWbot = async (whatsapp: Whatsapp): Promise<Session> => {
       });
       wbot.id = whatsapp.id;
 
-      const timeoutId = setTimeout(() => {
-        wbot.destroy();
+      const timeoutId = setTimeout(async () => {
+        await wbot.destroy();
+        removeWbot(whatsapp.id);
         StartWhatsAppSession(whatsapp);
-      }, 15 * 60 * 1000);
+      }, fifteenMinutes);
 
       wbot.initialize();
 
       wbot.on("qr", async qr => {
         clearTimeout(timeoutId);
-        if (whatsapp.status === "CONNECTED") return;
+
+        if (
+          whatsapp.status === "CONNECTED" ||
+          whatsapp.status === "DISCONNECTED"
+        )
+          return;
+
         logger.info("Session:", sessionName);
         qrCode.generate(qr, { small: true });
         await whatsapp.update({ qrcode: qr, status: "qrcode", retries: 0 });
@@ -130,9 +138,6 @@ export const initWbot = async (whatsapp: Whatsapp): Promise<Session> => {
 
       wbot.on("authenticated", async session => {
         logger.info(`Session: ${sessionName} AUTHENTICATED`);
-        //        await whatsapp.update({
-        //          session: JSON.stringify(session)
-        //        });
       });
 
       wbot.on("auth_failure", async msg => {
@@ -205,6 +210,7 @@ export const getWbot = (whatsappId: number): Session => {
 export const removeWbot = (whatsappId: number): void => {
   try {
     const sessionIndex = sessions.findIndex(s => s.id === whatsappId);
+
     if (sessionIndex !== -1) {
       sessions[sessionIndex].destroy();
       sessions.splice(sessionIndex, 1);

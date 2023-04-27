@@ -22,7 +22,7 @@ jobs:
         env:
           DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
         run: |
-          curl -H "Content-Type: application/json" -X POST -d '{"content":"Iniciando processo de atualização da instancia demo101 contabo2"}' $DISCORD_WEBHOOK_URL
+          curl -H "Content-Type: application/json" -X POST -d '{"content":"Iniciando processo de atualização da instancia demo101 contabo2.\n\n===================="}' $DISCORD_WEBHOOK_URL
 
       - name: Execute updates to demo101 of contabo 2
         env:
@@ -36,4 +36,4 @@ jobs:
         env:
           DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
         run: |
-          curl -H "Content-Type: application/json" -X POST -d '{"content":"Processo de atualização da instancia demo101 completo"}' $DISCORD_WEBHOOK_URL
+          curl -H "Content-Type: application/json" -X POST -d '{"content":"Processo de atualização da instancia demo101 completo.\n\n===================="}' $DISCORD_WEBHOOK_URL
