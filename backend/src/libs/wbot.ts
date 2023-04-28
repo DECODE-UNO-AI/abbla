@@ -201,7 +201,7 @@ export const initWbot = async (whatsapp: Whatsapp): Promise<Session> => {
 
 export const getWbot = async (whatsappId: number): Promise<Session> => {
   const sessionIndex = sessions.findIndex(s => s.id === whatsappId);
-  console.log("não pode ser -1", sessionIndex);
+
   if (sessionIndex === -1) {
     throw new AppError("ERR_WAPP_NOT_INITIALIZED");
   }
@@ -212,7 +212,6 @@ export const removeWbot = (whatsappId: number): void => {
   try {
     const sessionIndex = sessions.findIndex(s => s.id === whatsappId);
 
-    console.log("não pode ser -1", sessionIndex);
     if (sessionIndex !== -1) {
       sessions[sessionIndex].destroy();
       sessions.splice(sessionIndex, 1);
