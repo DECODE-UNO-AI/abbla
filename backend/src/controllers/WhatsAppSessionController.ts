@@ -36,7 +36,7 @@ const update = async (req: Request, res: Response): Promise<Response> => {
 const remove = async (req: Request, res: Response): Promise<Response> => {
   const { whatsappId } = req.params;
   const whatsapp = await ShowWhatsAppService(whatsappId);
-  const wbot = getWbot(whatsapp.id);
+  const wbot = await getWbot(whatsapp.id);
 
   const destroyInstance = wbot.destroy();
   removeWbot(whatsapp.id);

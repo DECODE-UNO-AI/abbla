@@ -18,7 +18,7 @@ const NotificateOnDisconnected = async (whatsapp: Whatsapp): Promise<void> => {
 
   if (!whatsId || !whatsId.value || whatsId.value === "null") return;
 
-  const wbot = getWbot(+whatsId.value);
+  const wbot = await getWbot(+whatsId.value);
 
   const wbotStatus = await wbot.getState();
 

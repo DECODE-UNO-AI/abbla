@@ -112,7 +112,6 @@ export const initWbot = async (whatsapp: Whatsapp): Promise<Session> => {
       wbot.initialize();
 
       wbot.on("qr", async qr => {
-        console.log("status", whatsapp.status);
         clearTimeout(timeoutId);
 
         if (
@@ -126,7 +125,7 @@ export const initWbot = async (whatsapp: Whatsapp): Promise<Session> => {
         await whatsapp.update({ qrcode: qr, status: "qrcode", retries: 0 });
 
         const sessionIndex = sessions.findIndex(s => s.id === whatsapp.id);
-        console.log("será que vai? tem que ser -1", sessionIndex);
+
         if (sessionIndex === -1) {
           wbot.id = whatsapp.id;
           sessions.push(wbot);
@@ -200,9 +199,9 @@ export const initWbot = async (whatsapp: Whatsapp): Promise<Session> => {
   });
 };
 
-export const getWbot = (whatsappId: number): Session => {
+export const getWbot = async (whatsappId: number): Promise<Session> => {
   const sessionIndex = sessions.findIndex(s => s.id === whatsappId);
-  console.log("sessionIndex não pode ser -1", sessionIndex);
+  console.log("não pode ser -1", sessionIndex);
   if (sessionIndex === -1) {
     throw new AppError("ERR_WAPP_NOT_INITIALIZED");
   }
@@ -213,6 +212,7 @@ export const removeWbot = (whatsappId: number): void => {
   try {
     const sessionIndex = sessions.findIndex(s => s.id === whatsappId);
 
+    console.log("não pode ser -1", sessionIndex);
     if (sessionIndex !== -1) {
       sessions[sessionIndex].destroy();
       sessions.splice(sessionIndex, 1);
