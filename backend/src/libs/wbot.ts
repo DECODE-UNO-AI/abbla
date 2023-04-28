@@ -44,7 +44,6 @@ const syncUnreadMessages = async (wbot: Session) => {
 };
 
 export const initWbot = async (whatsapp: Whatsapp): Promise<Session> => {
-  console.log("status", whatsapp.status);
   return new Promise((resolve, reject) => {
     try {
       logger.level = "trace";
@@ -107,15 +106,11 @@ export const initWbot = async (whatsapp: Whatsapp): Promise<Session> => {
       });
       wbot.id = whatsapp.id;
 
-      if (whatsapp.status === "OPENING") {
-        console.log("entrei");
-        timeoutId = setTimeout(async () => {
-          console.log("entrei no timeout");
-          await wbot.destroy();
-          removeWbot(whatsapp.id);
-          StartWhatsAppSession(whatsapp);
-        }, fiveMinutes);
-      }
+      timeoutId = setTimeout(async () => {
+        await wbot.destroy();
+        removeWbot(whatsapp.id);
+        StartWhatsAppSession(whatsapp);
+      }, fifteenMinutes);
 
       wbot.initialize();
 
@@ -139,7 +134,7 @@ export const initWbot = async (whatsapp: Whatsapp): Promise<Session> => {
           });
 
           clearTimeout(qrcodeTimeoutId);
-        }, fiveMinutes);
+        }, 1 * 60 * 1000);
 
         if (
           whatsapp.status === "CONNECTED" ||
