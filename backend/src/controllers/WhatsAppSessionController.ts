@@ -39,7 +39,7 @@ const remove = async (req: Request, res: Response): Promise<Response> => {
   const wbot = await getWbot(whatsapp.id);
 
   const destroyInstance = wbot.destroy();
-  removeWbot(whatsapp.id);
+  await removeWbot(whatsapp.id);
 
   const io = getIO();
   const updateWhatsapp = whatsapp.update({
