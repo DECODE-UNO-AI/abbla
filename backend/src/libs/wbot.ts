@@ -108,7 +108,7 @@ export const initWbot = async (whatsapp: Whatsapp): Promise<Session> => {
 
       timeoutId = setTimeout(async () => {
         await wbot.destroy();
-        removeWbot(whatsapp.id);
+        await removeWbot(whatsapp.id);
         StartWhatsAppSession(whatsapp);
       }, fifteenMinutes);
 
@@ -119,7 +119,7 @@ export const initWbot = async (whatsapp: Whatsapp): Promise<Session> => {
 
         qrcodeTimeoutId = setTimeout(async () => {
           await wbot.destroy();
-          removeWbot(whatsapp.id);
+          await removeWbot(whatsapp.id);
 
           await whatsapp.update({
             status: "DISCONNECTED",
@@ -134,7 +134,7 @@ export const initWbot = async (whatsapp: Whatsapp): Promise<Session> => {
           });
 
           clearTimeout(qrcodeTimeoutId);
-        }, 1 * 60 * 1000);
+        }, fiveMinutes);
 
         if (
           whatsapp.status === "CONNECTED" ||
@@ -231,7 +231,7 @@ export const getWbot = async (whatsappId: number): Promise<Session> => {
   return sessions[sessionIndex];
 };
 
-export const removeWbot = (whatsappId: number): void => {
+export const removeWbot = async (whatsappId: number): Promise<void> => {
   try {
     const sessionIndex = sessions.findIndex(s => s.id === whatsappId);
 
