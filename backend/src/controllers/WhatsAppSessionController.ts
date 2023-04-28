@@ -38,23 +38,29 @@ const remove = async (req: Request, res: Response): Promise<Response> => {
   const whatsapp = await ShowWhatsAppService(whatsappId);
   const wbot = getWbot(whatsapp.id);
 
-  await wbot.destroy();
+  const destroyInstance = wbot.destroy();
   removeWbot(whatsapp.id);
 
   const io = getIO();
-  await whatsapp.update({
+  const updateWhatsapp = whatsapp.update({
     status: "DISCONNECTED",
     session: "",
     qrcode: null,
     retries: 0
   });
 
-  await NotificateOnDisconnected(whatsapp);
+  const notificateOnDisconnected = NotificateOnDisconnected(whatsapp);
 
   io.emit("whatsappSession", {
     action: "update",
     session: whatsapp
   });
+
+  await Promise.all([
+    destroyInstance,
+    updateWhatsapp,
+    notificateOnDisconnected
+  ]);
 
   return res.status(200).json({ message: "Session disconnected." });
 };
