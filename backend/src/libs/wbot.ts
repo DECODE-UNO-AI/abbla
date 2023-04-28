@@ -106,10 +106,11 @@ export const initWbot = async (whatsapp: Whatsapp): Promise<Session> => {
       wbot.id = whatsapp.id;
 
       const timeoutId = setTimeout(async () => {
+        console.log("entrei no timeout para destruir a instancia e reiniciar");
         await wbot.destroy();
         removeWbot(whatsapp.id);
         StartWhatsAppSession(whatsapp);
-      }, fifteenMinutes);
+      }, 1 * 60 * 1000);
 
       wbot.initialize();
 
@@ -117,7 +118,6 @@ export const initWbot = async (whatsapp: Whatsapp): Promise<Session> => {
         clearTimeout(timeoutId);
 
         qrcodeTimeoutId = setTimeout(async () => {
-          console.log("entrei no timeout para destruir a instancia");
           await wbot.destroy();
           removeWbot(whatsapp.id);
 
@@ -134,7 +134,7 @@ export const initWbot = async (whatsapp: Whatsapp): Promise<Session> => {
           });
 
           clearTimeout(qrcodeTimeoutId);
-        }, 1 * 60 * 1000);
+        }, fiveMinutes);
 
         if (
           whatsapp.status === "CONNECTED" ||
