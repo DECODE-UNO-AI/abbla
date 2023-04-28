@@ -36,31 +36,26 @@ const update = async (req: Request, res: Response): Promise<Response> => {
 const remove = async (req: Request, res: Response): Promise<Response> => {
   const { whatsappId } = req.params;
   const whatsapp = await ShowWhatsAppService(whatsappId);
-  const wbot = await getWbot(whatsapp.id);
 
-  const destroyInstance = wbot.destroy();
   await removeWbot(whatsapp.id);
 
-  const io = getIO();
-  const updateWhatsapp = whatsapp.update({
-    status: "DISCONNECTED",
-    session: "",
-    qrcode: null,
-    retries: 0
-  });
+  await whatsapp
+    .update({
+      status: "DISCONNECTED",
+      session: "",
+      qrcode: null,
+      retries: 0
+    })
+    .catch(err => {});
 
-  const notificateOnDisconnected = NotificateOnDisconnected(whatsapp);
+  const io = getIO();
+
+  await NotificateOnDisconnected(whatsapp);
 
   io.emit("whatsappSession", {
     action: "update",
     session: whatsapp
   });
-
-  await Promise.all([
-    destroyInstance,
-    updateWhatsapp,
-    notificateOnDisconnected
-  ]);
 
   return res.status(200).json({ message: "Session disconnected." });
 };
