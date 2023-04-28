@@ -105,12 +105,14 @@ export const initWbot = async (whatsapp: Whatsapp): Promise<Session> => {
       });
       wbot.id = whatsapp.id;
 
+      console.log("passando por aqui");
       const timeoutId = setTimeout(async () => {
         console.log("entrei no timeout para destruir a instancia e reiniciar");
         await wbot.destroy();
         removeWbot(whatsapp.id);
         StartWhatsAppSession(whatsapp);
-      }, 1 * 60 * 1000);
+      }, 2 * 60 * 1000);
+      console.log("saindo");
 
       wbot.initialize();
 
