@@ -44,6 +44,7 @@ const syncUnreadMessages = async (wbot: Session) => {
 };
 
 export const initWbot = async (whatsapp: Whatsapp): Promise<Session> => {
+  console.log("status", whatsapp.status);
   return new Promise((resolve, reject) => {
     try {
       logger.level = "trace";
@@ -55,6 +56,7 @@ export const initWbot = async (whatsapp: Whatsapp): Promise<Session> => {
       }
 
       let qrcodeTimeoutId: NodeJS.Timeout;
+      let timeoutId: NodeJS.Timeout;
 
       const wbot: Session = new Client({
         session: sessionCfg,
@@ -105,14 +107,15 @@ export const initWbot = async (whatsapp: Whatsapp): Promise<Session> => {
       });
       wbot.id = whatsapp.id;
 
-      console.log("passando por aqui");
-      const timeoutId = setTimeout(async () => {
-        console.log("entrei no timeout para destruir a instancia e reiniciar");
-        await wbot.destroy();
-        removeWbot(whatsapp.id);
-        StartWhatsAppSession(whatsapp);
-      }, 2 * 60 * 1000);
-      console.log("saindo");
+      if (whatsapp.status === "OPENING") {
+        console.log("entrei");
+        timeoutId = setTimeout(async () => {
+          console.log("entrei no timeout");
+          await wbot.destroy();
+          removeWbot(whatsapp.id);
+          StartWhatsAppSession(whatsapp);
+        }, fiveMinutes);
+      }
 
       wbot.initialize();
 
