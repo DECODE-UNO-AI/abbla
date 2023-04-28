@@ -132,6 +132,8 @@ export const initWbot = async (whatsapp: Whatsapp): Promise<Session> => {
             action: "update",
             session: whatsapp
           });
+
+          clearTimeout(qrcodeTimeoutId);
         }, 1 * 60 * 1000);
 
         if (
