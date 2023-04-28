@@ -33,11 +33,11 @@ const sendMessage = async (
     number = await wbot.getNumberId(`${contact.number}@c.us`);
   } catch (err) {
     await contact.update({
-      status: "invalid-number",
+      status: "invalid-number"
     });
-    await contact.reload()
-    await campaign.increment("contactsFailed", { by: 1 })
-    await campaign.reload()
+    await contact.reload();
+    await campaign.increment("contactsFailed", { by: 1 });
+    await campaign.reload();
     io.emit("campaigns", {
       action: "update",
       campaign
@@ -48,15 +48,15 @@ const sendMessage = async (
       campaign
     });
     logger.error(err);
-    return
+    return;
   }
   if (!number) {
     await contact.update({
-      status: "invalid-number",
+      status: "invalid-number"
     });
-    await contact.reload()
-    await campaign.increment("contactsFailed", { by: 1 })
-    await campaign.reload()
+    await contact.reload();
+    await campaign.increment("contactsFailed", { by: 1 });
+    await campaign.reload();
     io.emit("campaigns", {
       action: "update",
       campaign
@@ -70,38 +70,37 @@ const sendMessage = async (
   }
   // Message sending logic
   try {
-    for(let i = 0; i < message.length; i += 1) {
+    for (let i = 0; i < message.length; i += 1) {
       await (async () => {
-      if (message[i].startsWith("file-")) {
+        if (message[i].startsWith("file-")) {
           const messageMedia = MessageMedia.fromFilePath(
-          join(
-            __dirname,
-            "..",
-            "..",
-            "..",
-            "public",
-            message[i].replace("file-", "")
-          )
-        );
-        if (!messageMedia) return;
-        await wbot.sendMessage(number._serialized, messageMedia, {
-          sendAudioAsVoice: true,
-          sendMediaAsDocument: false
-        });
-      } else {
-        await wbot.sendMessage(number._serialized , message[i]);
-      }
-      await setDelay((Math.floor(Math.random() * 3) + 3) * 1000);
+            join(
+              __dirname,
+              "..",
+              "..",
+              "..",
+              "public",
+              message[i].replace("file-", "")
+            )
+          );
+          if (!messageMedia) return;
+          await wbot.sendMessage(number._serialized, messageMedia, {
+            sendAudioAsVoice: true,
+            sendMediaAsDocument: false
+          });
+        } else {
+          await wbot.sendMessage(number._serialized, message[i]);
+        }
+        await setDelay((Math.floor(Math.random() * 3) + 3) * 1000);
       })();
-
     }
     await contact.update({
       status: "sent",
       messageSent: JSON.stringify(message)
     });
-    await contact.reload()
-    await campaign.increment("contactsSent", { by: 1 })
-    await campaign.reload()
+    await contact.reload();
+    await campaign.increment("contactsSent", { by: 1 });
+    await campaign.reload();
     io.emit("campaigns", {
       action: "update",
       campaign
@@ -111,12 +110,11 @@ const sendMessage = async (
       contact,
       campaign
     });
-
   } catch (err) {
-    await contact.update({ status: "failed"});
-    await contact.reload()
-    await campaign.increment("contactsFailed", { by: 1 })
-    await campaign.reload()
+    await contact.update({ status: "failed" });
+    await contact.reload();
+    await campaign.increment("contactsFailed", { by: 1 });
+    await campaign.reload();
     io.emit("campaigns", {
       action: "update",
       campaign
@@ -139,18 +137,19 @@ const sendApiMessage = async (
   // Verify if number is valid
   let number;
   try {
-    const { data } = await axios.get(`${process.env.BAILEYS_API_HOST}/${whatsapp.sessionId}/contacts/${contact.number}`);
+    const { data } = await axios.get(
+      `${process.env.BAILEYS_API_HOST}/${whatsapp.sessionId}/contacts/${contact.number}`
+    );
     if (data.exists) {
       number = data.exists.resultjid;
     }
   } catch (err) {
-
     await contact.update({
-      status: "invalid-number",
+      status: "invalid-number"
     });
-    await contact.reload()
-    await campaign.increment("contactsFailed", { by: 1 })
-    await campaign.reload()
+    await contact.reload();
+    await campaign.increment("contactsFailed", { by: 1 });
+    await campaign.reload();
     io.emit("campaigns", {
       action: "update",
       campaign
@@ -161,17 +160,16 @@ const sendApiMessage = async (
       campaign
     });
     logger.error(err);
-    return
+    return;
   }
 
   if (!number) {
-
     await contact.update({
-      status: "invalid-number",
+      status: "invalid-number"
     });
-    await contact.reload()
-    await campaign.increment("contactsFailed", { by: 1 })
-    await campaign.reload()
+    await contact.reload();
+    await campaign.increment("contactsFailed", { by: 1 });
+    await campaign.reload();
     io.emit("campaigns", {
       action: "update",
       campaign
@@ -185,85 +183,87 @@ const sendApiMessage = async (
   }
   // Message sending logic
   try {
-    for(let i = 0; i < message.length; i += 1) {
+    for (let i = 0; i < message.length; i += 1) {
       await (async () => {
-      if (message[i].startsWith("file-")) {
-        const file = message[i].replace("file-", "")
-        const ext = path.extname(file)
+        if (message[i].startsWith("file-")) {
+          const file = message[i].replace("file-", "");
+          const ext = path.extname(file);
 
-        if([".mp4", ".mkv"].includes(ext)){
-          await axios.post(`${process.env.BAILEYS_API_HOST}/${whatsapp.sessionId}/messages/send`, {
-            jid: number,
-            type: "number",
-            message: {
-              video: fs.readFileSync(join(
-                __dirname,
-                "..",
-                "..",
-                "..",
-                "public",
-                file
-              )).toString("base64")
-            },
-            options: {},
-            isBufferFiles: true
-          })
-        } else if ([".jpg", ".jpeg", ".png"].includes(ext)) {
-          await axios.post(`${process.env.BAILEYS_API_HOST}/${whatsapp.sessionId}/messages/send`, {
-            jid: number,
-            type: "number",
-            message: {
-              image : fs.readFileSync(join(
-                __dirname,
-                "..",
-                "..",
-                "..",
-                "public",
-                file
-              )).toString("base64")
-            },
-            options: {},
-            isBufferFiles: true
-          })
-        } else if ([".ogg", ".mp3", ".mpeg"].includes(ext)) {
-          await axios.post(`${process.env.BAILEYS_API_HOST}/${whatsapp.sessionId}/messages/send`, {
-            jid: number,
-            type: "number",
-            message: {
-              audio : fs.readFileSync(join(
-                __dirname,
-                "..",
-                "..",
-                "..",
-                "public",
-                file
-              )).toString("base64") // { url: `${process.env.BACKEND_URL}/public/${file}`}
-            },
-            options: {},
-            isBufferFiles: true
-          })
+          if ([".mp4", ".mkv"].includes(ext)) {
+            await axios.post(
+              `${process.env.BAILEYS_API_HOST}/${whatsapp.sessionId}/messages/send`,
+              {
+                jid: number,
+                type: "number",
+                message: {
+                  video: fs
+                    .readFileSync(
+                      join(__dirname, "..", "..", "..", "public", file)
+                    )
+                    .toString("base64")
+                },
+                options: {},
+                isBufferFiles: true
+              }
+            );
+          } else if ([".jpg", ".jpeg", ".png"].includes(ext)) {
+            await axios.post(
+              `${process.env.BAILEYS_API_HOST}/${whatsapp.sessionId}/messages/send`,
+              {
+                jid: number,
+                type: "number",
+                message: {
+                  image: fs
+                    .readFileSync(
+                      join(__dirname, "..", "..", "..", "public", file)
+                    )
+                    .toString("base64")
+                },
+                options: {},
+                isBufferFiles: true
+              }
+            );
+          } else if ([".ogg", ".mp3", ".mpeg"].includes(ext)) {
+            await axios.post(
+              `${process.env.BAILEYS_API_HOST}/${whatsapp.sessionId}/messages/send`,
+              {
+                jid: number,
+                type: "number",
+                message: {
+                  audio: fs
+                    .readFileSync(
+                      join(__dirname, "..", "..", "..", "public", file)
+                    )
+                    .toString("base64") // { url: `${process.env.BACKEND_URL}/public/${file}`}
+                },
+                options: {},
+                isBufferFiles: true
+              }
+            );
+          }
+        } else {
+          await axios.post(
+            `${process.env.BAILEYS_API_HOST}/${whatsapp.sessionId}/messages/send`,
+            {
+              jid: number,
+              type: "number",
+              message: {
+                text: message[i]
+              },
+              options: {}
+            }
+          );
         }
-      } else {
-        await axios.post(`${process.env.BAILEYS_API_HOST}/${whatsapp.sessionId}/messages/send`, {
-          jid: number,
-          type: "number",
-          message: {
-            text: message[i]
-          },
-          options: {}
-        })
-      }
-      await setDelay((Math.floor(Math.random() * 3) + 3) * 1000);
+        await setDelay((Math.floor(Math.random() * 3) + 3) * 1000);
       })();
-
     }
     await contact.update({
       status: "sent",
       messageSent: JSON.stringify(message)
     });
-    await contact.reload()
-    await campaign.increment("contactsSent", { by: 1 })
-    await campaign.reload()
+    await contact.reload();
+    await campaign.increment("contactsSent", { by: 1 });
+    await campaign.reload();
     io.emit("campaigns", {
       action: "update",
       campaign
@@ -273,12 +273,11 @@ const sendApiMessage = async (
       contact,
       campaign
     });
-
   } catch (err) {
-    await contact.update({ status: "failed"});
-    await contact.reload()
-    await campaign.increment("contactsFailed", { by: 1 })
-    await campaign.reload()
+    await contact.update({ status: "failed" });
+    await contact.reload();
+    await campaign.increment("contactsFailed", { by: 1 });
+    await campaign.reload();
     io.emit("campaigns", {
       action: "update",
       campaign
@@ -289,7 +288,7 @@ const sendApiMessage = async (
       campaign
     });
   }
-}
+};
 
 const sendMessageCampaign = async (campaign: Campaign): Promise<void> => {
   await campaign.update({ status: "processing" });
@@ -308,7 +307,7 @@ const sendMessageCampaign = async (campaign: Campaign): Promise<void> => {
   let whatsapp: WhatsappApi | Session;
   if (!campaign.whatsappApiId) {
     try {
-      whatsapp = getWbot(+campaign.whatsappId);
+      whatsapp = await getWbot(+campaign.whatsappId);
       const whatsappState = await whatsapp.getState();
       if (!whatsapp || whatsappState !== "CONNECTED") {
         await campaign.update({
@@ -335,8 +334,8 @@ const sendMessageCampaign = async (campaign: Campaign): Promise<void> => {
     }
   } else {
     try {
-      const whatsappdata = await WhatsappApi.findByPk(campaign.whatsappApiId)
-      if (!whatsappdata ) {
+      const whatsappdata = await WhatsappApi.findByPk(campaign.whatsappApiId);
+      if (!whatsappdata) {
         await campaign.update({
           status: "failed"
         });
@@ -361,7 +360,6 @@ const sendMessageCampaign = async (campaign: Campaign): Promise<void> => {
       return;
     }
   }
-
 
   // get messages
   const messages: Array<string[]> = [];
@@ -420,12 +418,12 @@ const sendMessageCampaign = async (campaign: Campaign): Promise<void> => {
         currentDate.setMinutes(0);
       } else {
         currentDate.setHours(currentDate.getHours() + 24);
-        currentDate.setHours(+sendTime[0])
+        currentDate.setHours(+sendTime[0]);
         currentDate.setMinutes(0);
       }
       reSheduleJob(campaign, currentDate);
       await campaign.update({
-        status: "timeout",
+        status: "timeout"
       });
       await campaign.reload();
       io.emit("campaigns", {
@@ -440,22 +438,27 @@ const sendMessageCampaign = async (campaign: Campaign): Promise<void> => {
     );
     let randomMessages = messages[Math.floor(Math.random() * messages.length)];
 
-
     // replacing variables
     Object.keys(penddingContacts[i].details).forEach(key => {
       randomMessages = randomMessages.map((message: string) => {
         if (message.startsWith("file-")) {
-          return message
+          return message;
         }
         return message.replace(
           `$${key}`,
           `${penddingContacts[i].details[key]}`
         );
-      })
+      });
     });
     await setDelay(randomDelay * 1000);
-    if (!(whatsapp instanceof WhatsappApi)){
-      await sendMessage(penddingContacts[i], randomMessages, whatsapp, io, campaign);
+    if (!(whatsapp instanceof WhatsappApi)) {
+      await sendMessage(
+        penddingContacts[i],
+        randomMessages,
+        whatsapp,
+        io,
+        campaign
+      );
       const state = await whatsapp.getState();
       if (state !== "CONNECTED") {
         await campaign.update({
@@ -470,7 +473,9 @@ const sendMessageCampaign = async (campaign: Campaign): Promise<void> => {
       }
     } else {
       try {
-        const { status: statusApi }: {status: string} = await axios.get(`${process.env.BAILEYS_API_HOST}/${whatsapp.sessionId}/status`)
+        const { status: statusApi }: { status: string } = await axios.get(
+          `${process.env.BAILEYS_API_HOST}/${whatsapp.sessionId}/status`
+        );
         if (statusApi !== "AUTHENTICATED") {
           await campaign.update({
             status: "failed"
@@ -482,7 +487,7 @@ const sendMessageCampaign = async (campaign: Campaign): Promise<void> => {
           });
           break;
         }
-      } catch(err) {
+      } catch (err) {
         await campaign.update({
           status: "failed"
         });
@@ -494,7 +499,13 @@ const sendMessageCampaign = async (campaign: Campaign): Promise<void> => {
         logger.info("Api error");
         break;
       }
-      await sendApiMessage(penddingContacts[i], randomMessages, whatsapp, io, campaign);
+      await sendApiMessage(
+        penddingContacts[i],
+        randomMessages,
+        whatsapp,
+        io,
+        campaign
+      );
     }
     if (i + 1 === penddingContacts.length) {
       try {

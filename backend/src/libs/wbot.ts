@@ -54,6 +54,9 @@ export const initWbot = async (whatsapp: Whatsapp): Promise<Session> => {
         sessionCfg = JSON.parse(whatsapp.session);
       }
 
+      let qrcodeTimeoutId: NodeJS.Timeout;
+      let timeoutId: NodeJS.Timeout;
+
       const wbot: Session = new Client({
         session: sessionCfg,
         authStrategy: new LocalAuth({ clientId: `bd_${whatsapp.id}` }),
@@ -103,9 +106,9 @@ export const initWbot = async (whatsapp: Whatsapp): Promise<Session> => {
       });
       wbot.id = whatsapp.id;
 
-      const timeoutId = setTimeout(async () => {
+      timeoutId = setTimeout(async () => {
         await wbot.destroy();
-        removeWbot(whatsapp.id);
+        await removeWbot(whatsapp.id);
         StartWhatsAppSession(whatsapp);
       }, fifteenMinutes);
 
@@ -113,6 +116,25 @@ export const initWbot = async (whatsapp: Whatsapp): Promise<Session> => {
 
       wbot.on("qr", async qr => {
         clearTimeout(timeoutId);
+
+        qrcodeTimeoutId = setTimeout(async () => {
+          await wbot.destroy();
+          await removeWbot(whatsapp.id);
+
+          await whatsapp.update({
+            status: "DISCONNECTED",
+            session: "",
+            qrcode: null,
+            retries: 0
+          });
+
+          io.emit("whatsappSession", {
+            action: "update",
+            session: whatsapp
+          });
+
+          clearTimeout(qrcodeTimeoutId);
+        }, fiveMinutes);
 
         if (
           whatsapp.status === "CONNECTED" ||
@@ -125,6 +147,7 @@ export const initWbot = async (whatsapp: Whatsapp): Promise<Session> => {
         await whatsapp.update({ qrcode: qr, status: "qrcode", retries: 0 });
 
         const sessionIndex = sessions.findIndex(s => s.id === whatsapp.id);
+
         if (sessionIndex === -1) {
           wbot.id = whatsapp.id;
           sessions.push(wbot);
@@ -164,6 +187,7 @@ export const initWbot = async (whatsapp: Whatsapp): Promise<Session> => {
       });
 
       wbot.on("ready", async () => {
+        clearTimeout(qrcodeTimeoutId);
         logger.info(`Session: ${sessionName} READY`);
 
         console.log("WbotON", wbot.info.wid._serialized.split("@")[0]);
@@ -198,7 +222,7 @@ export const initWbot = async (whatsapp: Whatsapp): Promise<Session> => {
   });
 };
 
-export const getWbot = (whatsappId: number): Session => {
+export const getWbot = async (whatsappId: number): Promise<Session> => {
   const sessionIndex = sessions.findIndex(s => s.id === whatsappId);
 
   if (sessionIndex === -1) {
@@ -207,7 +231,7 @@ export const getWbot = (whatsappId: number): Session => {
   return sessions[sessionIndex];
 };
 
-export const removeWbot = (whatsappId: number): void => {
+export const removeWbot = async (whatsappId: number): Promise<void> => {
   try {
     const sessionIndex = sessions.findIndex(s => s.id === whatsappId);
 
