@@ -10,7 +10,7 @@ const GetTicketWbot = async (ticket: Ticket): Promise<Session> => {
     await ticket.$set("whatsapp", defaultWhatsapp);
   }
 
-  const wbot = getWbot(ticket.whatsappId);
+  const wbot = await getWbot(ticket.whatsappId);
 
   return wbot;
 };

@@ -4,7 +4,7 @@ import { getWbot } from "../../libs/wbot";
 const GetProfilePicUrl = async (number: string): Promise<string> => {
   const defaultWhatsapp = await GetDefaultWhatsApp();
 
-  const wbot = getWbot(defaultWhatsapp.id);
+  const wbot = await getWbot(defaultWhatsapp.id);
 
   const profilePicUrl = await wbot.getProfilePicUrl(`${number}@c.us`);
 

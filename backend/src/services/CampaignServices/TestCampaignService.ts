@@ -23,7 +23,12 @@ const setDelay = async (delay: number) => {
   await new Promise(resolve => setTimeout(resolve, delay));
 };
 
-const sendMessage = async (whatsapp: Session, number: string, message: string[], medias: Express.Multer.File[]) => {
+const sendMessage = async (
+  whatsapp: Session,
+  number: string,
+  message: string[],
+  medias: Express.Multer.File[]
+) => {
   let whatsNumber;
   let contactNumber: string = number;
   if (!contactNumber.startsWith("55")) {
@@ -91,7 +96,7 @@ const sendMessage = async (whatsapp: Session, number: string, message: string[],
       await setDelay((Math.floor(Math.random() * 3) + 3) * 1000);
     })();
   }
-}
+};
 
 const sendApiMessage = async (
   message: string[],
@@ -102,11 +107,15 @@ const sendApiMessage = async (
   // Verify if number is valid
   let number;
   try {
-    const fiveFiveNumber = contactNumber.startsWith("55") ? contactNumber : `55${contactNumber}`
+    const fiveFiveNumber = contactNumber.startsWith("55")
+      ? contactNumber
+      : `55${contactNumber}`;
     console.log(fiveFiveNumber);
-    const { data } = await axios.get(`${process.env.BAILEYS_API_HOST}/${whatsapp.sessionId}/contacts/${fiveFiveNumber}`);
+    const { data } = await axios.get(
+      `${process.env.BAILEYS_API_HOST}/${whatsapp.sessionId}/contacts/${fiveFiveNumber}`
+    );
     if (data.exists) {
-      number = data.exists.resultjid
+      number = data.exists.resultjid;
     }
   } catch (err) {
     logger.error(err);
@@ -118,87 +127,95 @@ const sendApiMessage = async (
   }
   // Message sending logic
   try {
-    await axios.post(`${process.env.BAILEYS_API_HOST}/${whatsapp.sessionId}/messages/send`, {
-      jid: number,
-      type: "number",
-      message: {
-        text: "------------------------------------------------------- \n MENSAGEM DE TESTE \n ABBLA - CAMPANHA \n -------------------------------------------------------"
-      },
-      options: {}
-    })
-    for(let i = 0; i < message.length; i += 1) {
-      await (async () => {
-      if (message[i].startsWith("file-")) {
-        const file = message[i].replace("file-", "")
-        const ext = path.extname(file)
-        let base64Media: string
-        const media = medias.find(
-          file => file.originalname === message[i].replace("file-", "")
-        );
-
-        if (media) {
-          base64Media = media.buffer.toString("base64")
-        } else {
-          base64Media = fs.readFileSync(join(
-            __dirname,
-            "..",
-            "..",
-            "..",
-            "public",
-            file
-          )).toString("base64")
-        }
-
-        if([".mp4", ".mkv"].includes(ext)){
-          await axios.post(`${process.env.BAILEYS_API_HOST}/${whatsapp.sessionId}/messages/send`, {
-            jid: number,
-            type: "number",
-            message: {
-              video: base64Media
-            },
-            options: {},
-            isBufferFiles: true
-          })
-        } else if ([".jpg", ".jpeg", ".png"].includes(ext)) {
-          await axios.post(`${process.env.BAILEYS_API_HOST}/${whatsapp.sessionId}/messages/send`, {
-            jid: number,
-            type: "number",
-            message: {
-              image : base64Media
-            },
-            options: {},
-            isBufferFiles: true
-          })
-        } else if ([".ogg", ".mp3", ".mpeg"].includes(ext)) {
-          await axios.post(`${process.env.BAILEYS_API_HOST}/${whatsapp.sessionId}/messages/send`, {
-            jid: number,
-            type: "number",
-            message: {
-              audio : base64Media
-            },
-            options: {},
-            isBufferFiles: true
-          })
-        }
-      } else {
-        await axios.post(`${process.env.BAILEYS_API_HOST}/${whatsapp.sessionId}/messages/send`, {
-          jid: number,
-          type: "number",
-          message: {
-            text: message[i]
-          },
-          options: {}
-        })
+    await axios.post(
+      `${process.env.BAILEYS_API_HOST}/${whatsapp.sessionId}/messages/send`,
+      {
+        jid: number,
+        type: "number",
+        message: {
+          text: "------------------------------------------------------- \n MENSAGEM DE TESTE \n ABBLA - CAMPANHA \n -------------------------------------------------------"
+        },
+        options: {}
       }
-      await setDelay((Math.floor(Math.random() * 3) + 3) * 1000);
+    );
+    for (let i = 0; i < message.length; i += 1) {
+      await (async () => {
+        if (message[i].startsWith("file-")) {
+          const file = message[i].replace("file-", "");
+          const ext = path.extname(file);
+          let base64Media: string;
+          const media = medias.find(
+            file => file.originalname === message[i].replace("file-", "")
+          );
+
+          if (media) {
+            base64Media = media.buffer.toString("base64");
+          } else {
+            base64Media = fs
+              .readFileSync(join(__dirname, "..", "..", "..", "public", file))
+              .toString("base64");
+          }
+
+          if ([".mp4", ".mkv"].includes(ext)) {
+            await axios.post(
+              `${process.env.BAILEYS_API_HOST}/${whatsapp.sessionId}/messages/send`,
+              {
+                jid: number,
+                type: "number",
+                message: {
+                  video: base64Media
+                },
+                options: {},
+                isBufferFiles: true
+              }
+            );
+          } else if ([".jpg", ".jpeg", ".png"].includes(ext)) {
+            await axios.post(
+              `${process.env.BAILEYS_API_HOST}/${whatsapp.sessionId}/messages/send`,
+              {
+                jid: number,
+                type: "number",
+                message: {
+                  image: base64Media
+                },
+                options: {},
+                isBufferFiles: true
+              }
+            );
+          } else if ([".ogg", ".mp3", ".mpeg"].includes(ext)) {
+            await axios.post(
+              `${process.env.BAILEYS_API_HOST}/${whatsapp.sessionId}/messages/send`,
+              {
+                jid: number,
+                type: "number",
+                message: {
+                  audio: base64Media
+                },
+                options: {},
+                isBufferFiles: true
+              }
+            );
+          }
+        } else {
+          await axios.post(
+            `${process.env.BAILEYS_API_HOST}/${whatsapp.sessionId}/messages/send`,
+            {
+              jid: number,
+              type: "number",
+              message: {
+                text: message[i]
+              },
+              options: {}
+            }
+          );
+        }
+        await setDelay((Math.floor(Math.random() * 3) + 3) * 1000);
       })();
-
     }
-
   } catch (err) {
     throw new AppError("INTERNAL_ERROR", 500);
   }
-}
+};
 
 const TestCampaignService = async ({
   campaignData,
@@ -206,31 +223,30 @@ const TestCampaignService = async ({
 }: CampaignData): Promise<void> => {
   const { message, number, whatsappId } = campaignData;
 
-  if(!whatsappId.startsWith("api-")) {
-    try{
-      const whatsapp = getWbot(+whatsappId);
+  if (!whatsappId.startsWith("api-")) {
+    try {
+      const whatsapp = await getWbot(+whatsappId);
       const whatsappState = await whatsapp.getState();
       if (!whatsapp || whatsappState !== "CONNECTED") {
         throw new AppError("ERR_WAPP_NOT_INITIALIZED", 400);
       }
-      await sendMessage(whatsapp, number, message, medias)
-      return
-    } catch(err) {
+      await sendMessage(whatsapp, number, message, medias);
+      return;
+    } catch (err) {
       throw new AppError(err.message, 500);
     }
   }
 
   try {
-    const apiCon = await WhatsappApi.findByPk(whatsappId.slice(4))
-    if(!apiCon) {
+    const apiCon = await WhatsappApi.findByPk(whatsappId.slice(4));
+    if (!apiCon) {
       throw new AppError("ERR_WAPP_NOT_INITIALIZED", 400);
     }
-    await sendApiMessage(message, apiCon, number, medias)
+    await sendApiMessage(message, apiCon, number, medias);
     return;
-  } catch(err) {
+  } catch (err) {
     throw new AppError(err.message, 500);
   }
-
 };
 
 export default TestCampaignService;
