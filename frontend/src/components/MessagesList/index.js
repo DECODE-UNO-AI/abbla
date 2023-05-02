@@ -698,7 +698,7 @@ const MessagesList = ({ contactId, ticketId, isGroup }) => {
   const renderMessages = () => {
     if (messagesList.length > 0) {
       const viewMessagesList = messagesList
-        .filter((message) => message.contactId === contactId)
+        .filter((message) => message.contactId === contactId || message.fromMe)
         .map((message, index) => {
           if (message.mediaType === "call_log") {
             return (
