@@ -368,7 +368,6 @@ const reducer = (state, action) => {
 
 const MessagesList = ({ contactId, ticketId, isGroup }) => {
   const classes = useStyles();
-
   const [messagesList, dispatch] = useReducer(reducer, []);
   const [pageNumber, setPageNumber] = useState(1);
   const [hasMore, setHasMore] = useState(false);
@@ -379,6 +378,8 @@ const MessagesList = ({ contactId, ticketId, isGroup }) => {
   const [anchorEl, setAnchorEl] = useState(null);
   const messageOptionsMenuOpen = Boolean(anchorEl);
   const currentTicketId = useRef(ticketId);
+
+  let showTicketNumberOneTime = 0;
 
   useEffect(() => {
     dispatch({ type: "RESET" });
@@ -612,7 +613,10 @@ const MessagesList = ({ contactId, ticketId, isGroup }) => {
       let messageTicket = message.ticketId;
       let previousMessageTicket = messagesList[index - 1].ticketId;
 
-      if (messageTicket !== previousMessageTicket) {
+      if (
+        messageTicket !== previousMessageTicket &&
+        showTicketNumberOneTime < 1
+      ) {
         return (
           <div key={`ticket-${message.id}`} className={classes.ticketNumber}>
             #ticket: {messageTicket}
