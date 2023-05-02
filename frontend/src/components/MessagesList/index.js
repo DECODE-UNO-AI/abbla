@@ -617,6 +617,9 @@ const MessagesList = ({ contactId, ticketId, isGroup }) => {
         messageTicket !== previousMessageTicket &&
         showTicketNumberOneTime < 1
       ) {
+        messageTicket === currentTicketId
+          ? (showTicketNumberOneTime = 1)
+          : (showTicketNumberOneTime = 0);
         return (
           <div key={`ticket-${message.id}`} className={classes.ticketNumber}>
             #ticket: {messageTicket}
