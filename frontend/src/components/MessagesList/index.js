@@ -410,6 +410,7 @@ const MessagesList = ({ contactId, ticketId, isGroup }) => {
           toastError(err);
         }
       };
+
       fetchMessages();
     }, 500);
     return () => {
