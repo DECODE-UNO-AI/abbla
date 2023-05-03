@@ -397,19 +397,25 @@ const MessagesList = ({ contactId, ticketId, isGroup }) => {
             params: { pageNumber, contactId },
           });
 
+          const messages = data.messages.filter(
+            (message, index, array) =>
+              array.findIndex((t) => t.id === message.id) === index
+          );
+
           if (
-            currentTicketId.current === ticketId &&
-            currentContactId.current === contactId
+            (currentTicketId.current === ticketId &&
+              currentContactId.current === contactId) ||
+            (currentTicketId.current === ticketId && isGroup)
           ) {
             dispatch({
               type: "LOAD_MESSAGES",
-              payload: data.messages,
+              payload: messages,
             });
             setHasMore(data.hasMore);
             setLoading(false);
           }
 
-          if (pageNumber === 1 && data.messages.length > 1) {
+          if (pageNumber === 1 && messages.length > 1) {
             scrollToBottom();
           }
         } catch (err) {
