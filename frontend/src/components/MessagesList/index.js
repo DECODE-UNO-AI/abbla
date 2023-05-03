@@ -397,13 +397,16 @@ const MessagesList = ({ contactId, ticketId, isGroup }) => {
             params: { pageNumber, contactId },
           });
 
+          // console.log("messages", [...new Set(data.messages)]);
+
           if (
-            currentTicketId.current === ticketId &&
-            currentContactId.current === contactId
+            (currentTicketId.current === ticketId &&
+              currentContactId.current === contactId) ||
+            (currentTicketId.current === ticketId && isGroup)
           ) {
             dispatch({
               type: "LOAD_MESSAGES",
-              payload: data.messages,
+              payload: [...new Set(data.messages)],
             });
             setHasMore(data.hasMore);
             setLoading(false);
