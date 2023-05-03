@@ -393,7 +393,7 @@ const MessagesList = ({ contactId, ticketId, isGroup }) => {
       const fetchMessages = async () => {
         try {
           const { data } = await api.get("/messages/" + ticketId, {
-            params: { pageNumber, contactId },
+            params: { pageNumber },
           });
 
           if (currentTicketId.current === ticketId) {
