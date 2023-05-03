@@ -378,15 +378,15 @@ const MessagesList = ({ contactId, ticketId, isGroup }) => {
   const [anchorEl, setAnchorEl] = useState(null);
   const messageOptionsMenuOpen = Boolean(anchorEl);
   const currentTicketId = useRef(ticketId);
-
-  let showTicketNumberOneTime = 0;
+  const currentContactId = useRef(contactId);
 
   useEffect(() => {
     dispatch({ type: "RESET" });
     setPageNumber(1);
 
     currentTicketId.current = ticketId;
-  }, [ticketId]);
+    currentContactId.current = contactId;
+  }, [ticketId, contactId]);
 
   useEffect(() => {
     setLoading(true);
@@ -397,7 +397,10 @@ const MessagesList = ({ contactId, ticketId, isGroup }) => {
             params: { pageNumber, contactId },
           });
 
-          if (currentTicketId.current === ticketId) {
+          if (
+            currentTicketId.current === ticketId &&
+            currentContactId.current === contactId
+          ) {
             dispatch({
               type: "LOAD_MESSAGES",
               payload: data.messages,
@@ -613,13 +616,7 @@ const MessagesList = ({ contactId, ticketId, isGroup }) => {
       let messageTicket = message.ticketId;
       let previousMessageTicket = messagesList[index - 1].ticketId;
 
-      if (
-        messageTicket !== previousMessageTicket &&
-        showTicketNumberOneTime < 1
-      ) {
-        messageTicket === currentTicketId
-          ? (showTicketNumberOneTime = 1)
-          : (showTicketNumberOneTime = 0);
+      if (messageTicket !== previousMessageTicket) {
         return (
           <div key={`ticket-${message.id}`} className={classes.ticketNumber}>
             #ticket: {messageTicket}
