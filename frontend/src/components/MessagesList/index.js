@@ -397,25 +397,28 @@ const MessagesList = ({ contactId, ticketId, isGroup }) => {
             params: { pageNumber, contactId },
           });
 
-          let newArray = data.messages.filter((item, index) => {
-            return (
-              data.messages.findIndex((obj) => {
-                return JSON.stringify(obj) === JSON.stringify(item);
-              }) === index
-            );
-          });
+          let messages = data.messages
+            .filter((message, index) => {
+              return (
+                data.messages.findIndex((messageObj) => {
+                  return JSON.stringify(messageObj) === JSON.stringify(message);
+                }) === index
+              );
+            })
+            .sort(function (a, b) {
+              return new Date(a.createdAt) - new Date(b.createdAt);
+            });
 
           if (currentTicketId.current === ticketId) {
-            console.log("entrei");
             dispatch({
               type: "LOAD_MESSAGES",
-              payload: newArray,
+              payload: messages,
             });
             setHasMore(data.hasMore);
             setLoading(false);
           }
 
-          if (pageNumber === 1 && newArray.length > 1) {
+          if (pageNumber === 1 && messages.length > 1) {
             scrollToBottom();
           }
         } catch (err) {
