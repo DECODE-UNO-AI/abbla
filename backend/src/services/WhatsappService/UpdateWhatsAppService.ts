@@ -75,7 +75,10 @@ const UpdateWhatsAppService = async ({
 
   await whatsapp.update({
     name,
-    status,
+    status:
+      status === "DISCONNECTED" || status === "OPENING"
+        ? "PAUSED"
+        : "DISCONNECTED",
     session,
     greetingMessage,
     farewellMessage,
