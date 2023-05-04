@@ -170,6 +170,17 @@ const WhatsAppModal = ({ open, onClose, whatsAppId }) => {
                     }
                     label={i18n.t("whatsappModal.form.display")}
                   />
+                  <FormControlLabel
+                    control={
+                      <Field
+                        as={Switch}
+                        color="primary"
+                        name="isActived"
+                        checked={values.isActived}
+                      />
+                    }
+                    label={"Iniciar conexão"}
+                  />
                 </div>
                 <div>
                   <Field
