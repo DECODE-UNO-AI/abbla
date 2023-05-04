@@ -34,7 +34,10 @@ export const index = async (req: Request, res: Response): Promise<Response> => {
     ticketId
   });
 
-  const allContactMessages = await getContactMessages({ contactId });
+  const allContactMessages = await getContactMessages({
+    contactId,
+    isGroup: ticket.isGroup
+  });
 
   const allMessages = [...allContactMessages, ...messages];
 
