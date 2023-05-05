@@ -10,6 +10,7 @@ import ShowTicketService from "../services/TicketServices/ShowTicketService";
 import DeleteWhatsAppMessage from "../services/WbotServices/DeleteWhatsAppMessage";
 import SendWhatsAppMedia from "../services/WbotServices/SendWhatsAppMedia";
 import SendWhatsAppMessage from "../services/WbotServices/SendWhatsAppMessage";
+import getContactMessages from "../services/MessageServices/getContactMessages";
 
 type IndexQuery = {
   pageNumber: string;
@@ -26,7 +27,7 @@ type MessageData = {
 
 export const index = async (req: Request, res: Response): Promise<Response> => {
   const { ticketId } = req.params;
-  const { pageNumber } = req.query as IndexQuery;
+  const { pageNumber, contactId } = req.query as IndexQuery;
 
   const { count, messages, ticket, hasMore } = await ListMessagesService({
     pageNumber,
