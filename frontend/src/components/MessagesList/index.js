@@ -394,7 +394,7 @@ const MessagesList = ({ contactId, ticketId, isGroup }) => {
       const fetchMessages = async () => {
         try {
           const { data } = await api.get("/messages/" + ticketId, {
-            params: { pageNumber, contactId },
+            params: { pageNumber },
           });
 
           let messages = data.messages
@@ -426,6 +426,7 @@ const MessagesList = ({ contactId, ticketId, isGroup }) => {
           toastError(err);
         }
       };
+
       fetchMessages();
     }, 500);
     return () => {
