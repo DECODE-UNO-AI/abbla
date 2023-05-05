@@ -20,24 +20,26 @@ const fiveMinutes = 5 * 60 * 1000;
 const fifteenMinutes = 15 * 60 * 1000;
 
 const syncUnreadMessages = async (wbot: Session) => {
-  const chats = await wbot.getChats();
-
   const Settingdb = await Settings.findOne({
     where: { key: "CheckMsgIsGroup" }
   });
-  /* eslint-disable no-restricted-syntax */
-  /* eslint-disable no-await-in-loop */
-  for (const chat of chats) {
-    if (Settingdb?.value === "enabled" && chat.isGroup) {
-      return;
-    }
-    if (chat.unreadCount > 0) {
-      const unreadMessages = await chat.fetchMessages({
-        limit: chat.unreadCount
-      });
 
-      for (const msg of unreadMessages) {
-        await handleMessage(msg, wbot);
+  if (Settingdb?.value !== "enabled") {
+    const chats = await wbot.getChats();
+    for (const chat of chats) {
+      if (!chat.isGroup && chat.unreadCount > 0) {
+        try {
+          const unreadMessages = await chat.fetchMessages({
+            limit: chat.unreadCount
+          });
+          for await (const msg of unreadMessages) {
+            await handleMessage(msg, wbot);
+          }
+        } catch (error) {
+          console.error(
+            `Error processing messages in chat ${chat.id}: ${error.message}`
+          );
+        }
       }
     }
   }

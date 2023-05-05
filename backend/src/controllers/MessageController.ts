@@ -33,6 +33,13 @@ export const index = async (req: Request, res: Response): Promise<Response> => {
     ticketId
   });
 
+  const allContactMessages = await getContactMessages({
+    contactId,
+    isGroup: ticket.isGroup
+  });
+
+  const allMessages = [...allContactMessages, ...messages];
+
   // Setting vizualizeMessage
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const listSettingsService: any = await ListSettingsServiceOne({
@@ -41,7 +48,7 @@ export const index = async (req: Request, res: Response): Promise<Response> => {
   const option = listSettingsService?.dataValues.value;
   if (option === "disabled") await SetTicketMessagesAsRead(ticket);
 
-  return res.json({ count, messages, ticket, hasMore });
+  return res.json({ count, messages: allMessages, ticket, hasMore });
 };
 
 export const store = async (req: Request, res: Response): Promise<Response> => {

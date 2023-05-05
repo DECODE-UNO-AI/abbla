@@ -368,7 +368,6 @@ const reducer = (state, action) => {
 
 const MessagesList = ({ contactId, ticketId, isGroup }) => {
   const classes = useStyles();
-
   const [messagesList, dispatch] = useReducer(reducer, []);
   const [pageNumber, setPageNumber] = useState(1);
   const [hasMore, setHasMore] = useState(false);
@@ -379,13 +378,15 @@ const MessagesList = ({ contactId, ticketId, isGroup }) => {
   const [anchorEl, setAnchorEl] = useState(null);
   const messageOptionsMenuOpen = Boolean(anchorEl);
   const currentTicketId = useRef(ticketId);
+  const currentContactId = useRef(contactId);
 
   useEffect(() => {
     dispatch({ type: "RESET" });
     setPageNumber(1);
 
     currentTicketId.current = ticketId;
-  }, [ticketId]);
+    currentContactId.current = contactId;
+  }, [ticketId, contactId]);
 
   useEffect(() => {
     setLoading(true);
@@ -396,13 +397,28 @@ const MessagesList = ({ contactId, ticketId, isGroup }) => {
             params: { pageNumber },
           });
 
+          let messages = data.messages
+            .filter((message, index) => {
+              return (
+                data.messages.findIndex((messageObj) => {
+                  return JSON.stringify(messageObj) === JSON.stringify(message);
+                }) === index
+              );
+            })
+            .sort(function (a, b) {
+              return new Date(a.createdAt) - new Date(b.createdAt);
+            });
+
           if (currentTicketId.current === ticketId) {
-            dispatch({ type: "LOAD_MESSAGES", payload: data.messages });
+            dispatch({
+              type: "LOAD_MESSAGES",
+              payload: messages,
+            });
             setHasMore(data.hasMore);
             setLoading(false);
           }
 
-          if (pageNumber === 1 && data.messages.length > 1) {
+          if (pageNumber === 1 && messages.length > 1) {
             scrollToBottom();
           }
         } catch (err) {
@@ -806,7 +822,9 @@ const MessagesList = ({ contactId, ticketId, isGroup }) => {
               {renderNumberTicket(message, index)}
               <div
                 className={classes.messageRight}
-                style={{ backgroundColor: message.isComment ? "#ffea1c" : "" }}
+                style={{
+                  backgroundColor: message.isComment ? "#ffea1c" : "",
+                }}
               >
                 <IconButton
                   variant="contained"
@@ -860,8 +878,6 @@ const MessagesList = ({ contactId, ticketId, isGroup }) => {
       return <div>Say hello to your new contact!</div>;
     }
   };
-
-  console.log("messagesList", messagesList);
 
   return (
     <div className={classes.messagesListWrapper}>
