@@ -12,8 +12,7 @@ import {
   makeStyles,
   Accordion,
   AccordionSummary,
-  AccordionDetails
-
+  AccordionDetails,
 } from "@material-ui/core";
 
 import {
@@ -33,7 +32,7 @@ import {
   PhonelinkRing,
   ListAlt,
   ExpandMore,
-  QueuePlayNext
+  QueuePlayNext,
 } from "@material-ui/icons";
 
 import { i18n } from "../translate/i18n";
@@ -43,32 +42,32 @@ import { Can } from "../components/Can";
 import { systemVersion } from "../../package.json";
 import { system } from "../config.json";
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles((theme) => ({
   icon: {
-    color: theme.palette.secondary.main
+    color: theme.palette.secondary.main,
   },
   li: {
     backgroundColor: theme.palette.menuItens.main,
-    width: "100%"
+    width: "100%",
   },
   sub: {
-    backgroundColor: theme.palette.sub.main
+    backgroundColor: theme.palette.sub.main,
   },
   divider: {
-    backgroundColor: theme.palette.divide.main
+    backgroundColor: theme.palette.divide.main,
   },
   systemCss: {
     display: "flex",
     justifyContent: "center",
     opacity: 0.5,
-    fontSize: 12
+    fontSize: 12,
   },
 
-  "@global" : {
+  "@global": {
     ".MuiAccordion-root:before": {
-      display: "none"
-    }
-  }
+      display: "none",
+    },
+  },
 }));
 
 function ListItemLink(props) {
@@ -86,7 +85,9 @@ function ListItemLink(props) {
   return (
     <li className={classes.li}>
       <ListItem button component={renderLink} className={className}>
-        {icon ? <ListItemIcon className={classes.icon}>{icon}</ListItemIcon> : null}
+        {icon ? (
+          <ListItemIcon className={classes.icon}>{icon}</ListItemIcon>
+        ) : null}
         <ListItemText primary={primary} />
       </ListItem>
     </li>
@@ -123,50 +124,61 @@ const MainListItems = (props) => {
   }, [whatsApps]);
 
   return (
-    <div onClick={drawerClose}>
-      <ListItemLink
-        to="/"
-        primary="Dashboard"
-        icon={<DashboardOutlined />}
-      />
-      <ListItemLink
-        to="/tickets"
-        primary={i18n.t("mainDrawer.listItems.tickets")}
-        icon={<WhatsApp />}
-      />
-      <ListItemLink
-        to="/contacts"
-        primary={i18n.t("mainDrawer.listItems.contacts")}
-        icon={<ContactPhoneOutlined />}
-      />
-      <ListItemLink
-        to="/quickAnswers"
-        primary={i18n.t("mainDrawer.listItems.quickAnswers")}
-        icon={<QuestionAnswerOutlined />}
-      />
-      <ListItemLink
-        to="/tags"
-        primary={i18n.t("mainDrawer.listItems.tags")}
-        icon={<LocalOffer />}
-      />
+    <div>
+      <div onClick={drawerClose}>
+        <ListItemLink to="/" primary="Dashboard" icon={<DashboardOutlined />} />
+      </div>
+      <div onClick={drawerClose}>
+        <ListItemLink
+          to="/tickets"
+          primary={i18n.t("mainDrawer.listItems.tickets")}
+          icon={<WhatsApp />}
+        />
+      </div>
+      <div onClick={drawerClose}>
+        <ListItemLink
+          to="/contacts"
+          primary={i18n.t("mainDrawer.listItems.contacts")}
+          icon={<ContactPhoneOutlined />}
+        />
+      </div>
+      <div onClick={drawerClose}>
+        <ListItemLink
+          to="/quickAnswers"
+          primary={i18n.t("mainDrawer.listItems.quickAnswers")}
+          icon={<QuestionAnswerOutlined />}
+        />
+      </div>
+      <div onClick={drawerClose}>
+        <ListItemLink
+          to="/tags"
+          primary={i18n.t("mainDrawer.listItems.tags")}
+          icon={<LocalOffer />}
+        />
+      </div>
       <Can
         role={user.profile}
         perform="drawer-supervisor-items:view"
         yes={() => (
           <>
-            <Divider className={classes.divider}/>
+            <Divider className={classes.divider} />
             <ListSubheader inset className={classes.sub}>
               {i18n.t("mainDrawer.listItems.administration")}
             </ListSubheader>
-            <ListItemLink
-              to="/connections"
-              primary={i18n.t("mainDrawer.listItems.connections")}
-              icon={
-                <Badge badgeContent={connectionWarning ? "!" : 0} color="error">
-                  <SyncAlt />
-                </Badge>
-              }
-            />
+            <div onClick={drawerClose}>
+              <ListItemLink
+                to="/connections"
+                primary={i18n.t("mainDrawer.listItems.connections")}
+                icon={
+                  <Badge
+                    badgeContent={connectionWarning ? "!" : 0}
+                    color="error"
+                  >
+                    <SyncAlt />
+                  </Badge>
+                }
+              />
+            </div>
           </>
         )}
       />
@@ -175,99 +187,118 @@ const MainListItems = (props) => {
         perform="drawer-admin-items:view"
         yes={() => (
           <>
-            <Divider className={classes.divider}/>
+            <Divider className={classes.divider} />
             <ListSubheader inset className={classes.sub}>
               {i18n.t("mainDrawer.listItems.administration")}
             </ListSubheader>
-            {
-               process.env.REACT_APP_CAMPAIGN_FUNCTION === "true" && (
-                <Accordion style={{ boxShadow: "none", width: "100%", margin: 0 }}>
-                  <AccordionSummary
-                    aria-controls="panel1a-content"
-                    id="panel1a-header"
-                    style={{ transition: "none", padding: 0, display: "block"}}
-                  >
-                    <li className={classes.li}>
-                      <ListItem>
-                        <ListItemIcon className={classes.icon}><QueuePlayNext /></ListItemIcon>
-                        <ListItemText primary={"Campanhas"} />
-                      </ListItem>
-                    </li>
-                  </AccordionSummary>
-                  <AccordionDetails style={{ padding: 0 }}>
+            {process.env.REACT_APP_CAMPAIGN_FUNCTION === "true" && (
+              <Accordion
+                style={{ boxShadow: "none", width: "100%", margin: 0 }}
+              >
+                <AccordionSummary
+                  aria-controls="panel1a-content"
+                  id="panel1a-header"
+                  style={{ transition: "none", padding: 0, display: "block" }}
+                >
+                  <li className={classes.li}>
+                    <ListItem>
+                      <ListItemIcon className={classes.icon}>
+                        <QueuePlayNext />
+                      </ListItemIcon>
+                      <ListItemText primary={"Campanhas"} />
+                    </ListItem>
+                  </li>
+                </AccordionSummary>
+                <AccordionDetails style={{ padding: 0 }}>
+                  <div onClick={drawerClose}>
                     <ListItemLink
                       to="/campaigns"
                       primary={"Lista campanhas"}
                       icon={<PhonelinkRing />}
                       style={{ width: "100%", paddingLeft: 20 }}
                     />
-                  </AccordionDetails>
-                  <AccordionDetails style={{ padding: 0 }}>
-                      <ListItemLink
-                        to="/contactslists"
-                        primary={"Lista contatos"}
-                        icon={<ListAlt />}
-                        style={{ width: "100%", paddingLeft: 20 }}
-                      />
-                  </AccordionDetails>
-                </Accordion>
-              )
-            }
+                  </div>
+                </AccordionDetails>
+                <AccordionDetails style={{ padding: 0 }}>
+                  <div onClick={drawerClose}>
+                    <ListItemLink
+                      to="/contactslists"
+                      primary={"Lista contatos"}
+                      icon={<ListAlt />}
+                      style={{ width: "100%", paddingLeft: 20 }}
+                    />
+                  </div>
+                </AccordionDetails>
+              </Accordion>
+            )}
 
-            <ListItemLink
-              to="/connections"
-              primary={i18n.t("mainDrawer.listItems.connections")}
-              icon={
-                <Badge badgeContent={connectionWarning ? "!" : 0} color="error">
-                  <SyncAlt />
-                </Badge>
-              }
-            />
-            <ListItemLink
-              to="/users"
-              primary={i18n.t("mainDrawer.listItems.users")}
-              icon={<PeopleAltOutlined />}
-            />
-            <ListItemLink
-              to="/departaments"
-              primary={i18n.t("mainDrawer.listItems.departaments")}
-              icon={<DnsOutlined />}
-            />
-            <ListItemLink
-              to="/queues"
-              primary={i18n.t("mainDrawer.listItems.queues")}
-              icon={<AccountTreeOutlined />}
-            />
-            <ListItemLink
-              to="/settings"
-              primary={i18n.t("mainDrawer.listItems.settings")}
-              icon={<SettingsOutlined />}
-            />   
+            <div onClick={drawerClose}>
+              <ListItemLink
+                to="/connections"
+                primary={i18n.t("mainDrawer.listItems.connections")}
+                icon={
+                  <Badge
+                    badgeContent={connectionWarning ? "!" : 0}
+                    color="error"
+                  >
+                    <SyncAlt />
+                  </Badge>
+                }
+              />
+            </div>
+            <div onClick={drawerClose}>
+              <ListItemLink
+                to="/users"
+                primary={i18n.t("mainDrawer.listItems.users")}
+                icon={<PeopleAltOutlined />}
+              />
+            </div>
+            <div onClick={drawerClose}>
+              <ListItemLink
+                to="/departaments"
+                primary={i18n.t("mainDrawer.listItems.departaments")}
+                icon={<DnsOutlined />}
+              />
+            </div>
+            <div onClick={drawerClose}>
+              <ListItemLink
+                to="/queues"
+                primary={i18n.t("mainDrawer.listItems.queues")}
+                icon={<AccountTreeOutlined />}
+              />
+            </div>
+            <div onClick={drawerClose}>
+              <ListItemLink
+                to="/settings"
+                primary={i18n.t("mainDrawer.listItems.settings")}
+                icon={<SettingsOutlined />}
+              />
+            </div>
             <Divider className={classes.divider} />
             <ListSubheader inset className={classes.sub}>
               {i18n.t("mainDrawer.listItems.apititle")}
             </ListSubheader>
-            <ListItemLink
-              to="/api"
-              primary={i18n.t("mainDrawer.listItems.api")}
-              icon={
-                <Code />
-              }
-            />
-            <ListItemLink
-              to="/apidocs"
-              primary={i18n.t("mainDrawer.listItems.apidocs")}
-              icon={
-                <MenuBook />
-              }
-            />
-            <ListItemLink
-              to="/apikey"
-              primary={i18n.t("mainDrawer.listItems.apikey")}
-              icon={
-                <VpnKeyRounded />
-              }
-            />
+            <div onClick={drawerClose}>
+              <ListItemLink
+                to="/api"
+                primary={i18n.t("mainDrawer.listItems.api")}
+                icon={<Code />}
+              />
+            </div>
+            <div onClick={drawerClose}>
+              <ListItemLink
+                to="/apidocs"
+                primary={i18n.t("mainDrawer.listItems.apidocs")}
+                icon={<MenuBook />}
+              />
+            </div>
+            <div onClick={drawerClose}>
+              <ListItemLink
+                to="/apikey"
+                primary={i18n.t("mainDrawer.listItems.apikey")}
+                icon={<VpnKeyRounded />}
+              />
+            </div>
           </>
         )}
       />
@@ -280,4 +311,4 @@ const MainListItems = (props) => {
   );
 };
 
-export default MainListItems;/*  */
+export default MainListItems;
