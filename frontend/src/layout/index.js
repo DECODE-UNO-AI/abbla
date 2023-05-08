@@ -44,7 +44,7 @@ const useStyles = makeStyles((theme) => ({
   toolbar: {
     paddingRight: 24, // keep right padding when drawer closed
     color: "#ffffff",
-    background: theme.palette.toolbar.main
+    background: theme.palette.toolbar.main,
   },
   toolbarIcon: {
     display: "flex",
@@ -52,7 +52,7 @@ const useStyles = makeStyles((theme) => ({
     justifyContent: "flex-end",
     padding: "0 8px",
     minHeight: "48px",
-    backgroundColor: theme.palette.toolbarIcon.main
+    backgroundColor: theme.palette.toolbarIcon.main,
   },
   appBar: {
     zIndex: theme.zIndex.drawer + 1,
@@ -114,7 +114,7 @@ const useStyles = makeStyles((theme) => ({
     display: "flex",
     overflow: "auto",
     flexDirection: "column",
-  }
+  },
 }));
 
 const LoggedInLayout = ({ children }) => {
@@ -128,16 +128,14 @@ const LoggedInLayout = ({ children }) => {
   const { user } = useContext(AuthContext);
 
   useEffect(() => {
-
     if (document.body.offsetWidth > 600) {
       const fetchDrawerState = async () => {
         try {
           const { data } = await api.get("/settings");
 
-          const settingIndex = data.filter(s => s.key === 'sideMenu');
+          const settingIndex = data.filter((s) => s.key === "sideMenu");
 
           setDrawerOpen(settingIndex[0].value === "disabled" ? false : true);
-
         } catch (err) {
           setDrawerOpen(true);
           toastError(err);
@@ -200,7 +198,10 @@ const LoggedInLayout = ({ children }) => {
       >
         <div className={classes.toolbarIcon}>
           <img src={logodash} alt="logo" />
-          <IconButton color="secondary" onClick={() => setDrawerOpen(!drawerOpen)}>
+          <IconButton
+            color="secondary"
+            onClick={() => setDrawerOpen(!drawerOpen)}
+          >
             <ChevronLeftIcon />
           </IconButton>
         </div>
