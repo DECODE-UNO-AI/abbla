@@ -19,8 +19,9 @@ import ApiKey from "../pages/ApiKey/";
 import Tags from "../pages/Tags";
 import Departaments from "../pages/Departaments";
 import Campaigns from "../pages/Campaigns";
-import Campaign from '../pages/Campaign';
+import Campaign from "../pages/Campaign";
 import ContactsLists from "../pages/ContactsLists";
+import Macros from "../pages/Macros";
 
 import { AuthProvider } from "../context/Auth/AuthContext";
 import { WhatsAppsProvider } from "../context/WhatsApp/WhatsAppsContext";
@@ -36,28 +37,61 @@ const Routes = () => {
           <WhatsAppsProvider>
             <LoggedInLayout>
               <Route exact path="/" component={Dashboard} isPrivate />
-              <Route exact path="/tickets/:ticketId?" component={Tickets} isPrivate />
-              {
-                process.env.REACT_APP_CAMPAIGN_FUNCTION === "true"  && 
-                (
-                  <>
-                  <Route exact path="/campaigns" component={Campaigns} isPrivate />
-                  <Route exact path="/campaign/:campaignId" component={Campaign} isPrivate />
-                  <Route exact path="/contactslists" component={ContactsLists} isPrivate />
-                  </>
-                )
-              }
-              <Route exact path="/connections" component={Connections} isPrivate />
+              <Route
+                exact
+                path="/tickets/:ticketId?"
+                component={Tickets}
+                isPrivate
+              />
+              {process.env.REACT_APP_CAMPAIGN_FUNCTION === "true" && (
+                <>
+                  <Route
+                    exact
+                    path="/campaigns"
+                    component={Campaigns}
+                    isPrivate
+                  />
+                  <Route
+                    exact
+                    path="/campaign/:campaignId"
+                    component={Campaign}
+                    isPrivate
+                  />
+                  <Route
+                    exact
+                    path="/contactslists"
+                    component={ContactsLists}
+                    isPrivate
+                  />
+                </>
+              )}
+              <Route
+                exact
+                path="/connections"
+                component={Connections}
+                isPrivate
+              />
               <Route exact path="/contacts" component={Contacts} isPrivate />
               <Route exact path="/users" component={Users} isPrivate />
-              <Route exact path="/quickAnswers" component={QuickAnswers} isPrivate />
-              <Route exact path="/departaments" component={Departaments} isPrivate />
+              <Route
+                exact
+                path="/quickAnswers"
+                component={QuickAnswers}
+                isPrivate
+              />
+              <Route
+                exact
+                path="/departaments"
+                component={Departaments}
+                isPrivate
+              />
               <Route exact path="/Settings" component={Settings} isPrivate />
               <Route exact path="/api" component={Api} isPrivate />
               <Route exact path="/apidocs" component={ApiDocs} isPrivate />
               <Route exact path="/apikey" component={ApiKey} isPrivate />
               <Route exact path="/Queues" component={Queues} isPrivate />
               <Route exact path="/Tags" component={Tags} isPrivate />
+              <Route exact path="/macros" component={Macros} isPrivate />
             </LoggedInLayout>
           </WhatsAppsProvider>
         </Switch>
