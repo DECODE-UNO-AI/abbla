@@ -11,6 +11,7 @@ import DeleteWhatsAppMessage from "../services/WbotServices/DeleteWhatsAppMessag
 import SendWhatsAppMedia from "../services/WbotServices/SendWhatsAppMedia";
 import SendWhatsAppMessage from "../services/WbotServices/SendWhatsAppMessage";
 import getContactMessages from "../services/MessageServices/getContactMessages";
+import AppError from "../errors/AppError";
 
 type IndexQuery = {
   pageNumber: string;
@@ -57,27 +58,30 @@ export const store = async (req: Request, res: Response): Promise<Response> => {
   const { body, quotedMsg, isComment }: MessageData = req.body;
   const medias = req.files as Express.Multer.File[];
 
-  const ticket = await ShowTicketService(ticketId);
+  try {
+    const ticket = await ShowTicketService(ticketId);
 
-  // Setting vizualizeMessage
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const listSettingsService: any = await ListSettingsServiceOne({
-    key: "visualizeMessage"
-  });
-  const option = listSettingsService?.dataValues.value;
-  if (option === "disabled") await SetTicketMessagesAsRead(ticket);
+    // Setting vizualizeMessage
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const listSettingsService: any = await ListSettingsServiceOne({
+      key: "visualizeMessage"
+    });
+    const option = listSettingsService?.dataValues.value;
+    if (option === "disabled") await SetTicketMessagesAsRead(ticket);
 
-  if (medias) {
-    await Promise.all(
-      medias.map(async (media: Express.Multer.File) => {
-        await SendWhatsAppMedia({ media, ticket });
-      })
-    );
-  } else {
-    await SendWhatsAppMessage({ body, ticket, quotedMsg, isComment });
+    if (medias) {
+      await Promise.all(
+        medias.map(async (media: Express.Multer.File) => {
+          await SendWhatsAppMedia({ media, ticket });
+        })
+      );
+    } else {
+      await SendWhatsAppMessage({ body, ticket, quotedMsg, isComment });
+    }
+    return res.send();
+  } catch (error) {
+    throw new AppError(error.message);
   }
-
-  return res.send();
 };
 
 export const remove = async (
