@@ -21,48 +21,62 @@ interface Request {
 const CreateMessageService = async ({
   messageData
 }: Request): Promise<Message> => {
-  await Message.upsert(messageData);
+  try {
+    await Message.upsert(messageData);
 
-  const message = await Message.findByPk(messageData.id, {
-    include: [
-      "contact",
-      {
-        model: Ticket,
-        as: "ticket",
-        include: [
-          "contact",
-          "queue",
-          {
-            model: Whatsapp,
-            as: "whatsapp",
-            attributes: ["name"]
-          }
-        ]
-      },
-      {
-        model: Message,
-        as: "quotedMsg",
-        include: ["contact"]
-      }
-    ]
-  });
-
-  if (!message) {
-    throw new Error("ERR_CREATING_MESSAGE");
-  }
-
-  const io = getIO();
-  io.to(message.ticketId.toString())
-    .to(message.ticket.status)
-    .to("notification")
-    .emit("appMessage", {
-      action: "create",
-      message,
-      ticket: message.ticket,
-      contact: message.ticket.contact
+    const message = await Message.findByPk(messageData.id, {
+      include: [
+        "contact",
+        {
+          model: Ticket,
+          as: "ticket",
+          include: [
+            "contact",
+            "queue",
+            {
+              model: Whatsapp,
+              as: "whatsapp",
+              attributes: ["name"]
+            }
+          ]
+        },
+        {
+          model: Message,
+          as: "quotedMsg",
+          include: ["contact"]
+        }
+      ]
     });
 
-  return message;
+    if (!message) {
+      throw new Error("ERR_CREATING_MESSAGE");
+    }
+
+    const io = getIO();
+    io.to(message.ticketId.toString())
+      .to(message.ticket.status)
+      .to("notification")
+      .emit("appMessage", {
+        action: "create",
+        message,
+        ticket: message.ticket,
+        contact: message.ticket.contact
+      });
+
+    io.to(message.ticketId.toString())
+      .to(message.ticket.status)
+      .to("notification")
+      .emit("appMessage", {
+        action: "update",
+        message,
+        ticket: message.ticket,
+        contact: message.ticket.contact
+      });
+
+    return message;
+  } catch (error) {
+    throw new Error(error.message);
+  }
 };
 
 export default CreateMessageService;
