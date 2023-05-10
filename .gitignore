@@ -2,3 +2,5 @@
 ssl/
 .env
 .vscode
+package-lock.json
+backend/core.*
