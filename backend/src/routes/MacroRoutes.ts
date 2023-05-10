@@ -14,4 +14,6 @@ macroRoutes.post(
   MacroController.store
 );
 
+macroRoutes.get("/macros", isAuth, MacroController.getAllMacros);
+
 export default macroRoutes;
