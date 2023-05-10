@@ -21,7 +21,7 @@ import ScheduledMessage from "../models/ScheduledMessage";
 import WhatsappApi from "../models/WhatsappApi";
 import CampaignContactsList from "../models/CampaignContactsList";
 import CampaignContactsListAssociate from "../models/CampaignContactsListAssociate";
-
+import Macro from "../models/Macro";
 
 // eslint-disable-next-line
 const dbConfig = require("../config/database");
@@ -52,6 +52,7 @@ const models = [
   WhatsappApi,
   CampaignContactsList,
   CampaignContactsListAssociate,
+  Macro
 ];
 
 sequelize.addModels(models);
