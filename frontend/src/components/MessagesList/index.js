@@ -378,15 +378,13 @@ const MessagesList = ({ contactId, ticketId, isGroup }) => {
   const [anchorEl, setAnchorEl] = useState(null);
   const messageOptionsMenuOpen = Boolean(anchorEl);
   const currentTicketId = useRef(ticketId);
-  const currentContactId = useRef(contactId);
 
   useEffect(() => {
     dispatch({ type: "RESET" });
     setPageNumber(1);
 
     currentTicketId.current = ticketId;
-    currentContactId.current = contactId;
-  }, [ticketId, contactId]);
+  }, [ticketId]);
 
   useEffect(() => {
     setLoading(true);
@@ -410,20 +408,21 @@ const MessagesList = ({ contactId, ticketId, isGroup }) => {
             });
 
           if (currentTicketId.current === ticketId) {
+            dispatch({ type: "RESET" });
             dispatch({
               type: "LOAD_MESSAGES",
               payload: messages,
             });
             setHasMore(data.hasMore);
-            setLoading(false);
           }
 
           if (pageNumber === 1 && messages.length > 1) {
             scrollToBottom();
           }
         } catch (err) {
-          setLoading(false);
           toastError(err);
+        } finally {
+          setLoading(false);
         }
       };
       fetchMessages();
