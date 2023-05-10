@@ -23,14 +23,15 @@ const SendWhatsAppMessage = async ({
   isComment = false
 }: Request): Promise<WbotMessage | string> => {
   let quotedMsgSerializedId: string | undefined;
-  if (quotedMsg) {
-    await GetWbotMessage(ticket, quotedMsg.id);
-    quotedMsgSerializedId = SerializeWbotMsgId(ticket, quotedMsg);
-  }
-
-  const wbot = await GetTicketWbot(ticket);
 
   try {
+    if (quotedMsg) {
+      await GetWbotMessage(ticket, quotedMsg.id);
+      quotedMsgSerializedId = SerializeWbotMsgId(ticket, quotedMsg);
+    }
+
+    const wbot = await GetTicketWbot(ticket);
+
     if (!isComment) {
       const sentMessage = await wbot.sendMessage(
         `${ticket.contact.number}@${ticket.isGroup ? "g" : "c"}.us`,
@@ -40,6 +41,7 @@ const SendWhatsAppMessage = async ({
           linkPreview: false
         }
       );
+
       await ticket.update({ lastMessage: body });
       return sentMessage;
     }
