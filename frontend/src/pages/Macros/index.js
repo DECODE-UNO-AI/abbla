@@ -12,7 +12,6 @@ const Macros = () => {
   const [confirmModalOpen, setConfirmModalOpen] = useState(false);
   const [modalOpen, setModalOpen] = useState(false);
   const [visualizeModal, setVisualizeModal] = useState(false);
-  // const classes = useStyles();
 
   const handleOnCloseModal = () => {
     setModalOpen(false);
@@ -22,15 +21,12 @@ const Macros = () => {
     setConfirmModalOpen(false);
   };
 
-  console.log("modalOpen", modalOpen);
-
   return (
     <MainContainer>
       <ConfirmationModal
         title="Adicionar Macros"
         open={confirmModalOpen}
         onClose={handleCloseConfirmationModal}
-        // onConfirm={() => handleOnArchiveCampaign(selectedCampaign)}
       >
         {i18n.t("campaigns.confirmationModal.archiveMessage")}
       </ConfirmationModal>
