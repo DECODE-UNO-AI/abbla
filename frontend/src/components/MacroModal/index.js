@@ -122,13 +122,6 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-function getFirstDate() {
-  const currentDate = new Date();
-  currentDate.setDate(currentDate.getDate() + 1);
-  const dateString = currentDate.toISOString().substring(0, 16);
-  return dateString;
-}
-
 const MacroSchema = Yup.object().shape({
   name: Yup.string()
     .min(2, i18n.t("campaignModal.errors.tooShort"))
@@ -274,7 +267,7 @@ const MacroModal = ({ open, onClose, visualize }) => {
         },
       });
       toast.success(`Macro salvo com sucesso`);
-      onClose();
+      handleOnModalClose();
       setSubmittingForm(false);
     } catch (err) {
       setSubmittingForm(false);
