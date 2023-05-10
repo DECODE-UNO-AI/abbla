@@ -3,6 +3,7 @@ import { Request, Response } from "express";
 import AppError from "../errors/AppError";
 import { getIO } from "../libs/socket";
 import CreateMacroService from "../services/MacroService/CreateMacroService";
+import GetAllMacrosService from "../services/MacroService/GetAllMacrosService";
 
 interface MacroData {
   name: string;
@@ -65,6 +66,19 @@ export const store = async (req: Request, res: Response) => {
     });
 
     return res.status(201).send();
+  } catch (error) {
+    throw new AppError(error.message);
+  }
+};
+
+export const getAllMacros = async (
+  req: Request,
+  res: Response
+): Promise<Response> => {
+  try {
+    const macros = await GetAllMacrosService();
+
+    return res.status(200).json(macros);
   } catch (error) {
     throw new AppError(error.message);
   }
