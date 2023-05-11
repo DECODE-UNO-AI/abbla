@@ -314,7 +314,7 @@ const reducer = (state, action) => {
       }
     });
 
-    if (messages[0].ticket.isGroup) {
+    if (messages[0]?.ticket?.isGroup) {
       return [...newMessages, ...state]
         .filter((message) => message.ticket.isGroup === true)
         .sort(function (a, b) {
