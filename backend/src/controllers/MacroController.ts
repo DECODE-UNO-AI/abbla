@@ -4,12 +4,28 @@ import AppError from "../errors/AppError";
 import { getIO } from "../libs/socket";
 import CreateMacroService from "../services/MacroService/CreateMacroService";
 import GetAllMacrosService from "../services/MacroService/GetAllMacrosService";
+import ListMacroService from "../services/MacroService/ListMacroService";
 
+type IndexQuery = {
+  searchParam: string;
+  pageNumber: string;
+};
 interface MacroData {
   name: string;
   message1: string[];
   userId: string;
 }
+
+export const index = async (req: Request, res: Response): Promise<Response> => {
+  const { searchParam, pageNumber } = req.query as IndexQuery;
+
+  const { macros, count, hasMore } = await ListMacroService({
+    searchParam,
+    pageNumber
+  });
+
+  return res.json({ macros, count, hasMore });
+};
 
 export const store = async (req: Request, res: Response) => {
   const { id, profile } = req.user;
