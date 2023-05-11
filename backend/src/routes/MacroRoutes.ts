@@ -16,4 +16,6 @@ macroRoutes.post(
 
 macroRoutes.get("/macros", isAuth, MacroController.getAllMacros);
 
+macroRoutes.get("/macros/shortcut", isAuth, MacroController.index);
+
 export default macroRoutes;
