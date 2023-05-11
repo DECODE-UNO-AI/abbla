@@ -296,7 +296,13 @@ const useStyles = makeStyles((theme) => ({
 
 const reducer = (state, action) => {
   if (action.type === "LOAD_MESSAGES") {
-    const messages = action.payload;
+    const messages = action.payload.messages.filter((message, index) => {
+      return (
+        action.payload.messages.findIndex((messageObj) => {
+          return JSON.stringify(messageObj) === JSON.stringify(message);
+        }) === index
+      );
+    });
     const newMessages = [];
 
     messages.forEach((message) => {
@@ -308,7 +314,22 @@ const reducer = (state, action) => {
       }
     });
 
-    return [...newMessages, ...state];
+    if (messages[0].ticket.isGroup) {
+      return [...newMessages, ...state]
+        .filter((message) => message.ticket.isGroup === true)
+        .sort(function (a, b) {
+          return new Date(a.createdAt) - new Date(b.createdAt);
+        });
+    }
+
+    return [...newMessages, ...state]
+      .filter(
+        (message) =>
+          message.contactId === action.payload.contactId || message.fromMe
+      )
+      .sort(function (a, b) {
+        return new Date(a.createdAt) - new Date(b.createdAt);
+      });
   }
 
   if (action.type === "ADD_MESSAGE") {
@@ -395,28 +416,15 @@ const MessagesList = ({ contactId, ticketId, isGroup }) => {
             params: { pageNumber, contactId },
           });
 
-          let messages = data.messages
-            .filter((message, index) => {
-              return (
-                data.messages.findIndex((messageObj) => {
-                  return JSON.stringify(messageObj) === JSON.stringify(message);
-                }) === index
-              );
-            })
-            .sort(function (a, b) {
-              return new Date(a.createdAt) - new Date(b.createdAt);
-            });
-
           if (currentTicketId.current === ticketId) {
-            dispatch({ type: "RESET" });
             dispatch({
               type: "LOAD_MESSAGES",
-              payload: messages,
+              payload: { messages: data.messages, contactId },
             });
             setHasMore(data.hasMore);
           }
 
-          if (pageNumber === 1 && messages.length > 1) {
+          if (pageNumber === 1 && data.messages.length > 1) {
             scrollToBottom();
           }
         } catch (err) {
