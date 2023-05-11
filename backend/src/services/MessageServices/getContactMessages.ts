@@ -4,12 +4,21 @@ import Ticket from "../../models/Ticket";
 interface Request {
   contactId: string | number;
   isGroup: boolean;
+  pageNumber?: string;
 }
 
-const getContactMessages = async ({ contactId, isGroup }: Request) => {
+const getContactMessages = async ({
+  contactId,
+  isGroup,
+  pageNumber = "1"
+}: Request) => {
   if (contactId) {
+    const limit = 20;
+    const offset = limit * (+pageNumber - 1);
+
     const messages = await Message.findAll({
       where: { contactId },
+      limit,
       include: [
         "contact",
         {
@@ -25,6 +34,7 @@ const getContactMessages = async ({ contactId, isGroup }: Request) => {
           required: true
         }
       ],
+      offset,
       order: [["createdAt", "DESC"]]
     });
 
