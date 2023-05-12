@@ -416,8 +416,9 @@ const MessagesList = ({ contactId, ticketId, isGroup }) => {
   }, [ticketId]);
 
   useEffect(() => {
+    let visibleTimeout;
     setLoading(true);
-    setToggleVisibility("hidden");
+    if (messagesList.length <= 0) setToggleVisibility("hidden");
     const delayDebounceFn = setTimeout(() => {
       const fetchMessages = async () => {
         try {
@@ -439,17 +440,24 @@ const MessagesList = ({ contactId, ticketId, isGroup }) => {
         } catch (err) {
           toastError(err);
         } finally {
-          setTimeout(() => {
-            setToggleVisibility("visible");
-            setLoading(false);
-          }, delayToVisible);
-          delayToVisible !== 2500 && setDelayToVisible(2500);
+          if (delayToVisible !== 0) {
+            visibleTimeout = setTimeout(() => {
+              setToggleVisibility("visible");
+              setLoading(false);
+            }, delayToVisible);
+            delayToVisible === 4000 && setDelayToVisible(0);
+            return;
+          }
+
+          if (messagesList.length > 0) setToggleVisibility("visible");
+          setLoading(false);
         }
       };
       fetchMessages();
     }, 500);
     return () => {
       clearTimeout(delayDebounceFn);
+      clearTimeout(visibleTimeout);
     };
   }, [pageNumber, ticketId, contactId]);
 
