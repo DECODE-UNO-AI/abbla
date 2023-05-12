@@ -60,6 +60,12 @@ const useStyles = makeStyles((theme) => ({
     ...theme.scrollbarStyles,
   },
 
+  auxWrapper: {
+    display: "flex",
+    flexDirection: "column",
+    flexGrow: 1,
+  },
+
   circleLoading: {
     color: blue[500],
     position: "absolute",
@@ -391,6 +397,8 @@ const MessagesList = ({ contactId, ticketId, isGroup }) => {
   const classes = useStyles();
   const [messagesList, dispatch] = useReducer(reducer, []);
   const [pageNumber, setPageNumber] = useState(1);
+  const [toggleVisibility, setToggleVisibility] = useState("hidden");
+  const [delayToVisible, setDelayToVisible] = useState(4500);
   const [hasMore, setHasMore] = useState(false);
   const [loading, setLoading] = useState(false);
   const lastMessageRef = useRef();
@@ -409,6 +417,7 @@ const MessagesList = ({ contactId, ticketId, isGroup }) => {
 
   useEffect(() => {
     setLoading(true);
+    setToggleVisibility("hidden");
     const delayDebounceFn = setTimeout(() => {
       const fetchMessages = async () => {
         try {
@@ -430,7 +439,11 @@ const MessagesList = ({ contactId, ticketId, isGroup }) => {
         } catch (err) {
           toastError(err);
         } finally {
-          setLoading(false);
+          setTimeout(() => {
+            setToggleVisibility("visible");
+            setLoading(false);
+          }, delayToVisible);
+          delayToVisible !== 2500 && setDelayToVisible(2500);
         }
       };
       fetchMessages();
@@ -735,11 +748,11 @@ const MessagesList = ({ contactId, ticketId, isGroup }) => {
                 >
                   <ExpandMore />
                 </IconButton>
-                {isGroup && (
+                {isGroup ? (
                   <span className={classes.messageContactName}>
                     {message.contact?.name}
                   </span>
-                )}
+                ) : null}
                 <div>
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
@@ -778,11 +791,11 @@ const MessagesList = ({ contactId, ticketId, isGroup }) => {
                 >
                   <ExpandMore />
                 </IconButton>
-                {isGroup && (
+                {isGroup ? (
                   <span className={classes.messageContactName}>
                     {message.contact?.name}
                   </span>
-                )}
+                ) : null}
                 {message.isDeleted && (
                   <div>
                     <span className={"message-deleted"}>
@@ -898,13 +911,18 @@ const MessagesList = ({ contactId, ticketId, isGroup }) => {
         className={classes.messagesList}
         onScroll={handleScroll}
       >
-        {messagesList.length > 0 ? renderMessages() : []}
+        <div
+          className={classes.auxWrapper}
+          style={{ visibility: `${toggleVisibility}` }}
+        >
+          {messagesList.length > 0 ? renderMessages() : []}
+        </div>
       </div>
-      {loading && (
+      {loading ? (
         <div>
           <CircularProgress className={classes.circleLoading} />
         </div>
-      )}
+      ) : null}
     </div>
   );
 };
