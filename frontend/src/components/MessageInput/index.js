@@ -902,7 +902,8 @@ const MessageInput = ({ ticketStatus, ticket }) => {
               ) : (
                 <div></div>
               )}
-              {typeBackslash ? (
+              {typeBackslash &&
+              process.env.REACT_APP_MACRO_FUNCTION === "true" ? (
                 <ul className={classes.messageQuickAnswersWrapper}>
                   {macros.map((value, index) => {
                     return (

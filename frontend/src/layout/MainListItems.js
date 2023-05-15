@@ -192,7 +192,7 @@ const MainListItems = (props) => {
             <ListSubheader inset className={classes.sub}>
               {i18n.t("mainDrawer.listItems.administration")}
             </ListSubheader>
-            {process.env.REACT_APP_CAMPAIGN_FUNCTION === "true" && (
+            {process.env.REACT_APP_CAMPAIGN_FUNCTION === "true" ? (
               <Accordion
                 style={{ boxShadow: "none", width: "100%", margin: 0 }}
               >
@@ -231,34 +231,38 @@ const MainListItems = (props) => {
                   </div>
                 </AccordionDetails>
               </Accordion>
-            )}
+            ) : null}
 
-            <Accordion style={{ boxShadow: "none", width: "100%", margin: 0 }}>
-              <AccordionSummary
-                aria-controls="panel1a-content"
-                id="panel1a-header"
-                style={{ transition: "none", padding: 0, display: "block" }}
+            {process.env.REACT_APP_MACRO_FUNCTION === "true" ? (
+              <Accordion
+                style={{ boxShadow: "none", width: "100%", margin: 0 }}
               >
-                <li className={classes.li}>
-                  <ListItem>
-                    <ListItemIcon className={classes.icon}>
-                      <LoopOutlined />
-                    </ListItemIcon>
-                    <ListItemText primary={"Macros"} />
-                  </ListItem>
-                </li>
-              </AccordionSummary>
+                <AccordionSummary
+                  aria-controls="panel1a-content"
+                  id="panel1a-header"
+                  style={{ transition: "none", padding: 0, display: "block" }}
+                >
+                  <li className={classes.li}>
+                    <ListItem>
+                      <ListItemIcon className={classes.icon}>
+                        <LoopOutlined />
+                      </ListItemIcon>
+                      <ListItemText primary={"Macros"} />
+                    </ListItem>
+                  </li>
+                </AccordionSummary>
 
-              <AccordionDetails style={{ padding: 0 }}>
-                <div onClick={drawerClose}>
-                  <ListItemLink
-                    to="/macros"
-                    primary="Lista macros"
-                    icon={<ListAlt />}
-                  />
-                </div>
-              </AccordionDetails>
-            </Accordion>
+                <AccordionDetails style={{ padding: 0 }}>
+                  <div onClick={drawerClose}>
+                    <ListItemLink
+                      to="/macros"
+                      primary="Lista macros"
+                      icon={<ListAlt />}
+                    />
+                  </div>
+                </AccordionDetails>
+              </Accordion>
+            ) : null}
 
             <div onClick={drawerClose}>
               <ListItemLink

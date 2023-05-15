@@ -43,7 +43,7 @@ const Routes = () => {
                 component={Tickets}
                 isPrivate
               />
-              {process.env.REACT_APP_CAMPAIGN_FUNCTION === "true" && (
+              {process.env.REACT_APP_CAMPAIGN_FUNCTION === "true" ? (
                 <>
                   <Route
                     exact
@@ -64,7 +64,10 @@ const Routes = () => {
                     isPrivate
                   />
                 </>
-              )}
+              ) : null}
+              {process.env.REACT_APP_MACRO_FUNCTION === "true" ? (
+                <Route exact path="/macros" component={Macros} isPrivate />
+              ) : null}
               <Route
                 exact
                 path="/connections"
@@ -91,7 +94,6 @@ const Routes = () => {
               <Route exact path="/apikey" component={ApiKey} isPrivate />
               <Route exact path="/Queues" component={Queues} isPrivate />
               <Route exact path="/Tags" component={Tags} isPrivate />
-              <Route exact path="/macros" component={Macros} isPrivate />
             </LoggedInLayout>
           </WhatsAppsProvider>
         </Switch>
