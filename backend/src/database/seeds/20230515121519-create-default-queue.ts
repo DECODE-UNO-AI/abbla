@@ -1,16 +1,15 @@
 import { QueryInterface } from "sequelize";
-import { v4 as uuidv4 } from "uuid";
 
 module.exports = {
   up: async (queryInterface: QueryInterface) => {
     const result = await queryInterface.rawSelect(
-      "Settings",
+      "Queues",
       {
         where: {
-          key: "userApiToken"
+          name: "padrão"
         }
       },
-      ["key"]
+      ["name"]
     );
 
     if (result) {
@@ -18,13 +17,17 @@ module.exports = {
     }
 
     return queryInterface.bulkInsert(
-      "Settings",
+      "Queues",
       [
         {
-          key: "userApiToken",
-          value: uuidv4(),
+          name: "padrão",
+          color: "#000000",
+          greetingMessage: "",
           createdAt: new Date(),
-          updatedAt: new Date()
+          updatedAt: new Date(),
+          startWork: "",
+          endWork: "",
+          absenceMessage: ""
         }
       ],
       {}
@@ -32,6 +35,6 @@ module.exports = {
   },
 
   down: (queryInterface: QueryInterface) => {
-    return queryInterface.bulkDelete("Settings", {});
+    return queryInterface.bulkDelete("Queues", {});
   }
 };
