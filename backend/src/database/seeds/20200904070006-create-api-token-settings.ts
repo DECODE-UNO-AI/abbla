@@ -2,7 +2,21 @@ import { QueryInterface } from "sequelize";
 import { v4 as uuidv4 } from "uuid";
 
 module.exports = {
-  up: (queryInterface: QueryInterface) => {
+  up: async (queryInterface: QueryInterface) => {
+    const result = await queryInterface.rawSelect(
+      "Settings",
+      {
+        where: {
+          key: "userApiToken"
+        }
+      },
+      ["key"]
+    );
+
+    if (result) {
+      return;
+    }
+
     return queryInterface.bulkInsert(
       "Settings",
       [
