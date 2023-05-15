@@ -36,10 +36,12 @@ routes.use(tagRoutes);
 routes.use(departamentRoutes);
 routes.use("/service", restartRoutes);
 routes.use(scheduleMessageRoutes);
-routes.use(MacroRoutes); // perguntar se essa func vai ser paga
 if (process.env.CAMPAIGN_FUNCTION === "true") {
   routes.use("/campaigncontactslist", CampaignContactsListRoutes);
   routes.use(campaignRoutes);
+}
+if (process.env.MACRO_FUNCTION === "true") {
+  routes.use(MacroRoutes);
 }
 
 export default routes;
