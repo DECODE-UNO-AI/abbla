@@ -365,7 +365,6 @@ const MessageInput = ({ ticketStatus, ticket }) => {
     const formData = new FormData();
     formData.append("fromMe", true);
     medias.forEach((media) => {
-      console.log("media", media);
       formData.append("medias", media);
       formData.append("body", media.name);
     });
@@ -425,16 +424,20 @@ const MessageInput = ({ ticketStatus, ticket }) => {
 
         messagesToSend.push(messageObj);
       } else {
-        const messageObj = {
-          read: 1,
-          isComment: false,
-          fromMe: true,
-          mediaUrl: message,
-          body: "\n",
-          quotedMsg: replyingMessage,
-        };
+        const name = message.replace("file-", "");
+        const blob = new Blob([], {
+          type: "application/octet-stream",
+          name: name,
+        });
+        const file = new File([blob], name);
 
-        messagesToSend.push(messageObj);
+        const formData = new FormData();
+
+        formData.append("fromMe", true);
+        formData.append("medias", file);
+        formData.append("body", name);
+
+        messagesToSend.push(formData);
       }
     });
 
@@ -577,8 +580,6 @@ const MessageInput = ({ ticketStatus, ticket }) => {
   const handleMenuItemClick = (event) => {
     setAnchorEl(null);
   };
-
-  console.log("chosedMacroMessages", chosedMacroMessages);
 
   const renderReplyingMessage = (message) => {
     return (
