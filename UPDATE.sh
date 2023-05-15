@@ -51,7 +51,7 @@ echo " "
 sleep 2
 
 npx sequelize db:migrate
-npx sequelize db:seed
+npx sequelize db:seed:all
 
 echo " "
 echo "ACESSANDO O FRONTEND"
