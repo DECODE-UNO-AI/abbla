@@ -1,7 +1,21 @@
 import { QueryInterface } from "sequelize";
 
 module.exports = {
-  up: (queryInterface: QueryInterface) => {
+  up: async (queryInterface: QueryInterface) => {
+    const result = await queryInterface.rawSelect(
+      "Settings",
+      {
+        where: {
+          key: "visualizeMessage"
+        }
+      },
+      ["key"]
+    );
+
+    if (result) {
+      return;
+    }
+
     return queryInterface.bulkInsert(
       "Settings",
       [
