@@ -4,3 +4,4 @@ ssl/
 .vscode
 package-lock.json
 backend/core.*
+backend/.wwebjs_auth_bkp/
