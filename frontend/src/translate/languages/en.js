@@ -580,6 +580,11 @@ const messages = {
       },
       macros: {
         title: "Macros",
+        notifications: {
+          macroTestFailed:
+            "The bot, the message and the WhatsApp number must be completed in advance",
+          macroTested: "Test message sent",
+        },
         table: {
           name: "Name",
           shortcut: "Shortcut",

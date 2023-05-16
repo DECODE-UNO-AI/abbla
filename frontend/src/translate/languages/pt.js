@@ -596,6 +596,11 @@ const messages = {
       },
       macros: {
         title: "Macros",
+        notifications: {
+          macroTestFailed:
+            "Whatsapp Bot, Mensagem e Número devem ser preenchidos",
+          macroTested: "Mensagem teste Enviada",
+        },
         table: {
           name: "Nome",
           shortcut: "Atalho",

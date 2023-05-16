@@ -584,6 +584,11 @@ const messages = {
       },
       macros: {
         title: "Macros",
+        notifications: {
+          macroTestFailed:
+            "El bot, el mensaje y el número de Whatsapp deben completarse previamente",
+          macroTested: "Mensaje de prueba enviado",
+        },
         table: {
           name: "Nombre",
           shortcut: "Atajo",
