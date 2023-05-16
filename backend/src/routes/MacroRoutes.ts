@@ -18,4 +18,13 @@ macroRoutes.get("/macros", isAuth, MacroController.getAllMacros);
 
 macroRoutes.get("/macros/shortcut", isAuth, MacroController.index);
 
+macroRoutes.get("/macros/:macroId", isAuth, MacroController.getMacroById);
+
+macroRoutes.put(
+  "/macros/:macroId",
+  isAuth,
+  upload.array("medias"),
+  MacroController.update
+);
+
 export default macroRoutes;
