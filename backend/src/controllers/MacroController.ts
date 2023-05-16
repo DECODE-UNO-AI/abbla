@@ -7,6 +7,7 @@ import GetAllMacrosService from "../services/MacroService/GetAllMacrosService";
 import ListMacroService from "../services/MacroService/ListMacroService";
 import GetMacroByIdService from "../services/MacroService/GetMacroByIdService";
 import UpdateMacroService from "../services/MacroService/UpdateMacroService";
+import DeleteMacroService from "../services/MacroService/DeleteMacroService";
 
 type IndexQuery = {
   searchParam: string;
@@ -178,6 +179,31 @@ export const update = async (req: Request, res: Response) => {
     });
 
     return res.status(201).send();
+  } catch (error) {
+    throw new AppError(error.message);
+  }
+};
+
+export const deleteMacro = async (req: Request, res: Response) => {
+  const { macroId } = req.params;
+  const { profile } = req.user;
+
+  if (profile !== "admin") {
+    throw new AppError("ERR_NO_PERMISSION", 403);
+  }
+
+  try {
+    await DeleteMacroService({ macroId });
+
+    const macros = await GetAllMacrosService();
+
+    const io = getIO();
+    io.emit("macros", {
+      action: "delete",
+      macroId
+    });
+
+    return res.status(204).send();
   } catch (error) {
     throw new AppError(error.message);
   }
