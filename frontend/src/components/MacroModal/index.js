@@ -446,6 +446,7 @@ const MacroModal = ({ open, onClose, visualize, macroId }) => {
                       visualize={visualize}
                       setOpenIAModal={null}
                       setModalInput={null}
+                      isMacro={true}
                     />
                   </Box>
                 </DialogContent>
