@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import * as Yup from "yup";
 import {
   Button,
@@ -129,7 +129,16 @@ const MacroSchema = Yup.object().shape({
     .required(" "),
 });
 
-const MacroModal = ({ open, onClose, visualize }) => {
+const MacroModal = ({ open, onClose, visualize, macroId }) => {
+  const classes = useStyles();
+  const initialState = {
+    name: "",
+    whatsappId: "",
+    columnName: "",
+    message1: [],
+  };
+
+  const [macroForm, setMacroForm] = useState(initialState);
   const [submittingForm, setSubmittingForm] = useState(false);
   const [tabValue, setTabValue] = useState(0);
   const [testNumber, setTestNumber] = useState("");
@@ -140,24 +149,51 @@ const MacroModal = ({ open, onClose, visualize }) => {
 
   const [inputsOrder, setInputsOrder] = useState({
     message1InputOrder: [],
-    message2InputOrder: [],
-    message3InputOrder: [],
-    message4InputOrder: [],
-    message5InputOrder: [],
   });
 
-  const initialState = {
-    name: "",
-    whatsappId: "",
-    columnName: "",
-  };
+  useEffect(() => {
+    (async () => {
+      if (!macroId) return;
+      try {
+        const {
+          data: { macro },
+        } = await api.get(`/macros/${macroId}`);
+        setMacroForm((prevState) => {
+          return { ...prevState, ...macro };
+        });
 
-  const [campaignForm, setCapaignForm] = useState(initialState);
+        if (macro?.whatsappApiId) {
+          setMacroForm((prevState) => {
+            return { ...prevState, whatsappId: `api-${macro?.whatsappApiId}` };
+          });
+        }
 
-  const classes = useStyles();
+        setAllMessagesInputs({
+          message1Inputs: macro?.message1.map((message, index) => {
+            if (message.startsWith("file-")) {
+              return { id: index, type: "file", value: message };
+            }
+            return { id: index, type: "text", value: message };
+          }),
+        });
+
+        setInputsOrder({
+          message1InputOrder: macro?.message1.map((message, index) => index),
+        });
+      } catch (error) {
+        toastError(error);
+      }
+    })();
+
+    return () => {
+      setMacroForm(initialState);
+      setInputsOrder([]);
+      setAllMessagesInputs([]);
+    };
+  }, [macroId]);
 
   const handleOnModalClose = () => {
-    setCapaignForm(initialState);
+    setMacroForm(initialState);
     setInputsOrder([]);
     setAllMessagesInputs([]);
     onClose();
@@ -259,14 +295,23 @@ const MacroModal = ({ open, onClose, visualize }) => {
     });
 
     try {
-      // aqui eu vou fazer a chamada para salvar o macro no banco de dados
-      await api.post(`/macros`, formData, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-          Accept: "application/json",
-        },
-      });
-      toast.success(`Macro salvo com sucesso`);
+      if (macroId) {
+        await api.put(`/macros/${macroId}`, formData, {
+          headers: {
+            "Content-Type": "multipart/form-data",
+            Accept: "application/json",
+          },
+        });
+        toast.success(`Macro Editado com sucesso`);
+      } else {
+        await api.post(`/macros`, formData, {
+          headers: {
+            "Content-Type": "multipart/form-data",
+            Accept: "application/json",
+          },
+        });
+        toast.success(`Macro salvo com sucesso`);
+      }
       handleOnModalClose();
       setSubmittingForm(false);
     } catch (err) {
@@ -282,9 +327,13 @@ const MacroModal = ({ open, onClose, visualize }) => {
       className={classes.dialog}
       scroll="paper"
     >
-      <DialogTitle id="form-dialog-title">Macro</DialogTitle>
+      <DialogTitle id="form-dialog-title">
+        {macroId
+          ? i18n.t("macros.modal.updateMacroTitle")
+          : i18n.t("macros.modal.createMacroTitle")}
+      </DialogTitle>
       <Formik
-        initialValues={campaignForm}
+        initialValues={macroForm}
         enableReinitialize={true}
         validationSchema={MacroSchema}
         onSubmit={async (values, actions) => {
@@ -292,7 +341,7 @@ const MacroModal = ({ open, onClose, visualize }) => {
           actions.setSubmitting(false);
         }}
       >
-        {({ touched, errors, isSubmitting, values, setValues }) => {
+        {({ touched, errors, values, setValues }) => {
           return (
             <>
               <Form>
@@ -307,10 +356,14 @@ const MacroModal = ({ open, onClose, visualize }) => {
                   }}
                 >
                   <Box sx={{ width: "100%" }} className={classes.box}>
-                    <Typography variant="h6">Nome do Macro</Typography>
+                    <Typography variant="h6">
+                      {i18n.t("macros.modal.form.messagesPlaceholder")}
+                    </Typography>
                     <Field
                       as={TextField}
-                      placeholder="Nome do Macro"
+                      placeholder={i18n.t(
+                        "macros.modal.form.messagesPlaceholder"
+                      )}
                       name="name"
                       id="name"
                       disabled={visualize}
@@ -327,7 +380,7 @@ const MacroModal = ({ open, onClose, visualize }) => {
                   </Box>
                   <Box sx={{ width: "100%" }} className={classes.box}>
                     <Typography variant="h6">
-                      {i18n.t("campaignModal.form.messages")}
+                      {i18n.t("macros.modal.form.messages")}
                     </Typography>
                     <DynamicInputs
                       values={values}
@@ -356,7 +409,7 @@ const MacroModal = ({ open, onClose, visualize }) => {
                   scroll="paper"
                 >
                   <DialogTitle id="form-dialog-title">
-                    {i18n.t("campaignModal.title.preview") + ":"}
+                    {i18n.t("macros.modal.preview.title") + ":"}
                   </DialogTitle>
                   <DialogContent style={{ padding: 0, minHeight: "400px" }}>
                     <Box className={classes.previewContainer}>
@@ -375,19 +428,19 @@ const MacroModal = ({ open, onClose, visualize }) => {
                       }}
                       variant="outlined"
                     >
-                      {i18n.t("campaignModal.buttons.close")}
+                      {i18n.t("macros.buttons.close")}
                     </Button>
                   </DialogActions>
                 </Dialog>
                 <Box className={classes.testContainer}>
                   <Typography variant="h6">
-                    {i18n.t("campaignModal.form.testMessage")}
+                    {i18n.t("macros.modal.form.testMessage")}
                   </Typography>
                   <Box className={classes.numberTestContainer}>
                     <TextField
                       className={classes.inputTest}
                       placeholder={i18n.t(
-                        "campaignModal.form.testNumberPlaceholder"
+                        "macro.modal.form.testNumberPlaceholder"
                       )}
                       inputProps={{ "aria-label": "message test" }}
                       variant="outlined"
@@ -405,7 +458,7 @@ const MacroModal = ({ open, onClose, visualize }) => {
                       onClick={() => handleOnTest(values)}
                       style={{ marginLeft: 20 }}
                     >
-                      {i18n.t("campaignModal.form.testButton")}
+                      {i18n.t("macros.modal.form.testButton")}
                       {submittingForm && (
                         <CircularProgress
                           size={20}
@@ -422,7 +475,7 @@ const MacroModal = ({ open, onClose, visualize }) => {
                     disabled={submittingForm}
                     variant="outlined"
                   >
-                    {i18n.t("campaignModal.buttons.cancel")}
+                    {i18n.t("macros.buttons.close")}
                   </Button>
                   <Button
                     type="submit"
@@ -431,7 +484,9 @@ const MacroModal = ({ open, onClose, visualize }) => {
                     variant="contained"
                   >
                     <span style={{ display: "flex", alignItems: "center" }}>
-                      Salvar Macro
+                      {macroId
+                        ? i18n.t("macros.buttons.editMacro")
+                        : i18n.t("macros.buttons.saveMacro")}
                       <NearMeIcon style={{ marginLeft: 5 }} />
                     </span>
 
