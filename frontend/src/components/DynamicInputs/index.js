@@ -94,6 +94,7 @@ const SortableItem = sortableElement(
     visualize,
     setOpenIAModal,
     setModalInput,
+    isMacro = false,
   }) => {
     const classes = useStyles();
     const inputIndex = messageInputs[`message${messageIndex}Inputs`].findIndex(
@@ -177,18 +178,20 @@ const SortableItem = sortableElement(
                       <InputLabel>
                         {input.value.replace("file-", "")}
                       </InputLabel>
-                      <Button
-                        onClick={() =>
-                          handleDownload(
-                            false,
-                            input.value.replace("file-", "")
-                          )
-                        }
-                        color="primary"
-                        variant="contained"
-                      >
-                        Download
-                      </Button>
+                      {!isMacro ? (
+                        <Button
+                          onClick={() =>
+                            handleDownload(
+                              false,
+                              input.value.replace("file-", "")
+                            )
+                          }
+                          color="primary"
+                          variant="contained"
+                        >
+                          Download
+                        </Button>
+                      ) : null}
                     </Box>
                   </>
                 )}
@@ -248,6 +251,7 @@ const DynamicInputs = ({
   visualize,
   setOpenIAModal,
   setModalInput,
+  isMacro = false,
 }) => {
   const classes = useStyles();
 
@@ -337,6 +341,7 @@ const DynamicInputs = ({
                 visualize={visualize}
                 setOpenIAModal={setOpenIAModal}
                 setModalInput={setModalInput}
+                isMacro={isMacro}
               />
             </>
           );
