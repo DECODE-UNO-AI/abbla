@@ -11,7 +11,12 @@ import { Edit, CancelOutlined } from "@material-ui/icons";
 import TableRowSkeleton from "../TableRowSkeleton";
 import { i18n } from "../../translate/i18n";
 
-const MacroTable = ({ macros, loading, handleEditMacro }) => {
+const MacroTable = ({
+  macros,
+  loading,
+  handleEditMacro,
+  handleDeleteMacro,
+}) => {
   return (
     <Table size="small">
       <TableHead>
@@ -45,7 +50,7 @@ const MacroTable = ({ macros, loading, handleEditMacro }) => {
                 <IconButton
                   size="small"
                   onClick={() => {
-                    handleEditMacro(macro);
+                    handleDeleteMacro(macro.id);
                   }}
                 >
                   <CancelOutlined color="secondary" />
