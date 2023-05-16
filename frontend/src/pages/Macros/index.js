@@ -10,6 +10,7 @@ import MacroModal from "../../components/MacroModal";
 import openSocket from "../../services/socket-io";
 import api from "../../services/api";
 import toastError from "../../errors/toastError";
+import MacroTable from "../../components/MacroTable";
 
 const reducer = (state, action) => {
   if (action.type === "LOAD_MACROS") {
@@ -17,16 +18,16 @@ const reducer = (state, action) => {
     return [...state, ...macros];
   }
 
-  // if (action.type === "UPDATE_MACROS") {
-  //   const macros = action.payload;
-  //   const campaignIndex = state.findIndex((u) => u.id === campaign.id);
-  //   if (campaignIndex !== -1) {
-  //     state[campaignIndex] = campaign;
-  //     return [...state];
-  //   } else {
-  //     return [campaign, ...state];
-  //   }
-  // }
+  if (action.type === "UPDATE_MACROS") {
+    const macros = action.payload;
+    const macrosIndex = state.findIndex((u) => u.id === macros.id);
+    if (macrosIndex !== -1) {
+      state[macrosIndex] = macros;
+      return [...state];
+    } else {
+      return [...state, macros];
+    }
+  }
 
   // if (action.type === "DELETE_CAMPAIGNS") {
   //   const campaignId = action.payload;
@@ -48,6 +49,7 @@ const Macros = () => {
   const [visualizeModal, setVisualizeModal] = useState(false);
   const [loading, setLoading] = useState(false);
   const [macros, dispatch] = useReducer(reducer, []);
+  const [selectedMacro, setSelectedMacro] = useState(null);
 
   useEffect(() => {
     (async () => {
@@ -68,11 +70,11 @@ const Macros = () => {
 
     socket.on("macros", (data) => {
       if (data.action === "update" || data.action === "create") {
-        dispatch({ type: "UPDATE_CAMPAIGNS", payload: data.macro });
+        dispatch({ type: "UPDATE_MACROS", payload: data.macro });
       }
 
       if (data.action === "delete") {
-        dispatch({ type: "DELETE_CAMPAIGNS", payload: data.campaignId });
+        dispatch({ type: "DELETE_MACROS", payload: data.macroId });
       }
     });
 
@@ -83,28 +85,29 @@ const Macros = () => {
 
   const handleOnCloseModal = () => {
     setModalOpen(false);
+    setSelectedMacro(null);
   };
 
   const handleCloseConfirmationModal = () => {
     setConfirmModalOpen(false);
   };
 
+  const handleEditMacro = (macro) => {
+    setVisualizeModal(false);
+    setSelectedMacro(macro);
+    setModalOpen(true);
+  };
+
   return (
     <MainContainer>
-      <ConfirmationModal
-        title="Adicionar Macros"
-        open={confirmModalOpen}
-        onClose={handleCloseConfirmationModal}
-      >
-        {i18n.t("campaigns.confirmationModal.archiveMessage")}
-      </ConfirmationModal>
       <MacroModal
         open={modalOpen}
         onClose={handleOnCloseModal}
         visualize={visualizeModal}
+        macroId={selectedMacro?.id}
       />
       <MainHeader>
-        <Title>Macros</Title>
+        <Title>{i18n.t("macros.title")}</Title>
         <MainHeaderButtonsWrapper>
           <Button
             variant="contained"
@@ -114,10 +117,15 @@ const Macros = () => {
               setModalOpen(true);
             }}
           >
-            Adicionar Macro
+            {i18n.t("macros.buttons.add")}
           </Button>
         </MainHeaderButtonsWrapper>
       </MainHeader>
+      <MacroTable
+        macros={macros}
+        loading={loading}
+        handleEditMacro={handleEditMacro}
+      />
     </MainContainer>
   );
 };
