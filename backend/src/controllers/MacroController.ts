@@ -8,6 +8,7 @@ import ListMacroService from "../services/MacroService/ListMacroService";
 import GetMacroByIdService from "../services/MacroService/GetMacroByIdService";
 import UpdateMacroService from "../services/MacroService/UpdateMacroService";
 import DeleteMacroService from "../services/MacroService/DeleteMacroService";
+import TestCampaignService from "../services/CampaignServices/TestCampaignService";
 
 type IndexQuery = {
   searchParam: string;
@@ -113,7 +114,6 @@ export const getMacroById = async (
   res: Response
 ): Promise<Response> => {
   const { macroId } = req.params;
-  console.log("macroId", macroId);
   try {
     const macro = await GetMacroByIdService({ macroId });
 
@@ -195,8 +195,6 @@ export const deleteMacro = async (req: Request, res: Response) => {
   try {
     await DeleteMacroService({ macroId });
 
-    const macros = await GetAllMacrosService();
-
     const io = getIO();
     io.emit("macros", {
       action: "delete",
@@ -207,4 +205,39 @@ export const deleteMacro = async (req: Request, res: Response) => {
   } catch (error) {
     throw new AppError(error.message);
   }
+};
+
+export const testMacro = async (req: Request, res: Response) => {
+  const { profile } = req.user;
+  if (profile !== "admin") {
+    throw new AppError("ERR_NO_PERMISSION", 403);
+  }
+
+  const schema = Yup.object().shape({
+    number: Yup.string().required(),
+    message: Yup.array().required(),
+    whatsappId: Yup.string().required()
+  });
+
+  const macroData: {
+    message: string[];
+    number: string;
+    whatsappId: string;
+  } = {
+    message: req.body.message ? JSON.parse(req.body.message) : [],
+    number: req.body.number,
+    whatsappId: req.body.whatsappId
+  };
+
+  const medias = req.files as Express.Multer.File[];
+
+  try {
+    await schema.validate(macroData);
+  } catch (error) {
+    throw new AppError(error.message);
+  }
+
+  await TestCampaignService({ campaignData: macroData, medias });
+
+  return res.status(200).json({ message: "message sent" });
 };
