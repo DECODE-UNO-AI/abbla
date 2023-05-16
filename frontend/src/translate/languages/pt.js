@@ -603,6 +603,7 @@ const messages = {
         },
         buttons: {
           add: "Adicionar Macro",
+          action: "Ações",
         },
       },
       queueSelect: {

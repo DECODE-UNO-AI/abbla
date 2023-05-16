@@ -587,6 +587,7 @@ const messages = {
         },
         buttons: {
           add: "Add Macro",
+          action: "Actions",
         },
       },
       queueSelect: {

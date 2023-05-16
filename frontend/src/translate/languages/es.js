@@ -591,6 +591,7 @@ const messages = {
         },
         buttons: {
           add: "Añadir Macro",
+          action: "Comportamiento",
         },
       },
       queueSelect: {
