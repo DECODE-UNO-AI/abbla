@@ -589,6 +589,21 @@ const messages = {
           add: "Add Macro",
           action: "Actions",
         },
+        modal: {
+          createMacroTitle: "Create new Macro",
+          updateMacroTitle: "Edit Macro",
+          form: {
+            messages: "Text Messages",
+            messagesPlaceholder: "Macro's name",
+            testMessage: "Test Message",
+            testNumberPlaceholder:
+              "Number with DDD (only digits, without punctuation)",
+            testButton: "Test",
+          },
+          preview: {
+            title: "Preview",
+          },
+        },
       },
       queueSelect: {
         inputLabel: "Sectors",

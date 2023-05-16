@@ -604,6 +604,22 @@ const messages = {
         buttons: {
           add: "Adicionar Macro",
           action: "Ações",
+          close: "Cancelar",
+        },
+        modal: {
+          createMacroTitle: "Criar novo Macro",
+          updateMacroTitle: "Editar Macro",
+          form: {
+            messages: "Texto das mensagens",
+            messagesPlaceholder: "Nome do Macro",
+            testMessage: "Testar Mensagem",
+            testNumberPlaceholder:
+              "Número com DDD (apenas dígitos, sem pontuação)",
+            testButton: "Testar",
+          },
+          preview: {
+            title: "Pré-visualização",
+          },
         },
       },
       queueSelect: {
