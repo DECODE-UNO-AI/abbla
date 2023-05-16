@@ -76,9 +76,9 @@ export const store = async (req: Request, res: Response) => {
     await newMacro.reload();
 
     const io = getIO();
-    io.emit("macro", {
+    io.emit("macros", {
       action: "create",
-      campaign: newMacro
+      macro: newMacro
     });
 
     return res.status(201).send();
