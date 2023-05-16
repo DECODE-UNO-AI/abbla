@@ -592,6 +592,9 @@ const messages = {
         buttons: {
           add: "Añadir Macro",
           action: "Comportamiento",
+          close: "Cancelar",
+          saveMacro: "Guardar Macro",
+          editMacro: "Editar Macro",
         },
         modal: {
           createMacroTitle: "Crear nueva Macro",

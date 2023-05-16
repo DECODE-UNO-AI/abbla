@@ -588,6 +588,9 @@ const messages = {
         buttons: {
           add: "Add Macro",
           action: "Actions",
+          close: "Cancel",
+          saveMacro: "Save Macro",
+          editMacro: "Edit Macro",
         },
         modal: {
           createMacroTitle: "Create new Macro",

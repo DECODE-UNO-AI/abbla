@@ -605,6 +605,8 @@ const messages = {
           add: "Adicionar Macro",
           action: "Ações",
           close: "Cancelar",
+          saveMacro: "Salvar Macro",
+          editMacro: "Editar Macro",
         },
         modal: {
           createMacroTitle: "Criar novo Macro",
