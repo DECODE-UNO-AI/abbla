@@ -11,6 +11,8 @@ import {
   TextField,
   Typography,
   Box,
+  Select,
+  MenuItem,
 } from "@material-ui/core";
 
 import NearMeIcon from "@material-ui/icons/NearMe";
@@ -21,6 +23,7 @@ import WhatsAppLayout from "../WhatsappLayout";
 import { toast } from "react-toastify";
 import api from "../../services/api";
 import toastError from "../../errors/toastError";
+import useWhatsApps from "../../hooks/useWhatsApps";
 
 const useStyles = makeStyles((theme) => ({
   slider: {
@@ -137,7 +140,8 @@ const MacroModal = ({ open, onClose, visualize, macroId }) => {
     columnName: "",
     message1: [],
   };
-
+  const { whatsApps } = useWhatsApps();
+  const [whatsappsApis, setWhatsappsApis] = useState([]);
   const [macroForm, setMacroForm] = useState(initialState);
   const [submittingForm, setSubmittingForm] = useState(false);
   const [tabValue, setTabValue] = useState(0);
@@ -192,6 +196,18 @@ const MacroModal = ({ open, onClose, visualize, macroId }) => {
     };
   }, [macroId]);
 
+  useEffect(() => {
+    (async () => {
+      try {
+        const response = await api.get("/whatsappapi");
+        const wtsapps = response.data.whatsapps;
+        setWhatsappsApis(wtsapps);
+      } catch (err) {
+        toastError(err);
+      }
+    })();
+  }, []);
+
   const handleOnModalClose = () => {
     setMacroForm(initialState);
     setInputsOrder([]);
@@ -205,7 +221,7 @@ const MacroModal = ({ open, onClose, visualize, macroId }) => {
     const messages = allMessagesInputs[`message${tabValue + 1}Inputs`];
     let medias = [];
     if (!whatsappId || !messages || !testNumber || messages.length < 1) {
-      toast.error(`${i18n.t("campaigns.notifications.campaignTestFailed")}`);
+      toast.error(`${i18n.t("macros.notifications.macroTestFailed")}`);
       setSubmittingForm(false);
       return;
     }
@@ -237,14 +253,13 @@ const MacroModal = ({ open, onClose, visualize, macroId }) => {
     });
 
     try {
-      await api.post(`/campaigns/test`, formData, {
-        // preciso editar isso <--
+      await api.post(`/macros/test`, formData, {
         headers: {
           "Content-Type": "multipart/form-data",
           Accept: "application/json",
         },
       });
-      toast.success(`${i18n.t("campaigns.notifications.campaignTested")}`);
+      toast.success(`${i18n.t("macros.notifications.macroTested")}`);
       setSubmittingForm(false);
     } catch (err) {
       setSubmittingForm(false);
@@ -378,6 +393,40 @@ const MacroModal = ({ open, onClose, visualize, macroId }) => {
                       }}
                     />
                   </Box>
+                  <Box style={{ width: "100%" }}>
+                    <Typography variant="h6">
+                      {i18n.t("campaignModal.form.whatsappId")}
+                    </Typography>
+                    <Field
+                      as={Select}
+                      name="whatsappId"
+                      id="whatsappId"
+                      disabled={visualize}
+                      error={touched.whatsappId && Boolean(errors.whatsappId)}
+                      helperText={touched.whatsappId && errors.whatsappId}
+                      variant="outlined"
+                      margin="dense"
+                      style={{
+                        width: "100%",
+                        paddingRight: 10,
+                        paddingBottom: 10,
+                      }}
+                    >
+                      {whatsApps?.map((whatsapp) => (
+                        <MenuItem key={whatsapp.id} value={`${whatsapp.id}`}>
+                          {whatsapp.name}
+                        </MenuItem>
+                      ))}
+                      {whatsappsApis.map((whatsapp) => (
+                        <MenuItem
+                          key={whatsapp.id}
+                          value={`api-${whatsapp.id}`}
+                        >
+                          {whatsapp?.name}
+                        </MenuItem>
+                      ))}
+                    </Field>
+                  </Box>
                   <Box sx={{ width: "100%" }} className={classes.box}>
                     <Typography variant="h6">
                       {i18n.t("macros.modal.form.messages")}
@@ -440,7 +489,7 @@ const MacroModal = ({ open, onClose, visualize, macroId }) => {
                     <TextField
                       className={classes.inputTest}
                       placeholder={i18n.t(
-                        "macro.modal.form.testNumberPlaceholder"
+                        "macros.modal.form.testNumberPlaceholder"
                       )}
                       inputProps={{ "aria-label": "message test" }}
                       variant="outlined"
