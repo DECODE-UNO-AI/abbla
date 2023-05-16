@@ -29,14 +29,14 @@ const reducer = (state, action) => {
     }
   }
 
-  // if (action.type === "DELETE_CAMPAIGNS") {
-  //   const campaignId = action.payload;
-  //   const campaignIndex = state.findIndex((q) => q.id === +campaignId);
-  //   if (campaignIndex !== -1) {
-  //     state.splice(campaignIndex, 1);
-  //   }
-  //   return [...state];
-  // }
+  if (action.type === "DELETE_MACRO") {
+    const macroId = action.payload;
+    const macroIndex = state.findIndex((q) => q.id === +macroId);
+    if (macroIndex !== -1) {
+      state.splice(macroIndex, 1);
+    }
+    return [...state];
+  }
 
   // if (action.type === "RESET") {
   //   return [];
@@ -74,7 +74,7 @@ const Macros = () => {
       }
 
       if (data.action === "delete") {
-        dispatch({ type: "DELETE_MACROS", payload: data.macroId });
+        dispatch({ type: "DELETE_MACRO", payload: data.macroId });
       }
     });
 
@@ -96,6 +96,18 @@ const Macros = () => {
     setVisualizeModal(false);
     setSelectedMacro(macro);
     setModalOpen(true);
+  };
+
+  const handleDeleteMacro = async (macroId) => {
+    setLoading(true);
+    try {
+      await api.delete(`/macros/${macroId}`);
+
+      setLoading(false);
+    } catch (error) {
+      setLoading(false);
+      toastError(error);
+    }
   };
 
   return (
@@ -125,6 +137,7 @@ const Macros = () => {
         macros={macros}
         loading={loading}
         handleEditMacro={handleEditMacro}
+        handleDeleteMacro={handleDeleteMacro}
       />
     </MainContainer>
   );
