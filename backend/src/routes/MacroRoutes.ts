@@ -27,4 +27,6 @@ macroRoutes.put(
   MacroController.update
 );
 
+macroRoutes.delete("/macros/:macroId", isAuth, MacroController.deleteMacro);
+
 export default macroRoutes;
