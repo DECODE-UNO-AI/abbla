@@ -50,7 +50,7 @@ const sendMessage = async (
   try {
     await whatsapp.sendMessage(
       whatsNumber._serialized,
-      "------------------------------------------------------- \n MENSAGEM DE TESTE \n ABBLA - CAMPANHA \n -------------------------------------------------------"
+      "------------------------------------------------------- \n MENSAGEM DE TESTE \n ABBLA \n -------------------------------------------------------"
     );
   } catch {
     throw new AppError("INTERNAL_ERROR", 500);
@@ -65,10 +65,23 @@ const sendMessage = async (
             file => file.originalname === currentMessage.replace("file-", "")
           );
           if (media) {
-            messageMedia = new MessageMedia(
-              media.mimetype,
-              media.buffer.toString("base64")
-            );
+            if (media?.buffer) {
+              messageMedia = new MessageMedia(
+                media?.mimetype,
+                media.buffer.toString("base64")
+              );
+            } else {
+              messageMedia = MessageMedia.fromFilePath(
+                join(
+                  __dirname,
+                  "..",
+                  "..",
+                  "..",
+                  "public",
+                  media?.filename?.replace("file-", "")
+                )
+              );
+            }
           } else {
             messageMedia = MessageMedia.fromFilePath(
               join(
@@ -133,7 +146,7 @@ const sendApiMessage = async (
         jid: number,
         type: "number",
         message: {
-          text: "------------------------------------------------------- \n MENSAGEM DE TESTE \n ABBLA - CAMPANHA \n -------------------------------------------------------"
+          text: "------------------------------------------------------- \n MENSAGEM DE TESTE \n ABBLA \n -------------------------------------------------------"
         },
         options: {}
       }
