@@ -5,6 +5,8 @@ import { getIO } from "../libs/socket";
 import CreateMacroService from "../services/MacroService/CreateMacroService";
 import GetAllMacrosService from "../services/MacroService/GetAllMacrosService";
 import ListMacroService from "../services/MacroService/ListMacroService";
+import GetMacroByIdService from "../services/MacroService/GetMacroByIdService";
+import UpdateMacroService from "../services/MacroService/UpdateMacroService";
 
 type IndexQuery = {
   searchParam: string;
@@ -14,6 +16,11 @@ interface MacroData {
   name: string;
   message1: string[];
   userId: string;
+  id?: string;
+  shortcut?: string;
+  createdAt?: string;
+  updatedAt?: string;
+  whatsappId?: string;
 }
 
 export const index = async (req: Request, res: Response): Promise<Response> => {
@@ -95,6 +102,82 @@ export const getAllMacros = async (
     const macros = await GetAllMacrosService();
 
     return res.status(200).json(macros);
+  } catch (error) {
+    throw new AppError(error.message);
+  }
+};
+
+export const getMacroById = async (
+  req: Request,
+  res: Response
+): Promise<Response> => {
+  const { macroId } = req.params;
+  console.log("macroId", macroId);
+  try {
+    const macro = await GetMacroByIdService({ macroId });
+
+    return res.status(200).json({ macro });
+  } catch (error) {
+    throw new AppError(error.message);
+  }
+};
+
+export const update = async (req: Request, res: Response) => {
+  const { macroId } = req.params;
+  const { id, profile } = req.user;
+
+  const medias = req.files as Express.Multer.File[];
+  if (profile !== "admin") {
+    throw new AppError("ERR_NO_PERMISSION", 403);
+  }
+
+  let macro: MacroData = {
+    ...req.body,
+    message1: req.body.message1 ? JSON.parse(req.body.message1) : [],
+    userId: id
+  };
+
+  if (!macro.message1 || macro.message1.length < 1) {
+    throw new AppError("INVALID_MESSAGES");
+  }
+
+  medias.forEach(file => {
+    if (file.mimetype === "text/csv") return;
+    const message1 = macro.message1?.map((str: string) => {
+      if (file.filename.includes(str.replace("file-", ""))) {
+        return `file-${file.filename}`;
+      }
+      return str;
+    });
+
+    macro = {
+      ...macro,
+      message1
+    };
+  });
+
+  const schema = Yup.object().shape({
+    name: Yup.string().required(),
+    message1: Yup.array(),
+    userId: Yup.string().required()
+  });
+
+  try {
+    await schema.validate(macro);
+  } catch (error) {
+    throw new AppError(error.message);
+  }
+
+  try {
+    const newMacro = await UpdateMacroService({ macroId, macroData: macro });
+
+    const io = getIO();
+    io.emit("macros", {
+      action: "update",
+      macro: newMacro
+    });
+
+    return res.status(201).send();
   } catch (error) {
     throw new AppError(error.message);
   }
