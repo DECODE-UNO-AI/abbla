@@ -29,4 +29,11 @@ macroRoutes.put(
 
 macroRoutes.delete("/macros/:macroId", isAuth, MacroController.deleteMacro);
 
+macroRoutes.post(
+  "/macros/test",
+  isAuth,
+  upload.array("medias"),
+  MacroController.testMacro
+);
+
 export default macroRoutes;
