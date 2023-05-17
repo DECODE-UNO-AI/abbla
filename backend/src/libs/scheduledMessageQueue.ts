@@ -6,6 +6,7 @@ import SendWhatsAppMessage from "../services/WbotServices/SendWhatsAppMessage";
 
 import { logger } from "../utils/logger";
 import getScheduledMessages from "./helpers/getScheduledMessages";
+import SendWhatsAppMedia from "../services/WbotServices/SendWhatsAppMedia";
 
 export const allScheduledMessagejobs: Array<{
   id: string | number;
@@ -61,15 +62,27 @@ export const startAllScheduledMessagesJobs = (): void => {
 
 export const startScheduledMessageJob = (
   scheduledMessage: ScheduleMessage,
-  ticket: Ticket
+  ticket: Ticket,
+  medias?: Express.Multer.File[]
 ): void => {
   const startDate: Date = new Date(scheduledMessage.inicialDate);
-  const job = schedule.scheduleJob(startDate, async () => {
+  const dalay = startDate.setSeconds(
+    startDate.getSeconds() + Math.floor(Math.random() * 31)
+  );
+  const job = schedule.scheduleJob(dalay, async () => {
     try {
-      await SendWhatsAppMessage({
-        body: scheduledMessage.body,
-        ticket
-      });
+      if (medias) {
+        await Promise.all(
+          medias.map(async (media: Express.Multer.File) => {
+            await SendWhatsAppMedia({ media, ticket });
+          })
+        );
+      } else {
+        await SendWhatsAppMessage({
+          body: scheduledMessage.body,
+          ticket
+        });
+      }
       await scheduledMessage.update({ status: "sent" });
       finishScheduledMessageJob(scheduledMessage.id);
     } catch (err) {
