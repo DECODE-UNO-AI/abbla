@@ -60,6 +60,20 @@ export const startAllScheduledMessagesJobs = (): void => {
   });
 };
 
+let previousNumber = -1;
+
+const generatePreviousMajorNumber = () => {
+  let actualNumber;
+
+  do {
+    actualNumber = Math.floor(Math.random() * 31);
+  } while (actualNumber <= previousNumber);
+
+  previousNumber = actualNumber;
+
+  return actualNumber;
+};
+
 export const startScheduledMessageJob = (
   scheduledMessage: ScheduleMessage,
   ticket: Ticket,
@@ -67,7 +81,7 @@ export const startScheduledMessageJob = (
 ): void => {
   const startDate: Date = new Date(scheduledMessage.inicialDate);
   const dalay = startDate.setSeconds(
-    startDate.getSeconds() + Math.floor(Math.random() * 31)
+    startDate.getSeconds() + generatePreviousMajorNumber()
   );
   const job = schedule.scheduleJob(dalay, async () => {
     try {
