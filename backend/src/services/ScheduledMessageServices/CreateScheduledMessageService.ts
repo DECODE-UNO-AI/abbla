@@ -9,6 +9,7 @@ interface MessageData {
   contactId: number;
   ticketId: number;
   userId: number;
+  medias?: Express.Multer.File[];
 }
 
 const CreateSheduledMessageService = async ({
@@ -16,7 +17,8 @@ const CreateSheduledMessageService = async ({
   inicialDate,
   contactId,
   ticketId,
-  userId
+  userId,
+  medias
 }: MessageData): Promise<ScheduledMessage> => {
   try {
     const newScheduledMessage = await ScheduledMessage.create({
@@ -31,10 +33,10 @@ const CreateSheduledMessageService = async ({
       await newScheduledMessage.update({ status: "failed" });
       throw new Error("ERR_CREATING_MESSAGE");
     }
-    startScheduledMessageJob(newScheduledMessage, ticket);
+    startScheduledMessageJob(newScheduledMessage, ticket, medias);
     return newScheduledMessage;
   } catch (err) {
-    logger.error(err)
+    logger.error(err);
     throw new Error("ERR_CREATING_MESSAGE");
   }
 };
