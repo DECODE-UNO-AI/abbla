@@ -234,34 +234,13 @@ const MainListItems = (props) => {
             ) : null}
 
             {process.env.REACT_APP_MACRO_FUNCTION === "true" ? (
-              <Accordion
-                style={{ boxShadow: "none", width: "100%", margin: 0 }}
-              >
-                <AccordionSummary
-                  aria-controls="panel1a-content"
-                  id="panel1a-header"
-                  style={{ transition: "none", padding: 0, display: "block" }}
-                >
-                  <li className={classes.li}>
-                    <ListItem>
-                      <ListItemIcon className={classes.icon}>
-                        <LoopOutlined />
-                      </ListItemIcon>
-                      <ListItemText primary={"Macros"} />
-                    </ListItem>
-                  </li>
-                </AccordionSummary>
-
-                <AccordionDetails style={{ padding: 0 }}>
-                  <div onClick={drawerClose}>
-                    <ListItemLink
-                      to="/macros"
-                      primary="Lista macros"
-                      icon={<ListAlt />}
-                    />
-                  </div>
-                </AccordionDetails>
-              </Accordion>
+              <div onClick={drawerClose}>
+                <ListItemLink
+                  to="/macros"
+                  primary="Macros"
+                  icon={<LoopOutlined />}
+                />
+              </div>
             ) : null}
 
             <div onClick={drawerClose}>
