@@ -303,12 +303,6 @@ const MessageInput = ({ ticketStatus, ticket }) => {
     // eslint-disable-next-line
   }, [onDragEnter === true]);
 
-  useEffect(() => {
-    if (chosedMacroMessages.length > 0) {
-      handleSendMacroMessage();
-    }
-  }, [chosedMacroMessages]);
-
   const handleChangeInput = (e) => {
     setInputMessage(e.target.value);
     handleLoadQuickAnswer(e.target.value);
@@ -324,6 +318,7 @@ const MessageInput = ({ ticketStatus, ticket }) => {
     const messages = macros.find((macro) => macro.id === value).message1;
 
     setChosedMacroMessages(messages);
+    setScheduledModalOpen(true);
     setTypeBackslash(false);
   };
 
@@ -412,14 +407,12 @@ const MessageInput = ({ ticketStatus, ticket }) => {
     chosedMacroMessages.forEach((message) => {
       if (!message.startsWith("file-")) {
         const messageObj = {
-          read: 1,
-          isComment: false,
-          fromMe: true,
-          mediaUrl: "",
           body: signMessage
             ? `*${user?.name}:*\n${message.trim()}`
             : message.trim(),
-          quotedMsg: replyingMessage,
+          inicialDate: scheduleDate,
+          contactId: ticket.contact.id,
+          ticketId: +ticketId,
         };
 
         messagesToSend.push(messageObj);
@@ -433,7 +426,9 @@ const MessageInput = ({ ticketStatus, ticket }) => {
 
         const formData = new FormData();
 
-        formData.append("fromMe", true);
+        formData.append("inicialDate", scheduleDate);
+        formData.append("contactId", ticket.contact.id);
+        formData.append("ticketId", +ticketId);
         formData.append("medias", file);
         formData.append("body", name);
 
@@ -443,7 +438,9 @@ const MessageInput = ({ ticketStatus, ticket }) => {
 
     for await (const message of messagesToSend) {
       try {
-        await api.post(`/messages/${ticketId}`, message);
+        await api.post(`/scheduleMessage/`, message);
+        setScheduledModalOpen(false);
+        toast.success("Mensagem agendada.");
       } catch (err) {
         toastError(err);
       }
@@ -457,6 +454,11 @@ const MessageInput = ({ ticketStatus, ticket }) => {
 
   const handleSheduleMessage = async () => {
     if (inputMessage.trim() === "" || !scheduleDate) return;
+
+    if (inputMessage.startsWith("\\")) {
+      return handleSendMacroMessage();
+    }
+
     setLoading(true);
 
     if (new Date(scheduleDate) < new Date()) {
