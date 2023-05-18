@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback, useRef } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { useParams, useHistory } from "react-router-dom";
 
 import { toast } from "react-toastify";
@@ -85,25 +85,19 @@ const Ticket = () => {
   const [loading, setLoading] = useState(true);
   const [contact, setContact] = useState({});
   const [ticket, setTicket] = useState({});
-  const currentContactId = useRef(contact?.id);
 
   const fetchTicket = useCallback(async () => {
     setLoading(true);
     try {
       const { data } = await api.get("/tickets/" + ticketId);
       setContact(data.contact);
-      currentContactId.current = data.contact.id;
       setTicket(data);
     } catch (err) {
       toastError(err);
-    }
-  }, [ticketId]);
-
-  useEffect(() => {
-    if (currentContactId.current === contact?.id) {
+    } finally {
       setLoading(false);
     }
-  }, [currentContactId.current]);
+  }, [ticketId]);
 
   useEffect(() => {
     const delayDebounceFn = setTimeout(() => {
@@ -181,7 +175,7 @@ const Ticket = () => {
             <MessagesList contactId={null} ticketId={null} isGroup={null} />
           ) : (
             <MessagesList
-              contactId={currentContactId.current}
+              contactId={contact.id}
               ticketId={ticketId}
               isGroup={ticket.isGroup}
             />

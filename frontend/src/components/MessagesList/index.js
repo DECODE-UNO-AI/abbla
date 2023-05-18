@@ -406,13 +406,15 @@ const MessagesList = ({ contactId, ticketId, isGroup }) => {
   const [anchorEl, setAnchorEl] = useState(null);
   const messageOptionsMenuOpen = Boolean(anchorEl);
   const currentTicketId = useRef(ticketId);
+  const currentContactId = useRef(contactId);
 
   useMemo(() => {
     dispatch({ type: "RESET" });
     setPageNumber(1);
 
     currentTicketId.current = ticketId;
-  }, [ticketId]);
+    currentContactId.current = contactId;
+  }, [ticketId, contactId]);
 
   const fetchMessages = useCallback(async () => {
     try {
@@ -441,6 +443,10 @@ const MessagesList = ({ contactId, ticketId, isGroup }) => {
   useEffect(() => {
     setLoading(true);
     if (ticketId === null || isGroup === null || contactId === null) {
+      return;
+    }
+
+    if (currentContactId.current !== contactId) {
       return;
     }
 
