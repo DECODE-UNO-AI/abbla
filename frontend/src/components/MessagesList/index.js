@@ -1,4 +1,11 @@
-import React, { useState, useEffect, useReducer, useRef } from "react";
+import React, {
+  useState,
+  useEffect,
+  useReducer,
+  useRef,
+  useCallback,
+  useMemo,
+} from "react";
 
 import { isSameDay, parseISO, format } from "date-fns";
 import openSocket from "../../services/socket-io";
@@ -58,12 +65,6 @@ const useStyles = makeStyles((theme) => ({
       paddingBottom: "90px",
     },
     ...theme.scrollbarStyles,
-  },
-
-  auxWrapper: {
-    display: "flex",
-    flexDirection: "column",
-    flexGrow: 1,
   },
 
   circleLoading: {
@@ -397,8 +398,6 @@ const MessagesList = ({ contactId, ticketId, isGroup }) => {
   const classes = useStyles();
   const [messagesList, dispatch] = useReducer(reducer, []);
   const [pageNumber, setPageNumber] = useState(1);
-  const [toggleVisibility, setToggleVisibility] = useState("hidden");
-  const [delayToVisible, setDelayToVisible] = useState(4500);
   const [hasMore, setHasMore] = useState(false);
   const [loading, setLoading] = useState(false);
   const lastMessageRef = useRef();
@@ -408,58 +407,51 @@ const MessagesList = ({ contactId, ticketId, isGroup }) => {
   const messageOptionsMenuOpen = Boolean(anchorEl);
   const currentTicketId = useRef(ticketId);
 
-  useEffect(() => {
+  useMemo(() => {
     dispatch({ type: "RESET" });
     setPageNumber(1);
 
     currentTicketId.current = ticketId;
   }, [ticketId]);
 
+  const fetchMessages = useCallback(async () => {
+    try {
+      const { data } = await api.get("/messages/" + ticketId, {
+        params: { pageNumber, contactId },
+      });
+
+      if (currentTicketId.current === ticketId) {
+        dispatch({
+          type: "LOAD_MESSAGES",
+          payload: { messages: data.messages, contactId },
+        });
+        setHasMore(data.hasMore);
+      }
+
+      if (pageNumber === 1 && data.messages.length > 1) {
+        scrollToBottom();
+      }
+    } catch (err) {
+      toastError(err);
+    } finally {
+      setLoading(false);
+    }
+  }, [ticketId, pageNumber, contactId]);
+
   useEffect(() => {
-    let visibleTimeout;
     setLoading(true);
-    if (messagesList.length <= 0) setToggleVisibility("hidden");
+    if (ticketId === null || isGroup === null || contactId === null) {
+      return;
+    }
+
     const delayDebounceFn = setTimeout(() => {
-      const fetchMessages = async () => {
-        try {
-          const { data } = await api.get("/messages/" + ticketId, {
-            params: { pageNumber, contactId },
-          });
-
-          if (currentTicketId.current === ticketId) {
-            dispatch({
-              type: "LOAD_MESSAGES",
-              payload: { messages: data.messages, contactId },
-            });
-            setHasMore(data.hasMore);
-          }
-
-          if (pageNumber === 1 && data.messages.length > 1) {
-            scrollToBottom();
-          }
-        } catch (err) {
-          toastError(err);
-        } finally {
-          if (delayToVisible !== 0) {
-            visibleTimeout = setTimeout(() => {
-              setToggleVisibility("visible");
-              setLoading(false);
-            }, delayToVisible);
-            delayToVisible === 4000 && setDelayToVisible(0);
-            return;
-          }
-
-          if (messagesList.length > 0) setToggleVisibility("visible");
-          setLoading(false);
-        }
-      };
       fetchMessages();
     }, 500);
+
     return () => {
       clearTimeout(delayDebounceFn);
-      clearTimeout(visibleTimeout);
     };
-  }, [pageNumber, ticketId, contactId]);
+  }, [ticketId, isGroup, contactId, pageNumber]);
 
   useEffect(() => {
     const socket = openSocket();
@@ -919,12 +911,7 @@ const MessagesList = ({ contactId, ticketId, isGroup }) => {
         className={classes.messagesList}
         onScroll={handleScroll}
       >
-        <div
-          className={classes.auxWrapper}
-          style={{ visibility: `${toggleVisibility}` }}
-        >
-          {messagesList.length > 0 ? renderMessages() : []}
-        </div>
+        {messagesList.length > 0 ? renderMessages() : []}
       </div>
       {loading ? (
         <div>
