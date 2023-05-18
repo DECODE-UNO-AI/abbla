@@ -330,10 +330,18 @@ const reducer = (state, action) => {
     }
 
     return [...newMessages, ...state]
-      .filter(
-        (message) =>
-          message.contactId === action.payload.contactId || message.fromMe
-      )
+      .filter((message) => {
+        if (message.contactId !== action.payload.contactId && !message.fromMe)
+          return;
+
+        if (message.contactId === action.payload.contactId) {
+          return message;
+        }
+
+        if (message.fromMe) {
+          return message;
+        }
+      })
       .sort(function (a, b) {
         return new Date(a.createdAt) - new Date(b.createdAt);
       });
@@ -733,6 +741,8 @@ const MessagesList = ({ contactId, ticketId, isGroup }) => {
       </div>
     );
   };
+
+  console.log("messagesList", messagesList);
 
   const renderMessages = () => {
     if (messagesList.length > 0) {
