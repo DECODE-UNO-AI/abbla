@@ -11,12 +11,12 @@ const getContactMessages = async ({
   contactId,
   isGroup,
   pageNumber = "1"
-}: Request) => {
+}: Request): Promise<{ messages: Message[]; hasMore: boolean }> => {
   if (contactId) {
     const limit = 20;
     const offset = limit * (+pageNumber - 1);
 
-    const messages = await Message.findAll({
+    const { count, rows: messages } = await Message.findAndCountAll({
       where: { contactId },
       limit,
       include: [
@@ -38,10 +38,18 @@ const getContactMessages = async ({
       order: [["createdAt", "DESC"]]
     });
 
-    return messages.reverse();
+    const hasMore = count > offset + messages.length;
+
+    return {
+      messages: messages.reverse(),
+      hasMore
+    };
   }
 
-  return [];
+  return {
+    messages: [],
+    hasMore: false
+  };
 };
 
 export default getContactMessages;
