@@ -85,7 +85,6 @@ const Ticket = () => {
   const [loading, setLoading] = useState(true);
   const [contact, setContact] = useState({});
   const [ticket, setTicket] = useState({});
-  const [firstRender, setFirstRender] = useState(true);
 
   const fetchTicket = useCallback(async () => {
     setLoading(true);
@@ -97,7 +96,6 @@ const Ticket = () => {
       toastError(err);
     } finally {
       setLoading(false);
-      setTimeout(() => setFirstRender(false), 1500);
     }
   }, [ticketId]);
 
@@ -108,7 +106,6 @@ const Ticket = () => {
 
     return () => {
       clearTimeout(delayDebounceFn);
-      setFirstRender(true);
     };
   }, [ticketId, history]);
 
@@ -174,7 +171,7 @@ const Ticket = () => {
           </div>
         </TicketHeader>
         <ReplyMessageProvider>
-          {loading || firstRender ? (
+          {loading ? (
             <MessagesList contactId={null} ticketId={null} isGroup={null} />
           ) : (
             <MessagesList

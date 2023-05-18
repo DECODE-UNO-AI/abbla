@@ -29,7 +29,8 @@ const getContactMessages = async ({
         {
           model: Ticket,
           where: {
-            isGroup: isGroup ? 1 : 0
+            isGroup: isGroup ? 1 : 0,
+            contactId
           },
           required: true
         }
