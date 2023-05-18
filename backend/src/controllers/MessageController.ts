@@ -35,10 +35,13 @@ export const index = async (req: Request, res: Response): Promise<Response> => {
     ticketId
   });
 
-  const allContactMessages = await getContactMessages({
-    contactId,
-    isGroup: ticket.isGroup
-  });
+  const { messages: allContactMessages, hasMore: hasMoreContactMessages } =
+    await getContactMessages({
+      contactId,
+      isGroup: ticket.isGroup
+    });
+
+  const auxHasMore = hasMore || hasMoreContactMessages;
 
   const allMessages = [...allContactMessages, ...messages];
 
@@ -50,7 +53,12 @@ export const index = async (req: Request, res: Response): Promise<Response> => {
   const option = listSettingsService?.dataValues.value;
   if (option === "disabled") await SetTicketMessagesAsRead(ticket);
 
-  return res.json({ count, messages: allMessages, ticket, hasMore });
+  return res.json({
+    count,
+    messages: allMessages,
+    ticket,
+    hasMore: auxHasMore
+  });
 };
 
 export const store = async (req: Request, res: Response): Promise<Response> => {
