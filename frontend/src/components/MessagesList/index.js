@@ -742,8 +742,6 @@ const MessagesList = ({ contactId, ticketId, isGroup }) => {
     );
   };
 
-  console.log("messagesList", messagesList);
-
   const renderMessages = () => {
     if (messagesList.length > 0) {
       const viewMessagesList = messagesList.map((message, index) => {
