@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo, useCallback } from "react";
 import { useParams, useHistory } from "react-router-dom";
 
 import { toast } from "react-toastify";
@@ -86,22 +86,24 @@ const Ticket = () => {
   const [contact, setContact] = useState({});
   const [ticket, setTicket] = useState({});
 
-  useEffect(() => {
+  const fetchTicket = useCallback(async () => {
     setLoading(true);
+    try {
+      const { data } = await api.get("/tickets/" + ticketId);
+      setContact(data.contact);
+      setTicket(data);
+    } catch (err) {
+      toastError(err);
+    } finally {
+      setLoading(false);
+    }
+  }, [ticketId]);
+
+  useEffect(() => {
     const delayDebounceFn = setTimeout(() => {
-      const fetchTicket = async () => {
-        try {
-          const { data } = await api.get("/tickets/" + ticketId);
-          setContact(data.contact);
-          setTicket(data);
-          setLoading(false);
-        } catch (err) {
-          setLoading(false);
-          toastError(err);
-        }
-      };
       fetchTicket();
     }, 500);
+
     return () => clearTimeout(delayDebounceFn);
   }, [ticketId, history]);
 
@@ -167,11 +169,15 @@ const Ticket = () => {
           </div>
         </TicketHeader>
         <ReplyMessageProvider>
-          <MessagesList
-            contactId={contact.id}
-            ticketId={ticketId}
-            isGroup={ticket.isGroup}
-          ></MessagesList>
+          {loading ? (
+            <MessagesList contactId={null} ticketId={null} isGroup={null} />
+          ) : (
+            <MessagesList
+              contactId={contact.id}
+              ticketId={ticketId}
+              isGroup={ticket.isGroup}
+            />
+          )}
           <MessageInput ticketStatus={ticket.status} ticket={ticket} />
         </ReplyMessageProvider>
       </Paper>
