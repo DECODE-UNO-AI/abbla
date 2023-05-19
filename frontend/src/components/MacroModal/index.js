@@ -98,9 +98,8 @@ const useStyles = makeStyles((theme) => ({
     gap: 2,
   },
   testContainer: {
-    margin: "0 auto 10px auto",
+    margin: "20px auto 10px auto",
     width: "90%",
-    marginTop: 20,
   },
   numberTestContainer: {
     width: "100%",
@@ -393,40 +392,6 @@ const MacroModal = ({ open, onClose, visualize, macroId }) => {
                       }}
                     />
                   </Box>
-                  <Box style={{ width: "100%" }}>
-                    <Typography variant="h6">
-                      {i18n.t("campaignModal.form.whatsappId")}
-                    </Typography>
-                    <Field
-                      as={Select}
-                      name="whatsappId"
-                      id="whatsappId"
-                      disabled={visualize}
-                      error={touched.whatsappId && Boolean(errors.whatsappId)}
-                      helperText={touched.whatsappId && errors.whatsappId}
-                      variant="outlined"
-                      margin="dense"
-                      style={{
-                        width: "100%",
-                        paddingRight: 10,
-                        paddingBottom: 10,
-                      }}
-                    >
-                      {whatsApps?.map((whatsapp) => (
-                        <MenuItem key={whatsapp.id} value={`${whatsapp.id}`}>
-                          {whatsapp.name}
-                        </MenuItem>
-                      ))}
-                      {whatsappsApis.map((whatsapp) => (
-                        <MenuItem
-                          key={whatsapp.id}
-                          value={`api-${whatsapp.id}`}
-                        >
-                          {whatsapp?.name}
-                        </MenuItem>
-                      ))}
-                    </Field>
-                  </Box>
                   <Box sx={{ width: "100%" }} className={classes.box}>
                     <Typography variant="h6">
                       {i18n.t("macros.modal.form.messages")}
@@ -482,6 +447,37 @@ const MacroModal = ({ open, onClose, visualize, macroId }) => {
                     </Button>
                   </DialogActions>
                 </Dialog>
+                <Box style={{ width: "90%", margin: "20px auto 10px auto" }}>
+                  <Typography variant="h6">
+                    {i18n.t("campaignModal.form.whatsappId")}
+                  </Typography>
+                  <Field
+                    as={Select}
+                    name="whatsappId"
+                    id="whatsappId"
+                    disabled={visualize}
+                    error={touched.whatsappId && Boolean(errors.whatsappId)}
+                    helperText={touched.whatsappId && errors.whatsappId}
+                    variant="outlined"
+                    margin="dense"
+                    style={{
+                      width: "100%",
+                      paddingRight: 10,
+                      paddingBottom: 10,
+                    }}
+                  >
+                    {whatsApps?.map((whatsapp) => (
+                      <MenuItem key={whatsapp.id} value={`${whatsapp.id}`}>
+                        {whatsapp.name}
+                      </MenuItem>
+                    ))}
+                    {whatsappsApis.map((whatsapp) => (
+                      <MenuItem key={whatsapp.id} value={`api-${whatsapp.id}`}>
+                        {whatsapp?.name}
+                      </MenuItem>
+                    ))}
+                  </Field>
+                </Box>
                 <Box className={classes.testContainer}>
                   <Typography variant="h6">
                     {i18n.t("macros.modal.form.testMessage")}
