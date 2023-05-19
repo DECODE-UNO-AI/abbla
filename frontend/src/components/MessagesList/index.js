@@ -323,7 +323,7 @@ const reducer = (state, action) => {
 
     if (messages[0]?.ticket?.isGroup) {
       return [...newMessages, ...state]
-        .filter((message) => message?.ticket?.isGroup || message.fromMe)
+        .filter((message) => message?.ticket?.isGroup)
         .sort(function (a, b) {
           return new Date(a.createdAt) - new Date(b.createdAt);
         });
