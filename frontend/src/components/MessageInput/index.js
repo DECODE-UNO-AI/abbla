@@ -275,6 +275,7 @@ const MessageInput = ({ ticketStatus, ticket }) => {
   const [scheduleDate, setScheduledDate] = useState("");
   const [anchorEl, setAnchorEl] = useState(null);
   const [openSendMenu, setOpenSendMenu] = useState(false);
+  const [adicionalSeconds, setAdicionalSeconds] = useState(3);
   const anchorRef = useRef(null);
   const { setReplyingMessage, replyingMessage } =
     useContext(ReplyMessageContext);
@@ -402,7 +403,7 @@ const MessageInput = ({ ticketStatus, ticket }) => {
 
   const handleSendMacroMessage = async () => {
     setLoading(true);
-
+    let parsedDate = new Date(scheduleDate);
     let messagesToSend = [];
     chosedMacroMessages.forEach((message) => {
       if (!message.startsWith("file-")) {
@@ -410,11 +411,14 @@ const MessageInput = ({ ticketStatus, ticket }) => {
           body: signMessage
             ? `*${user?.name}:*\n${message.trim()}`
             : message.trim(),
-          inicialDate: scheduleDate,
+          inicialDate: parsedDate.setSeconds(
+            parsedDate.getSeconds() + adicionalSeconds
+          ),
           contactId: ticket.contact.id,
           ticketId: +ticketId,
         };
 
+        setAdicionalSeconds(adicionalSeconds + 2);
         messagesToSend.push(messageObj);
       } else {
         const name = message.replace("file-", "");
@@ -426,12 +430,17 @@ const MessageInput = ({ ticketStatus, ticket }) => {
 
         const formData = new FormData();
 
-        formData.append("inicialDate", scheduleDate);
+        const initialDate = parsedDate.setSeconds(
+          parsedDate.getSeconds() + adicionalSeconds
+        );
+
+        formData.append("inicialDate", new Date(initialDate));
         formData.append("contactId", ticket.contact.id);
         formData.append("ticketId", +ticketId);
         formData.append("medias", file);
         formData.append("body", name);
 
+        setAdicionalSeconds(adicionalSeconds + 2);
         messagesToSend.push(formData);
       }
     });
@@ -443,6 +452,8 @@ const MessageInput = ({ ticketStatus, ticket }) => {
         toast.success("Mensagem agendada.");
       } catch (err) {
         toastError(err);
+      } finally {
+        setAdicionalSeconds(3);
       }
     }
 

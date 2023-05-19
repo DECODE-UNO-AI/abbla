@@ -60,30 +60,13 @@ export const startAllScheduledMessagesJobs = (): void => {
   });
 };
 
-let previousNumber = -1;
-
-const generatePreviousMajorNumber = () => {
-  let actualNumber;
-
-  do {
-    actualNumber = Math.floor(Math.random() * 31);
-  } while (actualNumber <= previousNumber);
-
-  previousNumber = actualNumber;
-
-  return actualNumber;
-};
-
 export const startScheduledMessageJob = (
   scheduledMessage: ScheduleMessage,
   ticket: Ticket,
   medias?: Express.Multer.File[]
 ): void => {
   const startDate: Date = new Date(scheduledMessage.inicialDate);
-  const dalay = startDate.setSeconds(
-    startDate.getSeconds() + generatePreviousMajorNumber()
-  );
-  const job = schedule.scheduleJob(dalay, async () => {
+  const job = schedule.scheduleJob(startDate, async () => {
     try {
       if (medias) {
         await Promise.all(
