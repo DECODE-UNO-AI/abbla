@@ -323,7 +323,7 @@ const reducer = (state, action) => {
 
     if (messages[0]?.ticket?.isGroup) {
       return [...newMessages, ...state]
-        .filter((message) => message.ticket.isGroup === true)
+        .filter((message) => message?.ticket?.isGroup)
         .sort(function (a, b) {
           return new Date(a.createdAt) - new Date(b.createdAt);
         });
@@ -433,12 +433,12 @@ const MessagesList = ({ contactId, ticketId, isGroup }) => {
       if (currentTicketId.current === ticketId) {
         dispatch({
           type: "LOAD_MESSAGES",
-          payload: { messages: data.messages, contactId },
+          payload: { messages: data?.messages, contactId },
         });
-        setHasMore(data.hasMore);
+        setHasMore(data?.hasMore);
       }
 
-      if (pageNumber === 1 && data.messages.length > 1) {
+      if (pageNumber === 1 && data?.messages.length > 1) {
         scrollToBottom();
       }
     } catch (err) {
@@ -746,6 +746,8 @@ const MessagesList = ({ contactId, ticketId, isGroup }) => {
     if (messagesList.length > 0) {
       const viewMessagesList = messagesList
         .filter((message) => {
+          if (message?.ticket?.isGroup) return message;
+
           if (message.contactId !== contactId && !message.fromMe) return;
 
           if (message.contactId === contactId) {
