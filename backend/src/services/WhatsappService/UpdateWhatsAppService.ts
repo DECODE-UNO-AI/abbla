@@ -73,12 +73,11 @@ const UpdateWhatsAppService = async ({
 
   const whatsapp = await ShowWhatsAppService(whatsappId);
 
+  const auxStatus = status === "PAUSED" ? "DISCONNECTED" : status;
+
   await whatsapp.update({
     name,
-    status:
-      status === "DISCONNECTED" || status === "OPENING"
-        ? "PAUSED"
-        : "DISCONNECTED",
+    status: isActived ? auxStatus : "PAUSED",
     session,
     greetingMessage,
     farewellMessage,

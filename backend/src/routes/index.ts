@@ -14,6 +14,7 @@ import apiRoutes from "./apiRoutes";
 import tagRoutes from "./tagRoutes";
 import departamentRoutes from "./departamentRoutes";
 import campaignRoutes from "./campaignRoutes";
+import MacroRoutes from "./MacroRoutes";
 import restartRoutes from "./restartRoutes";
 import scheduleMessageRoutes from "./scheduledMessageRoutes";
 import CampaignContactsListRoutes from "./campaignContactsListRoutes";
@@ -38,6 +39,9 @@ routes.use(scheduleMessageRoutes);
 if (process.env.CAMPAIGN_FUNCTION === "true") {
   routes.use("/campaigncontactslist", CampaignContactsListRoutes);
   routes.use(campaignRoutes);
+}
+if (process.env.MACRO_FUNCTION === "true") {
+  routes.use(MacroRoutes);
 }
 
 export default routes;

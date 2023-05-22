@@ -41,15 +41,15 @@ const messages = {
         },
         messages: {
           inAttendance: {
-            title: "In Attendance"
+            title: "In Attendance",
           },
           waiting: {
-            title: "Waiting"
+            title: "Waiting",
           },
           closed: {
-            title: "Solved"
-          }
-        }
+            title: "Solved",
+          },
+        },
       },
       connections: {
         title: "Connections",
@@ -60,7 +60,8 @@ const messages = {
           deleteTitle: "Delete",
           deleteMessage: "Are you sure? This action cannot be reversed.",
           disconnectTitle: "Disconnect",
-          disconnectMessage: "Are you sure? You will need to scan the QR Code again.",
+          disconnectMessage:
+            "Are you sure? You will need to scan the QR Code again.",
         },
         buttons: {
           add: "Add WhatsApp",
@@ -73,18 +74,21 @@ const messages = {
         toolTips: {
           disconnected: {
             title: "Failed to sign in to WhatsApp",
-            content: "Make sure your cell phone is connected to the internet and try again, or request a new QR Code",
+            content:
+              "Make sure your cell phone is connected to the internet and try again, or request a new QR Code",
           },
           qrcode: {
             title: "Waiting to read QR Code",
-            content: "Click the 'QR CODE' button and scan the QR Code with your cell phone to log in",
+            content:
+              "Click the 'QR CODE' button and scan the QR Code with your cell phone to log in",
           },
           connected: {
             title: "Connection established!",
           },
           timeout: {
             title: "Connection to cell phone was lost",
-            content: "Make sure your mobile is connected to the internet and WhatsApp is open, or click the 'Disconnect' button to get a new QR Code",
+            content:
+              "Make sure your mobile is connected to the internet and WhatsApp is open, or click the 'Disconnect' button to get a new QR Code",
           },
         },
         table: {
@@ -107,7 +111,7 @@ const messages = {
           name: "Name",
           default: "Default",
           display: "Display sector time",
-          farewellMessage: "Farewell Message"
+          farewellMessage: "Farewell Message",
         },
         buttons: {
           okAdd: "Add",
@@ -130,15 +134,17 @@ const messages = {
           deleteTitle: "Delete",
           deleteAllTitle: "Delete All",
           importTitle: "Import Contacts",
-          deleteMessage: "Are you sure you want to delete this contact? All related tickets will be lost.",
-          deleteAllMessage: "Are you sure you want to delete all contacts? All related tickets will be lost.",
+          deleteMessage:
+            "Are you sure you want to delete this contact? All related tickets will be lost.",
+          deleteAllMessage:
+            "Are you sure you want to delete all contacts? All related tickets will be lost.",
           importMessage: "Do you want to import all phone contacts?",
         },
         buttons: {
           import: "Import Contacts",
           add: "Add Contact",
           export: "Export Contacts",
-          delete: "Delete All Contacts"
+          delete: "Delete All Contacts",
         },
         table: {
           name: "Name",
@@ -191,7 +197,7 @@ const messages = {
           name: "Tags",
           color: "Color",
           contacts: "Contacts",
-          actions: "Action"
+          actions: "Action",
         },
         toasts: {
           deleted: "Tag deleted successfully!",
@@ -220,7 +226,7 @@ const messages = {
         },
         form: {
           name: "Tag Name",
-          color: "Tag Color"
+          color: "Tag Color",
         },
         success: "Tag saved successfully!",
       },
@@ -270,7 +276,7 @@ const messages = {
           connection: "Connection to notificate",
           saveMessageButton: "Save",
           messageLabel: "Desconnection message",
-          messageFormat: "Available variables"
+          messageFormat: "Available variables",
         },
       },
       userModal: {
@@ -290,7 +296,7 @@ const messages = {
           supervisor: "Supervisor",
           startWork: "Start",
           endWork: "Finish",
-          numberFormatError: "Invalid number format. Only numbers is allowed."
+          numberFormatError: "Invalid number format. Only numbers is allowed.",
         },
         buttons: {
           okAdd: "Add",
@@ -304,7 +310,7 @@ const messages = {
           add: "Add Campaign",
           edit: "Edit Campaign",
           preview: "Message preview",
-          repeat: "Repeat Campaign"
+          repeat: "Repeat Campaign",
         },
         form: {
           name: "Campaign name",
@@ -320,26 +326,27 @@ const messages = {
           tab: "Message",
           columnName: "Number column",
           sendMediaBefore: "Send media file before",
-          testNumberPlaceholder: "Number with DDD (digits only, without punctuation)",
+          testNumberPlaceholder:
+            "Number with DDD (digits only, without punctuation)",
           testMessage: "Test Message",
           testButton: "Test",
           previewMessage: "Message preview",
           addText: "Text",
-          addFile: "File"
+          addFile: "File",
         },
         errors: {
           tooShort: "Too short",
           tooLong: "Too long",
           nameRequired: "Name is required",
           message: "Message is required",
-          fileError: "Max size 10mb"
+          fileError: "Max size 10mb",
         },
         buttons: {
           okAdd: "Add",
           okEdit: "Save",
           cancel: "Cancel",
           preview: "Preview",
-          close: "Close"
+          close: "Close",
         },
         success: "Capaign saved successfully.",
       },
@@ -348,8 +355,9 @@ const messages = {
       },
       uploads: {
         titles: {
-          titleUploadMsgDragDrop: "⬇️ DRAG AND DROP FILES INTO THE FIELD BELOW ⬇️",
-          titleFileList: "List of file(s)"
+          titleUploadMsgDragDrop:
+            "⬇️ DRAG AND DROP FILES INTO THE FIELD BELOW ⬇️",
+          titleFileList: "List of file(s)",
         },
       },
       ticketsManager: {
@@ -403,17 +411,17 @@ const messages = {
           spy: "Spy",
           close: "Close",
           reopen: "Reopen",
-          return: "Move to waiting"
+          return: "Move to waiting",
         },
         buttons: {
           accept: "Reply",
           acceptBeforeBot: "Accept",
           start: "start",
-          cancel: "Cancel"
+          cancel: "Cancel",
         },
         acceptModal: {
           title: "Accept Chat",
-          queue: "Select sector"
+          queue: "Select sector",
         },
       },
       newTicketModal: {
@@ -445,7 +453,7 @@ const messages = {
           apikey: "API Key",
           token: "Token",
           departaments: "Departaments",
-          campaigns: "Campaigns"
+          campaigns: "Campaigns",
         },
         appBar: {
           user: {
@@ -475,23 +483,24 @@ const messages = {
         },
         confirmationModal: {
           deleteTitle: "Delete",
-          deleteMessage: "Are you sure? This action cannot be reversed! Tickets from this sector will still exist, but will no longer have any sectors assigned.",
+          deleteMessage:
+            "Are you sure? This action cannot be reversed! Tickets from this sector will still exist, but will no longer have any sectors assigned.",
         },
       },
       departaments: {
         title: "Departaments",
         notifications: {
-          departamentDeleted: "The departament has been deleted"
+          departamentDeleted: "The departament has been deleted",
         },
         table: {
           name: "Name",
           description: "Description",
           actions: "Actions",
-          queues: "Queues"
+          queues: "Queues",
         },
         buttons: {
-          add: "Add departament"
-        }
+          add: "Add departament",
+        },
       },
       campaign: {
         inicialDate: "Start",
@@ -508,19 +517,19 @@ const messages = {
           sent: "Sent",
           "invalid-number": "Invalid number",
           finished: "Finished",
-          archived: "Archived"
+          archived: "Archived",
         },
         message: "Messages",
         table: {
           number: "Number",
           status: "Status",
-          messageSent: "Sent Message"
+          messageSent: "Sent Message",
         },
         search: "Search",
         card: {
           total: "TOTAL",
           sent: "SENT",
-          failed: "FAILED"
+          failed: "FAILED",
         },
       },
       campaigns: {
@@ -532,11 +541,12 @@ const messages = {
           campaignStarted: "The campaing has been started",
           campaignSaved: "The campaing has been saved",
           campaignTested: "Test message sent",
-          campaignTestFailed: "Whatsapp Bot, Message and Number must be filled"
+          campaignTestFailed: "Whatsapp Bot, Message and Number must be filled",
         },
         confirmationModal: {
           archiveTitle: "Archive campaign",
-          archiveMessage: "Are you sure to archive the campaign? This action cannot be undone."
+          archiveMessage:
+            "Are you sure to archive the campaign? This action cannot be undone.",
         },
         table: {
           name: "Name",
@@ -550,10 +560,10 @@ const messages = {
           total: "Total",
           sent: "Sent",
           failed: "Failed",
-          canceled: "Canceled"
+          canceled: "Canceled",
         },
         buttons: {
-          add: "Add campaign"
+          add: "Add campaign",
         },
         toolTips: {
           title: {
@@ -564,15 +574,50 @@ const messages = {
             finished: "Finished",
             failed: "Failed",
             timeout: "Paused due to schedule",
-            archived: "Archived"
-          }
-        }
+            archived: "Archived",
+          },
+        },
+      },
+      macros: {
+        title: "Macros",
+        notifications: {
+          macroTestFailed:
+            "The bot, the message and the WhatsApp number must be completed in advance",
+          macroTested: "Test message sent",
+        },
+        table: {
+          name: "Name",
+          shortcut: "Shortcut",
+          createdAt: "Creation Date",
+        },
+        buttons: {
+          add: "Add Macro",
+          action: "Actions",
+          close: "Cancel",
+          saveMacro: "Save Macro",
+          editMacro: "Edit Macro",
+        },
+        modal: {
+          createMacroTitle: "Create new Macro",
+          updateMacroTitle: "Edit Macro",
+          form: {
+            messages: "Text Messages",
+            messagesPlaceholder: "Macro's name",
+            testMessage: "Test Message",
+            testNumberPlaceholder:
+              "Number with DDD (only digits, without punctuation)",
+            testButton: "Test",
+          },
+          preview: {
+            title: "Preview",
+          },
+        },
       },
       queueSelect: {
         inputLabel: "Sectors",
       },
       departamentSelect: {
-        inputLabel: "Departaments"
+        inputLabel: "Departaments",
       },
       quickAnswers: {
         title: "Quick Answers",
@@ -616,7 +661,8 @@ const messages = {
         },
         confirmationModal: {
           deleteTitle: "Delete",
-          deleteMessage: "All agent data will be lost. Open tickets for this agent will be moved to hold.",
+          deleteMessage:
+            "All agent data will be lost. Open tickets for this agent will be moved to hold.",
         },
       },
       settings: {
@@ -715,19 +761,19 @@ const messages = {
             name: "Create new ticket after",
             note: "Select the time it will take to openlaugh a new ticket, in case the customer gets in touch again",
             options: {
-              "10": "10 Seconds",
-              "30": "30 Seconds",
-              "60": "1 minute",
-              "300": "5 minutes",
-              "1800": "30 minutes",
-              "3600": "1 hour",
-              "7200": "2 hours",
-              "21600": "6 hours",
-              "43200": "12 hours",
-              "86400": "24 hours",
-              "604800": "7 days",
-              "1296000": "15 days",
-              "2592000": "30 days",
+              10: "10 Seconds",
+              30: "30 Seconds",
+              60: "1 minute",
+              300: "5 minutes",
+              1800: "30 minutes",
+              3600: "1 hour",
+              7200: "2 hours",
+              21600: "6 hours",
+              43200: "12 hours",
+              86400: "24 hours",
+              604800: "7 days",
+              1296000: "15 days",
+              2592000: "30 days",
             },
           },
         },
@@ -757,7 +803,7 @@ const messages = {
       },
       copyToClipboard: {
         copy: "Copy",
-        copied: "Copied"
+        copied: "Copied",
       },
       ticketOptionsMenu: {
         delete: "Delete",
@@ -765,7 +811,8 @@ const messages = {
         confirmationModal: {
           title: "Delete the ticket",
           titleFrom: "from contact",
-          message: "Attention! All messages related to the ticket will be lost.",
+          message:
+            "Attention! All messages related to the ticket will be lost.",
         },
         buttons: {
           delete: "Delete",
@@ -789,18 +836,26 @@ const messages = {
       backendErrors: {
         ERR_NUMBER_NOT_FOUND: "WhatsApp number not found.",
         ERR_NO_OTHER_WHATSAPP: "There must be at least one default WhatsApp.",
-        ERR_NO_DEF_WAPP_FOUND: "No default WhatsApp found. Check connections page.",
-        ERR_WAPP_NOT_INITIALIZED: "This WhatsApp session was not initialized. Please check the connections page.",
-        ERR_WAPP_CHECK_CONTACT: "Could not verify WhatsApp contact. Please check connections page",
+        ERR_NO_DEF_WAPP_FOUND:
+          "No default WhatsApp found. Check connections page.",
+        ERR_WAPP_NOT_INITIALIZED:
+          "This WhatsApp session was not initialized. Please check the connections page.",
+        ERR_WAPP_CHECK_CONTACT:
+          "Could not verify WhatsApp contact. Please check connections page",
         ERR_WAPP_INVALID_CONTACT: "This is not a valid Whatsapp number.",
-        ERR_WAPP_DOWNLOAD_MEDIA: "Unable to download media from WhatsApp. Please check connections page.",
+        ERR_WAPP_DOWNLOAD_MEDIA:
+          "Unable to download media from WhatsApp. Please check connections page.",
         ERR_INVALID_CREDENTIALS: "Authentication error. Please try again.",
-        ERR_SENDING_WAPP_MSG: "Error sending WhatsApp message. Check connections page.",
+        ERR_SENDING_WAPP_MSG:
+          "Error sending WhatsApp message. Check connections page.",
         ERR_DELETE_WAPP_MSG: "Unable to delete WhatsApp message.",
-        ERR_OTHER_OPEN_TICKET: "There is already an open ticket for this contact.",
+        ERR_OTHER_OPEN_TICKET:
+          "There is already an open ticket for this contact.",
         ERR_SESSION_EXPIRED: "Session expired. Please sign in.",
-        ERR_USER_CREATION_DISABLED: "Creation of the attendant has been disabled by the administrator.",
-        ERR_NO_PERMISSION: "You do not have permission to access this resource.",
+        ERR_USER_CREATION_DISABLED:
+          "Creation of the attendant has been disabled by the administrator.",
+        ERR_NO_PERMISSION:
+          "You do not have permission to access this resource.",
         ERR_DUPLICATED_CONTACT: "A contact with this number already exists.",
         ERR_NO_SETTING_FOUND: "No settings found with this ID.",
         ERR_NO_CONTACT_FOUND: "No contact found with this ID.",
@@ -809,16 +864,21 @@ const messages = {
         ERR_NO_WAPP_FOUND: "No WhatsApp found with this ID.",
         ERR_CREATING_MESSAGE: "Error creating message in database.",
         ERR_CREATING_TICKET: "Error creating ticket in database.",
-        ERR_FETCH_WAPP_MSG: "Error fetching message on WhatsApp, it may be too old.",
-        ERR_QUEUE_COLOR_ALREADY_EXISTS: "This color is already in use, choose another one.",
-        ERR_WAPP_GREETING_REQUIRED: "The greeting message is required when there is more than one Sector.",
-        ERR_USER_CREATION_COUNT: "Attendant limit reached, contact support to change.",
-        ERR_CONNECTION_CREATION_COUNT: "Connection limit reached, contact support to change.",
+        ERR_FETCH_WAPP_MSG:
+          "Error fetching message on WhatsApp, it may be too old.",
+        ERR_QUEUE_COLOR_ALREADY_EXISTS:
+          "This color is already in use, choose another one.",
+        ERR_WAPP_GREETING_REQUIRED:
+          "The greeting message is required when there is more than one Sector.",
+        ERR_USER_CREATION_COUNT:
+          "Attendant limit reached, contact support to change.",
+        ERR_CONNECTION_CREATION_COUNT:
+          "Connection limit reached, contact support to change.",
         ERR_NO_TAG_FOUND: "Tag not found.",
         ERR_OUT_OF_HOURS: "Out of Office Hours!",
         INTERNAL_ERROR: "Internal error, try later!",
         ERR_INVALID_DATE: "Invalid date.",
-        ERR_NO_CONTACTS_FILE: "Invalid contacts file."
+        ERR_NO_CONTACTS_FILE: "Invalid contacts file.",
       },
     },
   },

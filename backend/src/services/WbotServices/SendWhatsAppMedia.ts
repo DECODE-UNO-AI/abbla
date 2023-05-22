@@ -19,11 +19,15 @@ const SendWhatsAppMedia = async ({
 }: Request): Promise<WbotMessage> => {
   try {
     const wbot = await GetTicketWbot(ticket);
-    const hasBody = body
-      ? formatBody(body as string, ticket)
-      : undefined;
+    const hasBody = body ? formatBody(body as string, ticket) : undefined;
 
-    const newMedia = MessageMedia.fromFilePath(media.path);
+    const auxPath =
+      media.size === 0
+        ? `${media.destination}/${media.originalname}`
+        : media.path;
+
+    const newMedia = MessageMedia.fromFilePath(auxPath);
+
     const sentMessage = await wbot.sendMessage(
       `${ticket.contact.number}@${ticket.isGroup ? "g" : "c"}.us`,
       newMedia,

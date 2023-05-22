@@ -33,6 +33,7 @@ import {
   ListAlt,
   ExpandMore,
   QueuePlayNext,
+  LoopOutlined,
 } from "@material-ui/icons";
 
 import { i18n } from "../translate/i18n";
@@ -191,7 +192,7 @@ const MainListItems = (props) => {
             <ListSubheader inset className={classes.sub}>
               {i18n.t("mainDrawer.listItems.administration")}
             </ListSubheader>
-            {process.env.REACT_APP_CAMPAIGN_FUNCTION === "true" && (
+            {process.env.REACT_APP_CAMPAIGN_FUNCTION === "true" ? (
               <Accordion
                 style={{ boxShadow: "none", width: "100%", margin: 0 }}
               >
@@ -230,7 +231,17 @@ const MainListItems = (props) => {
                   </div>
                 </AccordionDetails>
               </Accordion>
-            )}
+            ) : null}
+
+            {process.env.REACT_APP_MACRO_FUNCTION === "true" ? (
+              <div onClick={drawerClose}>
+                <ListItemLink
+                  to="/macros"
+                  primary="Macros"
+                  icon={<LoopOutlined />}
+                />
+              </div>
+            ) : null}
 
             <div onClick={drawerClose}>
               <ListItemLink

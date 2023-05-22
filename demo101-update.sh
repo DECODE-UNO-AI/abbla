@@ -1,6 +1,6 @@
 echo "Executando script demo101-update.sh"
 
-pm2 stop all
+pm2 stop demo101-backend demo101-frontend
 
 cd abbla
 
@@ -25,39 +25,3 @@ echo "Processo demo101-backend reiniciado com sucesso"
 pm2 restart demo101-frontend
 
 echo "Processo demo101-frontend reiniciado com sucesso"
-
-pm2 restart plincred-backend
-
-echo "Processo plincred-backend reiniciado com sucesso"
-
-pm2 restart plincred-frontend
-
-echo "Processo plincred-frontend reiniciado com sucesso"
-
-pm2 restart qwer-backend
-
-echo "Processo qwer-backend reiniciado com sucesso"
-
-pm2 restart qwer-frontend
-
-echo "Processo qwer-frontend reiniciado com sucesso"
-
-pm2 restart rtyu-backend
-
-echo "Processo rtyu-backend reiniciado com sucesso"
-
-pm2 restart rtyu-frontend
-
-echo "Processo rtyu-frontend reiniciado com sucesso"
-
-pm2 restart wert-backend
-
-echo "Processo wert-backend reiniciado com sucesso"
-
-pm2 restart wert-frontend
-
-echo "Processo wert-frontend reiniciado com sucesso"
-
-pm2 restart baileys-api
-
-echo "Processo baileys-api reiniciado com sucesso"

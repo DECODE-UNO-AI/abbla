@@ -19,8 +19,9 @@ import ApiKey from "../pages/ApiKey/";
 import Tags from "../pages/Tags";
 import Departaments from "../pages/Departaments";
 import Campaigns from "../pages/Campaigns";
-import Campaign from '../pages/Campaign';
+import Campaign from "../pages/Campaign";
 import ContactsLists from "../pages/ContactsLists";
+import Macros from "../pages/Macros";
 
 import { AuthProvider } from "../context/Auth/AuthContext";
 import { WhatsAppsProvider } from "../context/WhatsApp/WhatsAppsContext";
@@ -36,22 +37,57 @@ const Routes = () => {
           <WhatsAppsProvider>
             <LoggedInLayout>
               <Route exact path="/" component={Dashboard} isPrivate />
-              <Route exact path="/tickets/:ticketId?" component={Tickets} isPrivate />
-              {
-                process.env.REACT_APP_CAMPAIGN_FUNCTION === "true"  && 
-                (
-                  <>
-                  <Route exact path="/campaigns" component={Campaigns} isPrivate />
-                  <Route exact path="/campaign/:campaignId" component={Campaign} isPrivate />
-                  <Route exact path="/contactslists" component={ContactsLists} isPrivate />
-                  </>
-                )
-              }
-              <Route exact path="/connections" component={Connections} isPrivate />
+              <Route
+                exact
+                path="/tickets/:ticketId?"
+                component={Tickets}
+                isPrivate
+              />
+              {process.env.REACT_APP_CAMPAIGN_FUNCTION === "true" ? (
+                <>
+                  <Route
+                    exact
+                    path="/campaigns"
+                    component={Campaigns}
+                    isPrivate
+                  />
+                  <Route
+                    exact
+                    path="/campaign/:campaignId"
+                    component={Campaign}
+                    isPrivate
+                  />
+                  <Route
+                    exact
+                    path="/contactslists"
+                    component={ContactsLists}
+                    isPrivate
+                  />
+                </>
+              ) : null}
+              {process.env.REACT_APP_MACRO_FUNCTION === "true" ? (
+                <Route exact path="/macros" component={Macros} isPrivate />
+              ) : null}
+              <Route
+                exact
+                path="/connections"
+                component={Connections}
+                isPrivate
+              />
               <Route exact path="/contacts" component={Contacts} isPrivate />
               <Route exact path="/users" component={Users} isPrivate />
-              <Route exact path="/quickAnswers" component={QuickAnswers} isPrivate />
-              <Route exact path="/departaments" component={Departaments} isPrivate />
+              <Route
+                exact
+                path="/quickAnswers"
+                component={QuickAnswers}
+                isPrivate
+              />
+              <Route
+                exact
+                path="/departaments"
+                component={Departaments}
+                isPrivate
+              />
               <Route exact path="/Settings" component={Settings} isPrivate />
               <Route exact path="/api" component={Api} isPrivate />
               <Route exact path="/apidocs" component={ApiDocs} isPrivate />

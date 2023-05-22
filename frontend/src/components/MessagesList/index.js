@@ -1,4 +1,11 @@
-import React, { useState, useEffect, useReducer, useRef } from "react";
+import React, {
+  useState,
+  useEffect,
+  useReducer,
+  useRef,
+  useCallback,
+  useMemo,
+} from "react";
 
 import { isSameDay, parseISO, format } from "date-fns";
 import openSocket from "../../services/socket-io";
@@ -58,12 +65,6 @@ const useStyles = makeStyles((theme) => ({
       paddingBottom: "90px",
     },
     ...theme.scrollbarStyles,
-  },
-
-  auxWrapper: {
-    display: "flex",
-    flexDirection: "column",
-    flexGrow: 1,
   },
 
   circleLoading: {
@@ -322,17 +323,25 @@ const reducer = (state, action) => {
 
     if (messages[0]?.ticket?.isGroup) {
       return [...newMessages, ...state]
-        .filter((message) => message.ticket.isGroup === true)
+        .filter((message) => message?.ticket?.isGroup || message.fromMe)
         .sort(function (a, b) {
           return new Date(a.createdAt) - new Date(b.createdAt);
         });
     }
 
     return [...newMessages, ...state]
-      .filter(
-        (message) =>
-          message.contactId === action.payload.contactId || message.fromMe
-      )
+      .filter((message) => {
+        if (message.contactId !== action.payload.contactId && !message.fromMe)
+          return;
+
+        if (message.contactId === action.payload.contactId) {
+          return message;
+        }
+
+        if (message.fromMe) {
+          return message;
+        }
+      })
       .sort(function (a, b) {
         return new Date(a.createdAt) - new Date(b.createdAt);
       });
@@ -397,8 +406,6 @@ const MessagesList = ({ contactId, ticketId, isGroup }) => {
   const classes = useStyles();
   const [messagesList, dispatch] = useReducer(reducer, []);
   const [pageNumber, setPageNumber] = useState(1);
-  const [toggleVisibility, setToggleVisibility] = useState("hidden");
-  const [delayToVisible, setDelayToVisible] = useState(4500);
   const [hasMore, setHasMore] = useState(false);
   const [loading, setLoading] = useState(false);
   const lastMessageRef = useRef();
@@ -407,59 +414,58 @@ const MessagesList = ({ contactId, ticketId, isGroup }) => {
   const [anchorEl, setAnchorEl] = useState(null);
   const messageOptionsMenuOpen = Boolean(anchorEl);
   const currentTicketId = useRef(ticketId);
+  const currentContactId = useRef(contactId);
 
-  useEffect(() => {
+  useMemo(() => {
     dispatch({ type: "RESET" });
     setPageNumber(1);
 
     currentTicketId.current = ticketId;
-  }, [ticketId]);
+    currentContactId.current = contactId;
+  }, [ticketId, contactId]);
+
+  const fetchMessages = useCallback(async () => {
+    try {
+      const { data } = await api.get("/messages/" + ticketId, {
+        params: { pageNumber, contactId },
+      });
+
+      if (currentTicketId.current === ticketId) {
+        dispatch({
+          type: "LOAD_MESSAGES",
+          payload: { messages: data?.messages, contactId },
+        });
+        setHasMore(data?.hasMore);
+      }
+
+      if (pageNumber === 1 && data?.messages.length > 1) {
+        scrollToBottom();
+      }
+    } catch (err) {
+      toastError(err);
+    } finally {
+      setLoading(false);
+    }
+  }, [ticketId, pageNumber, contactId]);
 
   useEffect(() => {
-    let visibleTimeout;
     setLoading(true);
-    if (messagesList.length <= 0) setToggleVisibility("hidden");
+    if (ticketId === null || isGroup === null || contactId === null) {
+      return;
+    }
+
+    if (currentContactId.current !== contactId) {
+      return;
+    }
+
     const delayDebounceFn = setTimeout(() => {
-      const fetchMessages = async () => {
-        try {
-          const { data } = await api.get("/messages/" + ticketId, {
-            params: { pageNumber, contactId },
-          });
-
-          if (currentTicketId.current === ticketId) {
-            dispatch({
-              type: "LOAD_MESSAGES",
-              payload: { messages: data.messages, contactId },
-            });
-            setHasMore(data.hasMore);
-          }
-
-          if (pageNumber === 1 && data.messages.length > 1) {
-            scrollToBottom();
-          }
-        } catch (err) {
-          toastError(err);
-        } finally {
-          if (delayToVisible !== 0) {
-            visibleTimeout = setTimeout(() => {
-              setToggleVisibility("visible");
-              setLoading(false);
-            }, delayToVisible);
-            delayToVisible === 4000 && setDelayToVisible(0);
-            return;
-          }
-
-          if (messagesList.length > 0) setToggleVisibility("visible");
-          setLoading(false);
-        }
-      };
       fetchMessages();
     }, 500);
+
     return () => {
       clearTimeout(delayDebounceFn);
-      clearTimeout(visibleTimeout);
     };
-  }, [pageNumber, ticketId, contactId]);
+  }, [ticketId, isGroup, contactId, pageNumber]);
 
   useEffect(() => {
     const socket = openSocket();
@@ -738,168 +744,182 @@ const MessagesList = ({ contactId, ticketId, isGroup }) => {
 
   const renderMessages = () => {
     if (messagesList.length > 0) {
-      const viewMessagesList = messagesList.map((message, index) => {
-        if (message.mediaType === "call_log") {
-          return (
-            <React.Fragment key={message.id}>
-              {renderDailyTimestamps(message, index)}
-              {renderMessageDivider(message, index)}
-              {renderNumberTicket(message, index)}
-              <div className={classes.messageCenter}>
-                <IconButton
-                  variant="contained"
-                  size="small"
-                  id="messageActionsButton"
-                  disabled={message.isDeleted}
-                  className={classes.messageActionsButton}
-                  onClick={(e) => handleOpenMessageOptionsMenu(e, message)}
-                >
-                  <ExpandMore />
-                </IconButton>
-                {isGroup ? (
-                  <span className={classes.messageContactName}>
-                    {message.contact?.name}
-                  </span>
-                ) : null}
-                <div>
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    viewBox="0 0 20 17"
-                    width="20"
-                    height="17"
+      const viewMessagesList = messagesList
+        .filter((message) => {
+          if (message?.ticket?.isGroup) return message;
+
+          if (message.contactId !== contactId && !message.fromMe) return;
+
+          if (message.contactId === contactId) {
+            return message;
+          }
+
+          if (message.fromMe) {
+            return message;
+          }
+        })
+        .map((message, index) => {
+          if (message.mediaType === "call_log") {
+            return (
+              <React.Fragment key={message.id}>
+                {renderDailyTimestamps(message, index)}
+                {renderMessageDivider(message, index)}
+                {renderNumberTicket(message, index)}
+                <div className={classes.messageCenter}>
+                  <IconButton
+                    variant="contained"
+                    size="small"
+                    id="messageActionsButton"
+                    disabled={message.isDeleted}
+                    className={classes.messageActionsButton}
+                    onClick={(e) => handleOpenMessageOptionsMenu(e, message)}
                   >
-                    <path
-                      fill="#df3333"
-                      d="M18.2 12.1c-1.5-1.8-5-2.7-8.2-2.7s-6.7 1-8.2 2.7c-.7.8-.3 2.3.2 2.8.2.2.3.3.5.3 1.4 0 3.6-.7 3.6-.7.5-.2.8-.5.8-1v-1.3c.7-1.2 5.4-1.2 6.4-.1l.1.1v1.3c0 .2.1.4.2.6.1.2.3.3.5.4 0 0 2.2.7 3.6.7.2 0 1.4-2 .5-3.1zM5.4 3.2l4.7 4.6 5.8-5.7-.9-.8L10.1 6 6.4 2.3h2.5V1H4.1v4.8h1.3V3.2z"
-                    ></path>
-                  </svg>{" "}
-                  <span>
-                    Chamada de voz/vídeo perdida às{" "}
-                    {format(parseISO(message.createdAt), "HH:mm")}
-                  </span>
-                </div>
-              </div>
-            </React.Fragment>
-          );
-        }
-        if (!message.fromMe) {
-          return (
-            <React.Fragment key={message.id}>
-              {renderDailyTimestamps(message, index)}
-              {renderMessageDivider(message, index)}
-              {renderNumberTicket(message, index)}
-              <div className={classes.messageLeft}>
-                <IconButton
-                  variant="contained"
-                  size="small"
-                  id="messageActionsButton"
-                  disabled={message.isDeleted}
-                  className={classes.messageActionsButton}
-                  onClick={(e) => handleOpenMessageOptionsMenu(e, message)}
-                >
-                  <ExpandMore />
-                </IconButton>
-                {isGroup ? (
-                  <span className={classes.messageContactName}>
-                    {message.contact?.name}
-                  </span>
-                ) : null}
-                {message.isDeleted && (
+                    <ExpandMore />
+                  </IconButton>
+                  {isGroup ? (
+                    <span className={classes.messageContactName}>
+                      {message.contact?.name}
+                    </span>
+                  ) : null}
                   <div>
-                    <span className={"message-deleted"}>
-                      Mensagem apagada pelo contato
-                      <Block
-                        color=""
-                        fontSize="small"
-                        className={classes.deletedIcon}
-                      />
-                      <Block
-                        color=""
-                        fontSize="small"
-                        className={classes.deletedIcon}
-                      />
-                      <Block
-                        color=""
-                        fontSize="small"
-                        className={classes.deletedIcon}
-                      />
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      viewBox="0 0 20 17"
+                      width="20"
+                      height="17"
+                    >
+                      <path
+                        fill="#df3333"
+                        d="M18.2 12.1c-1.5-1.8-5-2.7-8.2-2.7s-6.7 1-8.2 2.7c-.7.8-.3 2.3.2 2.8.2.2.3.3.5.3 1.4 0 3.6-.7 3.6-.7.5-.2.8-.5.8-1v-1.3c.7-1.2 5.4-1.2 6.4-.1l.1.1v1.3c0 .2.1.4.2.6.1.2.3.3.5.4 0 0 2.2.7 3.6.7.2 0 1.4-2 .5-3.1zM5.4 3.2l4.7 4.6 5.8-5.7-.9-.8L10.1 6 6.4 2.3h2.5V1H4.1v4.8h1.3V3.2z"
+                      ></path>
+                    </svg>{" "}
+                    <span>
+                      Chamada de voz/vídeo perdida às{" "}
+                      {format(parseISO(message.createdAt), "HH:mm")}
                     </span>
                   </div>
-                )}
-                {(message.mediaUrl ||
-                  message.mediaType === "location" ||
-                  message.mediaType === "vcard") &&
-                  //|| message.mediaType === "multi_vcard"
-                  checkMessageMedia(message)}
-                <div className={classes.textContentItem}>
-                  {message.quotedMsg && renderQuotedMessage(message)}
-                  <MarkdownWrapper>{message.body}</MarkdownWrapper>
-                  <span className={classes.timestamp}>
-                    {format(parseISO(message.createdAt), "HH:mm")}
-                  </span>
                 </div>
-              </div>
-            </React.Fragment>
-          );
-        } else {
-          return (
-            <React.Fragment key={message.id}>
-              {renderDailyTimestamps(message, index)}
-              {renderMessageDivider(message, index)}
-              {renderNumberTicket(message, index)}
-              <div
-                className={classes.messageRight}
-                style={{
-                  backgroundColor: message.isComment ? "#ffea1c" : "",
-                }}
-              >
-                <IconButton
-                  variant="contained"
-                  size="small"
-                  id="messageActionsButton"
-                  disabled={message.isDeleted}
-                  className={classes.messageActionsButton}
-                  onClick={(e) => handleOpenMessageOptionsMenu(e, message)}
-                >
-                  <ExpandMore />
-                </IconButton>
-                {(message.mediaUrl ||
-                  message.mediaType === "location" ||
-                  message.mediaType === "vcard") &&
-                  //|| message.mediaType === "multi_vcard"
-                  checkMessageMedia(message)}
-                <div
-                  className={clsx(classes.textContentItem, {
-                    [classes.textContentItemDeleted]: message.isDeleted,
-                    [classes.textContentItemComment]: message.isComment,
-                  })}
-                >
+              </React.Fragment>
+            );
+          }
+          if (!message.fromMe) {
+            return (
+              <React.Fragment key={message.id}>
+                {renderDailyTimestamps(message, index)}
+                {renderMessageDivider(message, index)}
+                {renderNumberTicket(message, index)}
+                <div className={classes.messageLeft}>
+                  <IconButton
+                    variant="contained"
+                    size="small"
+                    id="messageActionsButton"
+                    disabled={message.isDeleted}
+                    className={classes.messageActionsButton}
+                    onClick={(e) => handleOpenMessageOptionsMenu(e, message)}
+                  >
+                    <ExpandMore />
+                  </IconButton>
+                  {isGroup ? (
+                    <span className={classes.messageContactName}>
+                      {message.contact?.name}
+                    </span>
+                  ) : null}
                   {message.isDeleted && (
-                    <Block
-                      color="disabled"
-                      fontSize="small"
-                      className={classes.deletedIcon}
-                    />
+                    <div>
+                      <span className={"message-deleted"}>
+                        Mensagem apagada pelo contato
+                        <Block
+                          color=""
+                          fontSize="small"
+                          className={classes.deletedIcon}
+                        />
+                        <Block
+                          color=""
+                          fontSize="small"
+                          className={classes.deletedIcon}
+                        />
+                        <Block
+                          color=""
+                          fontSize="small"
+                          className={classes.deletedIcon}
+                        />
+                      </span>
+                    </div>
                   )}
-                  {message.isComment && (
-                    <Comment
-                      color="#D9A118"
-                      fontSize="small"
-                      className={classes.deletedIcon}
-                    />
-                  )}
-                  {message.quotedMsg && renderQuotedMessage(message)}
-                  <MarkdownWrapper>{message.body}</MarkdownWrapper>
-                  <span className={classes.timestamp}>
-                    {format(parseISO(message.createdAt), "HH:mm")}
-                    {!message.isComment && renderMessageAck(message)}
-                  </span>
+                  {(message.mediaUrl ||
+                    message.mediaType === "location" ||
+                    message.mediaType === "vcard") &&
+                    //|| message.mediaType === "multi_vcard"
+                    checkMessageMedia(message)}
+                  <div className={classes.textContentItem}>
+                    {message.quotedMsg && renderQuotedMessage(message)}
+                    <MarkdownWrapper>{message.body}</MarkdownWrapper>
+                    <span className={classes.timestamp}>
+                      {format(parseISO(message.createdAt), "HH:mm")}
+                    </span>
+                  </div>
                 </div>
-              </div>
-            </React.Fragment>
-          );
-        }
-      });
+              </React.Fragment>
+            );
+          } else {
+            return (
+              <React.Fragment key={message.id}>
+                {renderDailyTimestamps(message, index)}
+                {renderMessageDivider(message, index)}
+                {renderNumberTicket(message, index)}
+                <div
+                  className={classes.messageRight}
+                  style={{
+                    backgroundColor: message.isComment ? "#ffea1c" : "",
+                  }}
+                >
+                  <IconButton
+                    variant="contained"
+                    size="small"
+                    id="messageActionsButton"
+                    disabled={message.isDeleted}
+                    className={classes.messageActionsButton}
+                    onClick={(e) => handleOpenMessageOptionsMenu(e, message)}
+                  >
+                    <ExpandMore />
+                  </IconButton>
+                  {(message.mediaUrl ||
+                    message.mediaType === "location" ||
+                    message.mediaType === "vcard") &&
+                    //|| message.mediaType === "multi_vcard"
+                    checkMessageMedia(message)}
+                  <div
+                    className={clsx(classes.textContentItem, {
+                      [classes.textContentItemDeleted]: message.isDeleted,
+                      [classes.textContentItemComment]: message.isComment,
+                    })}
+                  >
+                    {message.isDeleted && (
+                      <Block
+                        color="disabled"
+                        fontSize="small"
+                        className={classes.deletedIcon}
+                      />
+                    )}
+                    {message.isComment && (
+                      <Comment
+                        color="#D9A118"
+                        fontSize="small"
+                        className={classes.deletedIcon}
+                      />
+                    )}
+                    {message.quotedMsg && renderQuotedMessage(message)}
+                    <MarkdownWrapper>{message.body}</MarkdownWrapper>
+                    <span className={classes.timestamp}>
+                      {format(parseISO(message.createdAt), "HH:mm")}
+                      {!message.isComment && renderMessageAck(message)}
+                    </span>
+                  </div>
+                </div>
+              </React.Fragment>
+            );
+          }
+        });
       return viewMessagesList;
     } else {
       return <div>Say hello to your new contact!</div>;
@@ -919,12 +939,7 @@ const MessagesList = ({ contactId, ticketId, isGroup }) => {
         className={classes.messagesList}
         onScroll={handleScroll}
       >
-        <div
-          className={classes.auxWrapper}
-          style={{ visibility: `${toggleVisibility}` }}
-        >
-          {messagesList.length > 0 ? renderMessages() : []}
-        </div>
+        {messagesList.length > 0 ? renderMessages() : []}
       </div>
       {loading ? (
         <div>

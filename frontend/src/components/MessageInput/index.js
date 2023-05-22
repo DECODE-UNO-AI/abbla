@@ -12,11 +12,11 @@ import { green } from "@material-ui/core/colors";
 import AttachFileIcon from "@material-ui/icons/AttachFile";
 import IconButton from "@material-ui/core/IconButton";
 import MoreVert from "@material-ui/icons/MoreVert";
-import InsertCommentIcon from "@material-ui/icons/InsertComment"
-import AccessTimeIcon from '@material-ui/icons/AccessTime';
+import InsertCommentIcon from "@material-ui/icons/InsertComment";
+import AccessTimeIcon from "@material-ui/icons/AccessTime";
 import MoodIcon from "@material-ui/icons/Mood";
 import SendIcon from "@material-ui/icons/Send";
-import { ArrowDropDown } from '@material-ui/icons';
+import { ArrowDropDown } from "@material-ui/icons";
 import CancelIcon from "@material-ui/icons/Cancel";
 import ClearIcon from "@material-ui/icons/Clear";
 import MicIcon from "@material-ui/icons/Mic";
@@ -44,7 +44,7 @@ import {
   CircularProgress,
   Popper,
   ButtonGroup,
-  Grow
+  Grow,
 } from "@material-ui/core";
 import ClickAwayListener from "@material-ui/core/ClickAwayListener";
 import ScheduleMessage from "./ScheduleMessage";
@@ -57,7 +57,6 @@ import { AuthContext } from "../../context/Auth/AuthContext";
 import { useLocalStorage } from "../../hooks/useLocalStorage";
 import toastError from "../../errors/toastError";
 import { toast } from "react-toastify";
-
 
 const Mp3Recorder = new MicRecorder({ bitRate: 128 });
 
@@ -78,7 +77,7 @@ const useStyles = makeStyles((theme) => ({
   avatar: {
     width: "50px",
     height: "50px",
-    borderRadius:"25%"
+    borderRadius: "25%",
   },
 
   dropInfo: {
@@ -266,15 +265,20 @@ const MessageInput = ({ ticketStatus, ticket }) => {
   const [loading, setLoading] = useState(false);
   const [recording, setRecording] = useState(false);
   const [quickAnswers, setQuickAnswer] = useState([]);
+  const [macros, setMacros] = useState([]);
   const [typeBar, setTypeBar] = useState(false);
+  const [typeBackslash, setTypeBackslash] = useState(false);
+  const [chosedMacroMessages, setChosedMacroMessages] = useState([]);
   const [scheduleModalOpen, setScheduledModalOpen] = useState(false);
   const inputRef = useRef();
   const [onDragEnter, setOnDragEnter] = useState(false);
-  const [scheduleDate, setScheduledDate] = useState("")
+  const [scheduleDate, setScheduledDate] = useState("");
   const [anchorEl, setAnchorEl] = useState(null);
   const [openSendMenu, setOpenSendMenu] = useState(false);
+  const [adicionalSeconds, setAdicionalSeconds] = useState(3);
   const anchorRef = useRef(null);
-  const { setReplyingMessage, replyingMessage } = useContext(ReplyMessageContext);
+  const { setReplyingMessage, replyingMessage } =
+    useContext(ReplyMessageContext);
   const { user } = useContext(AuthContext);
 
   const [signMessage, setSignMessage] = useLocalStorage("signOption", true);
@@ -303,11 +307,20 @@ const MessageInput = ({ ticketStatus, ticket }) => {
   const handleChangeInput = (e) => {
     setInputMessage(e.target.value);
     handleLoadQuickAnswer(e.target.value);
+    handleLoadMacros(e.target.value);
   };
 
   const handleQuickAnswersClick = (value) => {
     setInputMessage(value);
     setTypeBar(false);
+  };
+
+  const handleMacroClick = (value) => {
+    const messages = macros.find((macro) => macro.id === value).message1;
+
+    setChosedMacroMessages(messages);
+    setScheduledModalOpen(true);
+    setTypeBackslash(false);
   };
 
   const handleAddEmoji = (e) => {
@@ -365,7 +378,7 @@ const MessageInput = ({ ticketStatus, ticket }) => {
   const handleSendMessage = async (isComment = false) => {
     if (inputMessage.trim() === "") return;
     setLoading(true);
-    
+
     const message = {
       read: 1,
       isComment: isComment,
@@ -388,14 +401,81 @@ const MessageInput = ({ ticketStatus, ticket }) => {
     setReplyingMessage(null);
   };
 
+  const handleSendMacroMessage = async () => {
+    setLoading(true);
+    let parsedDate = new Date(scheduleDate);
+    let messagesToSend = [];
+    chosedMacroMessages.forEach((message) => {
+      if (!message.startsWith("file-")) {
+        const messageObj = {
+          body: signMessage
+            ? `*${user?.name}:*\n${message.trim()}`
+            : message.trim(),
+          inicialDate: parsedDate.setSeconds(
+            parsedDate.getSeconds() + adicionalSeconds
+          ),
+          contactId: ticket.contact.id,
+          ticketId: +ticketId,
+        };
+
+        setAdicionalSeconds(adicionalSeconds + 2);
+        messagesToSend.push(messageObj);
+      } else {
+        const name = message.replace("file-", "");
+        const blob = new Blob([], {
+          type: "application/octet-stream",
+          name: name,
+        });
+        const file = new File([blob], name);
+
+        const formData = new FormData();
+
+        const initialDate = parsedDate.setSeconds(
+          parsedDate.getSeconds() + adicionalSeconds
+        );
+
+        formData.append("inicialDate", new Date(initialDate));
+        formData.append("contactId", ticket.contact.id);
+        formData.append("ticketId", +ticketId);
+        formData.append("medias", file);
+        formData.append("body", name);
+
+        setAdicionalSeconds(adicionalSeconds + 2);
+        messagesToSend.push(formData);
+      }
+    });
+
+    for await (const message of messagesToSend) {
+      try {
+        await api.post(`/scheduleMessage/`, message);
+        setScheduledModalOpen(false);
+        toast.success("Mensagem agendada.");
+      } catch (err) {
+        toastError(err);
+      } finally {
+        setAdicionalSeconds(3);
+      }
+    }
+
+    setInputMessage("");
+    setShowEmoji(false);
+    setLoading(false);
+    setReplyingMessage(null);
+  };
+
   const handleSheduleMessage = async () => {
     if (inputMessage.trim() === "" || !scheduleDate) return;
+
+    if (inputMessage.startsWith("\\")) {
+      return handleSendMacroMessage();
+    }
+
     setLoading(true);
 
-    if(new Date(scheduleDate) < new Date()) {
-      setLoading(false)
-      toast.error("Data inválida.")
-      return
+    if (new Date(scheduleDate) < new Date()) {
+      setLoading(false);
+      toast.error("Data inválida.");
+      return;
     }
 
     const data = {
@@ -405,19 +485,19 @@ const MessageInput = ({ ticketStatus, ticket }) => {
       inicialDate: scheduleDate,
       contactId: ticket.contact.id,
       ticketId: +ticketId,
-    }
+    };
 
     try {
       await api.post(`/scheduleMessage/`, data);
-      setInputMessage("")
+      setInputMessage("");
       setScheduledModalOpen(false);
-      toast.success("Mensagem agendada.")
+      toast.success("Mensagem agendada.");
     } catch (err) {
       toastError(err);
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   const handleStartRecording = async () => {
     setLoading(true);
@@ -449,6 +529,26 @@ const MessageInput = ({ ticketStatus, ticket }) => {
       }
     } else {
       setTypeBar(false);
+    }
+  };
+
+  const handleLoadMacros = async (value) => {
+    if (value && value.startsWith("\\")) {
+      try {
+        const { data } = await api.get("/macros/shortcut/", {
+          params: { searchParam: inputMessage.substring(1) },
+        });
+        setMacros(data.macros);
+        if (data.macros.length > 0) {
+          setTypeBackslash(true);
+        } else {
+          setTypeBackslash(false);
+        }
+      } catch (err) {
+        setTypeBackslash(false);
+      }
+    } else {
+      setTypeBackslash(false);
     }
   };
 
@@ -526,7 +626,7 @@ const MessageInput = ({ ticketStatus, ticket }) => {
 
   if (medias.length > 0)
     return (
-      <Paper 
+      <Paper
         elevation={0}
         square
         className={classes.viewMediaInputWrapper}
@@ -547,7 +647,7 @@ const MessageInput = ({ ticketStatus, ticket }) => {
           </div>
         ) : (
           <Grid item className={classes.gridFiles}>
-            <Typography  variant="h6" component="div">
+            <Typography variant="h6" component="div">
               {i18n.t("uploads.titles.titleFileList")} ({medias.length})
             </Typography>
             <List>
@@ -555,7 +655,11 @@ const MessageInput = ({ ticketStatus, ticket }) => {
                 return (
                   <ListItem key={index}>
                     <ListItemAvatar>
-                      <Avatar className={classes.avatar} alt={value.name} src={URL.createObjectURL(value)}/>
+                      <Avatar
+                        className={classes.avatar}
+                        alt={value.name}
+                        src={URL.createObjectURL(value)}
+                      />
                     </ListItemAvatar>
                     <ListItemText
                       primary={`${value.name}`}
@@ -594,315 +698,373 @@ const MessageInput = ({ ticketStatus, ticket }) => {
   else {
     return (
       <>
-      <Dialog
-            open={scheduleModalOpen}
-            onClose={() => {setScheduledModalOpen(false)}}
-            className={classes.dialog}
-            scroll="paper"
-        >   
-            <DialogTitle id="form-dialog-title">
-                Agendar mensagem:
-            </DialogTitle>
-            <DialogContent style={{ padding: 40, minHeight: "100px"}}>
-              <ScheduleMessage onSubmit={handleSheduleMessage} setDate={setScheduledDate}/>
-            </DialogContent>
-            <DialogActions>
-                <Button
-                    onClick={()=>{setScheduledModalOpen(false)}}
-                    variant="outlined"
-                    disabled={loading}
-                >
-                    {i18n.t("campaignModal.buttons.close")}
-                </Button>
-                <Button
-                    onClick={()=>{handleSheduleMessage()}}
-                    variant="contained"
-                    color="secondary"
-                    disabled={loading}
-                >
-                    AGENDAR
-                </Button>
-            </DialogActions>
-        </Dialog>
-      <Paper 
-        square
-        elevation={0}
-        className={classes.mainWrapper}
-        onDragEnter={() => setOnDragEnter(true)}
-        onDrop={(e) => handleInputDrop(e)}  
-      >
-        <div className={ onDragEnter ? classes.dropInfo : classes.dropInfoOut}>
-          {i18n.t("uploads.titles.titleUploadMsgDragDrop")}
-        </div>
-        {replyingMessage && renderReplyingMessage(replyingMessage)}
-        <div className={classes.newMessageBox}>
-          <Hidden only={["sm", "xs"]}>
-            <IconButton
-              aria-label="emojiPicker"
-              component="span"
-              disabled={loading || recording || ticketStatus !== "open"}
-              onClick={(e) => setShowEmoji((prevState) => !prevState)}
-            >
-              <MoodIcon className={classes.sendMessageIcons} />
-            </IconButton>
-            {showEmoji ? (
-              <div className={classes.emojiBox}>
-                <ClickAwayListener onClickAway={(e) => setShowEmoji(false)}>
-                  <Picker
-                    perLine={16}
-                    showPreview={false}
-                    showSkinTones={false}
-                    onSelect={handleAddEmoji}
-                  />
-                </ClickAwayListener>
-              </div>
-            ) : null}
-
-            <input
-              multiple
-              type="file"
-              id="upload-button"
-              disabled={loading || recording || ticketStatus !== "open"}
-              className={classes.uploadInput}
-              onChange={handleChangeMedias}
+        <Dialog
+          open={scheduleModalOpen}
+          onClose={() => {
+            setScheduledModalOpen(false);
+          }}
+          className={classes.dialog}
+          scroll="paper"
+        >
+          <DialogTitle id="form-dialog-title">Agendar mensagem:</DialogTitle>
+          <DialogContent style={{ padding: 40, minHeight: "100px" }}>
+            <ScheduleMessage
+              onSubmit={handleSheduleMessage}
+              setDate={setScheduledDate}
             />
-            <label htmlFor="upload-button">
+          </DialogContent>
+          <DialogActions>
+            <Button
+              onClick={() => {
+                setScheduledModalOpen(false);
+              }}
+              variant="outlined"
+              disabled={loading}
+            >
+              {i18n.t("campaignModal.buttons.close")}
+            </Button>
+            <Button
+              onClick={() => {
+                handleSheduleMessage();
+              }}
+              variant="contained"
+              color="secondary"
+              disabled={loading}
+            >
+              AGENDAR
+            </Button>
+          </DialogActions>
+        </Dialog>
+        <Paper
+          square
+          elevation={0}
+          className={classes.mainWrapper}
+          onDragEnter={() => setOnDragEnter(true)}
+          onDrop={(e) => handleInputDrop(e)}
+        >
+          <div className={onDragEnter ? classes.dropInfo : classes.dropInfoOut}>
+            {i18n.t("uploads.titles.titleUploadMsgDragDrop")}
+          </div>
+          {replyingMessage && renderReplyingMessage(replyingMessage)}
+          <div className={classes.newMessageBox}>
+            <Hidden only={["sm", "xs"]}>
               <IconButton
-                aria-label="upload"
+                aria-label="emojiPicker"
                 component="span"
                 disabled={loading || recording || ticketStatus !== "open"}
-                onMouseOver={() => setOnDragEnter(true)}
+                onClick={(e) => setShowEmoji((prevState) => !prevState)}
               >
-                <AttachFileIcon className={classes.sendMessageIcons} />
+                <MoodIcon className={classes.sendMessageIcons} />
               </IconButton>
-            </label>
-            <FormControlLabel
-              style={{ marginRight: 7, color: "gray" }}
-              label={i18n.t("messagesInput.signMessage")}
-              labelPlacement="start"
-              control={
-                <Switch
-                  size="small"
-                  checked={signMessage}
-                  onChange={(e) => {
-                    setSignMessage(e.target.checked);
-                  }}
-                  name="showAllTickets"
-                  color="primary"
-                />
-              }
-            />
-          </Hidden>
-          <Hidden only={["md", "lg", "xl"]}>
-            <IconButton
-              aria-controls="simple-menu"
-              aria-haspopup="true"
-              onClick={handleOpenMenuClick}
-            >
-              <MoreVert></MoreVert>
-            </IconButton>
-            <Menu
-              id="simple-menu"
-              keepMounted
-              anchorEl={anchorEl}
-              open={Boolean(anchorEl)}
-              onClose={handleMenuItemClick}
-            >
-              <MenuItem onClick={handleMenuItemClick}>
+              {showEmoji ? (
+                <div className={classes.emojiBox}>
+                  <ClickAwayListener onClickAway={(e) => setShowEmoji(false)}>
+                    <Picker
+                      perLine={16}
+                      showPreview={false}
+                      showSkinTones={false}
+                      onSelect={handleAddEmoji}
+                    />
+                  </ClickAwayListener>
+                </div>
+              ) : null}
+
+              <input
+                multiple
+                type="file"
+                id="upload-button"
+                disabled={loading || recording || ticketStatus !== "open"}
+                className={classes.uploadInput}
+                onChange={handleChangeMedias}
+              />
+              <label htmlFor="upload-button">
                 <IconButton
-                  aria-label="emojiPicker"
+                  aria-label="upload"
                   component="span"
                   disabled={loading || recording || ticketStatus !== "open"}
-                  onClick={(e) => setShowEmoji((prevState) => !prevState)}
+                  onMouseOver={() => setOnDragEnter(true)}
                 >
-                  <MoodIcon className={classes.sendMessageIcons} />
+                  <AttachFileIcon className={classes.sendMessageIcons} />
                 </IconButton>
-              </MenuItem>
-              <MenuItem onClick={handleMenuItemClick}>
-                <input
-                  multiple
-                  type="file" 
-                  id="upload-button"
-                  disabled={loading || recording || ticketStatus !== "open"}
-                  className={classes.uploadInput}
-                  onChange={handleChangeMedias}
-                />
-                <label htmlFor="upload-button">
+              </label>
+              <FormControlLabel
+                style={{ marginRight: 7, color: "gray" }}
+                label={i18n.t("messagesInput.signMessage")}
+                labelPlacement="start"
+                control={
+                  <Switch
+                    size="small"
+                    checked={signMessage}
+                    onChange={(e) => {
+                      setSignMessage(e.target.checked);
+                    }}
+                    name="showAllTickets"
+                    color="primary"
+                  />
+                }
+              />
+            </Hidden>
+            <Hidden only={["md", "lg", "xl"]}>
+              <IconButton
+                aria-controls="simple-menu"
+                aria-haspopup="true"
+                onClick={handleOpenMenuClick}
+              >
+                <MoreVert></MoreVert>
+              </IconButton>
+              <Menu
+                id="simple-menu"
+                keepMounted
+                anchorEl={anchorEl}
+                open={Boolean(anchorEl)}
+                onClose={handleMenuItemClick}
+              >
+                <MenuItem onClick={handleMenuItemClick}>
                   <IconButton
-                    aria-label="upload"
+                    aria-label="emojiPicker"
                     component="span"
                     disabled={loading || recording || ticketStatus !== "open"}
+                    onClick={(e) => setShowEmoji((prevState) => !prevState)}
                   >
-                    <AttachFileIcon className={classes.sendMessageIcons} />
+                    <MoodIcon className={classes.sendMessageIcons} />
                   </IconButton>
-                </label>
-              </MenuItem>
-              <MenuItem onClick={handleMenuItemClick}>
-                <FormControlLabel
-                  style={{ marginRight: 7, color: "gray" }}
-                  label={i18n.t("messagesInput.signMessage")}
-                  labelPlacement="start"
-                  control={
-                    <Switch
-                      size="small"
-                      checked={signMessage}
-                      onChange={(e) => {
-                        setSignMessage(e.target.checked);
-                      }}
-                      name="showAllTickets"
-                      color="primary"
-                    />
-                  }
-                />
-              </MenuItem>
-            </Menu>
-          </Hidden>
-          <div className={classes.messageInputWrapper}>
-            <InputBase
-              inputRef={(input) => {
-                input && input.focus();
-                input && (inputRef.current = input);
-              }}
-              className={classes.messageInput}
-              placeholder={
-                ticketStatus === "open"
-                  ? i18n.t("messagesInput.placeholderOpen")
-                  : i18n.t("messagesInput.placeholderClosed")
-              }
-              multiline
-              maxRows={5}
-              value={inputMessage}
-              onChange={handleChangeInput}
-              disabled={recording || loading || ticketStatus !== "open"}
-              onPaste={(e) => {
-                ticketStatus === "open" && handleInputPaste(e);
-              }}
-              onKeyPress={(e) => {
-                if (loading || e.shiftKey) return;
-                else if (e.key === "Enter") {
-                  handleSendMessage();
+                </MenuItem>
+                <MenuItem onClick={handleMenuItemClick}>
+                  <input
+                    multiple
+                    type="file"
+                    id="upload-button"
+                    disabled={loading || recording || ticketStatus !== "open"}
+                    className={classes.uploadInput}
+                    onChange={handleChangeMedias}
+                  />
+                  <label htmlFor="upload-button">
+                    <IconButton
+                      aria-label="upload"
+                      component="span"
+                      disabled={loading || recording || ticketStatus !== "open"}
+                    >
+                      <AttachFileIcon className={classes.sendMessageIcons} />
+                    </IconButton>
+                  </label>
+                </MenuItem>
+                <MenuItem onClick={handleMenuItemClick}>
+                  <FormControlLabel
+                    style={{ marginRight: 7, color: "gray" }}
+                    label={i18n.t("messagesInput.signMessage")}
+                    labelPlacement="start"
+                    control={
+                      <Switch
+                        size="small"
+                        checked={signMessage}
+                        onChange={(e) => {
+                          setSignMessage(e.target.checked);
+                        }}
+                        name="showAllTickets"
+                        color="primary"
+                      />
+                    }
+                  />
+                </MenuItem>
+              </Menu>
+            </Hidden>
+            <div className={classes.messageInputWrapper}>
+              <InputBase
+                inputRef={(input) => {
+                  input && input.focus();
+                  input && (inputRef.current = input);
+                }}
+                className={classes.messageInput}
+                placeholder={
+                  ticketStatus === "open"
+                    ? i18n.t("messagesInput.placeholderOpen")
+                    : i18n.t("messagesInput.placeholderClosed")
                 }
-              }}
-            />
-            {typeBar ? (
-              <ul className={classes.messageQuickAnswersWrapper}>
-                {quickAnswers.map((value, index) => {
-                  return (
-                    <li
-                      className={classes.messageQuickAnswersWrapperItem}
-                      key={index}
-                    >
-                      {/* eslint-disable-next-line jsx-a11y/anchor-is-valid */}
-                      <a onClick={() => handleQuickAnswersClick(value.message)}>
-                        {`${value.shortcut} - ${value.message}`}
-                      </a>
-                    </li>
-                  );
-                })}
-              </ul>
-            ) : (
-              <div></div>
-            )}
-          </div>
-          {inputMessage ? (
-            <>
-            <div style={{ display: "flex", alignItems: "center"}}>
-               <ButtonGroup variant="contained" ref={anchorRef} aria-label="split button">
-                  <Button
-                    onClick={() => handleSendMessage()}
-                    aria-label="sendMessage"
-                    component="span"
+                multiline
+                maxRows={5}
+                value={inputMessage}
+                onChange={handleChangeInput}
+                disabled={recording || loading || ticketStatus !== "open"}
+                onPaste={(e) => {
+                  ticketStatus === "open" && handleInputPaste(e);
+                }}
+                onKeyPress={(e) => {
+                  if (loading || e.shiftKey) return;
+                  else if (e.key === "Enter") {
+                    handleSendMessage();
+                  }
+                }}
+              />
+              {typeBar ? (
+                <ul className={classes.messageQuickAnswersWrapper}>
+                  {quickAnswers.map((value, index) => {
+                    return (
+                      <li
+                        className={classes.messageQuickAnswersWrapperItem}
+                        key={index}
+                      >
+                        {/* eslint-disable-next-line jsx-a11y/anchor-is-valid */}
+                        <a
+                          onClick={() => handleQuickAnswersClick(value.message)}
+                        >
+                          {`${value.shortcut} - ${value.message}`}
+                        </a>
+                      </li>
+                    );
+                  })}
+                </ul>
+              ) : (
+                <div></div>
+              )}
+              {typeBackslash &&
+              process.env.REACT_APP_MACRO_FUNCTION === "true" ? (
+                <ul className={classes.messageQuickAnswersWrapper}>
+                  {macros.map((value, index) => {
+                    return (
+                      <li
+                        className={classes.messageQuickAnswersWrapperItem}
+                        key={index}
+                      >
+                        {/* eslint-disable-next-line jsx-a11y/anchor-is-valid */}
+                        <a onClick={() => handleMacroClick(value.id)}>
+                          {`${value.shortcut}`}
+                        </a>
+                      </li>
+                    );
+                  })}
+                </ul>
+              ) : null}
+            </div>
+            {inputMessage ? (
+              <>
+                <div style={{ display: "flex", alignItems: "center" }}>
+                  <ButtonGroup
+                    variant="contained"
+                    ref={anchorRef}
+                    aria-label="split button"
                   >
-                    <SendIcon className={classes.sendMessageIcons} />
-                  </Button>
-                  <Button
-                    size="small"
-                    aria-controls={openSendMenu ? 'split-button-menu' : undefined}
-                    aria-expanded={openSendMenu ? 'true' : undefined}
-                    aria-label="select merge strategy"
-                    aria-haspopup="menu"
-                    onClick={() => setOpenSendMenu(e => !e)}
-                  >
-                    <ArrowDropDown className={classes.sendMessageIcons} style={{ transform: "rotate(180deg)"}}/>
-                  </Button>
-                </ButtonGroup>
-                <Popper open={openSendMenu} anchorEl={anchorRef.current} role={undefined} transition disablePortal>
-                  {({ TransitionProps, placement }) => (
-                    <Grow
-                      {...TransitionProps}
-                      style={{
-                        transformOrigin: placement === 'bottom' ? 'center top' : 'center bottom',
-                      }}
+                    <Button
+                      onClick={() => handleSendMessage()}
+                      aria-label="sendMessage"
+                      component="span"
                     >
-                      <Paper>
-                        <ClickAwayListener onClickAway={() => setOpenSendMenu(false)}>
-                          <MenuList id="split-button-menu">
+                      <SendIcon className={classes.sendMessageIcons} />
+                    </Button>
+                    <Button
+                      size="small"
+                      aria-controls={
+                        openSendMenu ? "split-button-menu" : undefined
+                      }
+                      aria-expanded={openSendMenu ? "true" : undefined}
+                      aria-label="select merge strategy"
+                      aria-haspopup="menu"
+                      onClick={() => setOpenSendMenu((e) => !e)}
+                    >
+                      <ArrowDropDown
+                        className={classes.sendMessageIcons}
+                        style={{ transform: "rotate(180deg)" }}
+                      />
+                    </Button>
+                  </ButtonGroup>
+                  <Popper
+                    open={openSendMenu}
+                    anchorEl={anchorRef.current}
+                    role={undefined}
+                    transition
+                    disablePortal
+                  >
+                    {({ TransitionProps, placement }) => (
+                      <Grow
+                        {...TransitionProps}
+                        style={{
+                          transformOrigin:
+                            placement === "bottom"
+                              ? "center top"
+                              : "center bottom",
+                        }}
+                      >
+                        <Paper>
+                          <ClickAwayListener
+                            onClickAway={() => setOpenSendMenu(false)}
+                          >
+                            <MenuList id="split-button-menu">
                               <MenuItem
                                 onClick={() => {
-                                  setScheduledModalOpen(true)
-                                  setOpenSendMenu(false)
-                                  }
-                                }
-                                style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}
+                                  setScheduledModalOpen(true);
+                                  setOpenSendMenu(false);
+                                }}
+                                style={{
+                                  display: "flex",
+                                  justifyContent: "space-between",
+                                  alignItems: "center",
+                                }}
                               >
-                                <AccessTimeIcon className={classes.sendMessageOptionsIcons}/>Agendar
+                                <AccessTimeIcon
+                                  className={classes.sendMessageOptionsIcons}
+                                />
+                                Agendar
                               </MenuItem>
                               <MenuItem
-                                onClick={
-                                  () => handleSendMessage(true)
-                                }
-                                style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}
+                                onClick={() => handleSendMessage(true)}
+                                style={{
+                                  display: "flex",
+                                  justifyContent: "space-between",
+                                  alignItems: "center",
+                                }}
                               >
-                                <InsertCommentIcon className={classes.sendMessageOptionsIcons}/>Comentar
+                                <InsertCommentIcon
+                                  className={classes.sendMessageOptionsIcons}
+                                />
+                                Comentar
                               </MenuItem>
-                          </MenuList>
-                        </ClickAwayListener>
-                      </Paper>
-                    </Grow>
-                  )}
-                </Popper>
-            </div>
-            </>
-          ) : recording ? (
-            <div className={classes.recorderWrapper}>
-              <IconButton
-                aria-label="cancelRecording"
-                component="span"
-                fontSize="large"
-                disabled={loading}
-                onClick={handleCancelAudio}
-              >
-                <HighlightOffIcon className={classes.cancelAudioIcon} />
-              </IconButton>
-              {loading ? (
-                <div>
-                  <CircularProgress className={classes.audioLoading} />
+                            </MenuList>
+                          </ClickAwayListener>
+                        </Paper>
+                      </Grow>
+                    )}
+                  </Popper>
                 </div>
-              ) : (
-                <RecordingTimer />
-              )}
+              </>
+            ) : recording ? (
+              <div className={classes.recorderWrapper}>
+                <IconButton
+                  aria-label="cancelRecording"
+                  component="span"
+                  fontSize="large"
+                  disabled={loading}
+                  onClick={handleCancelAudio}
+                >
+                  <HighlightOffIcon className={classes.cancelAudioIcon} />
+                </IconButton>
+                {loading ? (
+                  <div>
+                    <CircularProgress className={classes.audioLoading} />
+                  </div>
+                ) : (
+                  <RecordingTimer />
+                )}
 
+                <IconButton
+                  aria-label="sendRecordedAudio"
+                  component="span"
+                  onClick={handleUploadAudio}
+                  disabled={loading}
+                >
+                  <CheckCircleOutlineIcon className={classes.sendAudioIcon} />
+                </IconButton>
+              </div>
+            ) : (
               <IconButton
-                aria-label="sendRecordedAudio"
+                aria-label="showRecorder"
                 component="span"
-                onClick={handleUploadAudio}
-                disabled={loading}
+                disabled={loading || ticketStatus !== "open"}
+                onClick={handleStartRecording}
               >
-                <CheckCircleOutlineIcon className={classes.sendAudioIcon} />
+                <MicIcon className={classes.sendMessageIcons} />
               </IconButton>
-            </div>
-          ) : (
-            <IconButton
-              aria-label="showRecorder"
-              component="span"
-              disabled={loading || ticketStatus !== "open"}
-              onClick={handleStartRecording}
-            >
-              <MicIcon className={classes.sendMessageIcons} />
-            </IconButton>
-          )}
-        </div>
-      </Paper>
+            )}
+          </div>
+        </Paper>
       </>
     );
   }
