@@ -36,7 +36,7 @@ const SendWhatsAppMessage = async ({
       const sentMessage = await wbot.sendMessage(
         `${ticket?.contact?.number}@${ticket?.isGroup ? "g" : "c"}.us`,
         formatBody(body, ticket),
-        ticket?.isGroup
+        quotedMsg?.fromMe && ticket?.isGroup
           ? {
               linkPreview: false
             }
