@@ -35,6 +35,9 @@ const useStyles = makeStyles((theme) => ({
     padding: "3px",
     margin: "3px",
   },
+  deleteButton: {
+    cursor: "pointer",
+  },
 }));
 
 const filter = createFilterOptions({
@@ -184,6 +187,7 @@ const CreateGroupModal = ({
               <div key={contact.id} className={classes.contact}>
                 <span className={classes.contactName}>{contact.name}</span>
                 <DeleteOutline
+                  className={classes.deleteButton}
                   onClick={() => handleDeleteContactFromList(contact.id)}
                   color="secondary"
                 />
