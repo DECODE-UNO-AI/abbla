@@ -11,6 +11,7 @@ import ShowWhatsAppService from "../services/WhatsappService/ShowWhatsAppService
 import ShowQueueService from "../services/QueueService/ShowQueueService";
 import formatBody from "../helpers/Mustache";
 import ListTicketsServiceAdmin from "../services/TicketServices/ListTicketsServiceAdmin";
+import GetContactsByQueueIdService from "../services/TicketServices/GetContactsByQueueIdService";
 
 type IndexQuery = {
   adminFilterOptions: string;
@@ -31,6 +32,10 @@ interface TicketData {
   queueId: number;
   userId: number;
   transf: boolean;
+}
+
+interface ContactSearchData {
+  queueIds: string[];
 }
 
 export const index = async (req: Request, res: Response): Promise<Response> => {
@@ -179,4 +184,16 @@ export const remove = async (
   });
 
   return res.status(200).json({ message: "ticket deleted" });
+};
+
+export const getContactsByQueueId = async (req: Request, res: Response) => {
+  const { queueIds }: ContactSearchData = req.body;
+
+  try {
+    const contacts = await GetContactsByQueueIdService(queueIds);
+
+    return res.status(200).json({ contacts });
+  } catch (error) {
+    throw new Error(error);
+  }
 };
