@@ -155,6 +155,7 @@ const NewTicketModal = ({ modalOpen, onClose }) => {
             selectedContact={selectedContact}
             handleClose={handleClose}
             setShowCreateGroup={setShowCreateGroup}
+            user={user}
           />
         ) : null}
       </Dialog>
