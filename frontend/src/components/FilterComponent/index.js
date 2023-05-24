@@ -108,7 +108,7 @@ const FilterComponent = ({
   const [filters, dispatch] = useReducer(reducer, {});
 
   const { user: currentUser } = useContext(AuthContext);
-  console.log("setores", setores);
+
   useEffect(() => {
     const queuesChildren = user?.queues.map((queue) => {
       return { value: `${queue.id}`, label: queue.name };
