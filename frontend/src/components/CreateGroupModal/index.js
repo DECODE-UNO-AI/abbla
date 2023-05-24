@@ -13,6 +13,9 @@ import TextField from "@material-ui/core/TextField";
 import { i18n } from "../../translate/i18n";
 
 import { FormControl, makeStyles } from "@material-ui/core";
+import FilterComponent from "../FilterComponent";
+import api from "../../services/api";
+import toastError from "../../errors/toastError";
 
 const useStyles = makeStyles((theme) => ({
   contactsListContainer: {
@@ -55,18 +58,33 @@ const CreateGroupModal = ({
   selectedContact,
   handleClose,
   setShowCreateGroup,
+  user,
 }) => {
   const [groupName, setGroupName] = useState("");
   const [contacts, setContacts] = useState([]);
   const [clearInput, setClearInput] = useState(true);
+  const [adminFilterOptions, setAdminFilterOptions] = useState(null);
+  const [width, setWidth] = useState("34px");
+  const [filterModalOpen, setFilterModalOpen] = useState(false);
   const classes = useStyles();
 
   useEffect(() => {
-    return () => {
-      setShowCreateGroup(false);
-      setContacts([]);
-    };
-  }, []);
+    if (!adminFilterOptions) return;
+
+    fetchContacts();
+  }, [adminFilterOptions]);
+
+  const fetchContacts = async () => {
+    try {
+      const { data } = await api.post("/tickets/contacts", {
+        queueIds: adminFilterOptions.queue,
+      });
+
+      console.log("data", data);
+    } catch (error) {
+      toastError(error);
+    }
+  };
 
   const handleSelectOption = (e, newValue) => {
     if (newValue?.number) {
@@ -107,6 +125,7 @@ const CreateGroupModal = ({
 
   const handleCreateGroup = () => {
     console.log("creating...");
+    setShowCreateGroup(false);
     handleClose();
   };
 
@@ -118,8 +137,15 @@ const CreateGroupModal = ({
 
   return (
     <>
-      <DialogTitle id="form-dialog-title">Criar Grupo</DialogTitle>
-      <FormControl>
+      <DialogTitle
+        style={!filterModalOpen ? { display: "flex" } : { display: "none" }}
+        id="form-dialog-title"
+      >
+        Criar Grupo
+      </DialogTitle>
+      <FormControl
+        style={!filterModalOpen ? { display: "flex" } : { display: "none" }}
+      >
         <DialogContent dividers>
           <TextField
             style={{ width: 300, marginBottom: 20 }}
@@ -180,8 +206,12 @@ const CreateGroupModal = ({
           />
         </DialogContent>
       </FormControl>
+
       {contacts.length > 0 ? (
-        <div className={classes.contactsListContainer}>
+        <div
+          className={classes.contactsListContainer}
+          style={!filterModalOpen ? { display: "flex" } : { display: "none" }}
+        >
           {contacts.map((contact) => {
             return (
               <div key={contact.id} className={classes.contact}>
@@ -197,7 +227,30 @@ const CreateGroupModal = ({
         </div>
       ) : null}
       <DialogActions>
+        {user?.profile === "admin" || user?.profile === "supervisor" ? (
+          <div
+            style={
+              width !== "34px"
+                ? {
+                    width: width,
+                    height: "651px",
+                    backgroundColor: "transparent",
+                  }
+                : null
+            }
+          >
+            <FilterComponent
+              user={user}
+              onSubmit={setAdminFilterOptions}
+              calledByGroupCreator
+              setWidth={setWidth}
+              setFilterModalOpen={setFilterModalOpen}
+            />
+          </div>
+        ) : null}
+
         <ButtonWithSpinner
+          style={!filterModalOpen ? { display: "flex" } : { display: "none" }}
           variant="contained"
           type="button"
           disabled={!selectedContact}
@@ -218,6 +271,7 @@ const CreateGroupModal = ({
           Adicionar ao Grupo
         </ButtonWithSpinner>
         <Button
+          style={!filterModalOpen ? { display: "flex" } : { display: "none" }}
           onClick={handleCreateGroup}
           color="secondary"
           disabled={loading}
