@@ -18,6 +18,7 @@ import MacroRoutes from "./MacroRoutes";
 import restartRoutes from "./restartRoutes";
 import scheduleMessageRoutes from "./scheduledMessageRoutes";
 import CampaignContactsListRoutes from "./campaignContactsListRoutes";
+import groupsRoutes from "./groupsRouter";
 
 const routes = Router();
 
@@ -43,5 +44,6 @@ if (process.env.CAMPAIGN_FUNCTION === "true") {
 if (process.env.MACRO_FUNCTION === "true") {
   routes.use(MacroRoutes);
 }
+routes.use(groupsRoutes);
 
 export default routes;
