@@ -153,10 +153,20 @@ const CreateGroupModal = ({
     }
   };
 
-  const handleCreateGroup = () => {
-    console.log("creating...");
-    setShowCreateGroup(false);
-    handleClose();
+  const handleCreateGroup = async () => {
+    try {
+      await api.post("/groups", {
+        groupName,
+        contacts,
+        userId: user.id,
+        whatsappId: user.whatsappId,
+      });
+    } catch (error) {
+      toastError(error);
+    } finally {
+      setShowCreateGroup(false);
+      handleClose();
+    }
   };
 
   const handleDeleteContactFromList = (contactId) => {
@@ -304,7 +314,7 @@ const CreateGroupModal = ({
           style={!filterModalOpen ? { display: "flex" } : { display: "none" }}
           onClick={handleCreateGroup}
           color="secondary"
-          disabled={loading}
+          disabled={!groupName && (!selectedContact || contacts.length > 0)}
           variant="outlined"
         >
           Finalizar
