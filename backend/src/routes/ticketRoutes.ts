@@ -18,7 +18,7 @@ ticketRoutes.delete("/tickets/:ticketId", isAuth, TicketController.remove);
 ticketRoutes.post(
   "/tickets/contacts",
   isAuth,
-  TicketController.getContactsByQueueId
+  TicketController.getContactsByFilters
 );
 
 export default ticketRoutes;
