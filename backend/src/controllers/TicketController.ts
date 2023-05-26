@@ -11,7 +11,7 @@ import ShowWhatsAppService from "../services/WhatsappService/ShowWhatsAppService
 import ShowQueueService from "../services/QueueService/ShowQueueService";
 import formatBody from "../helpers/Mustache";
 import ListTicketsServiceAdmin from "../services/TicketServices/ListTicketsServiceAdmin";
-import GetContactsByQueueIdService from "../services/TicketServices/GetContactsByQueueIdService";
+import getContactsByFiltersService from "../services/TicketServices/GetContactsByFiltersService";
 
 type IndexQuery = {
   adminFilterOptions: string;
@@ -36,6 +36,11 @@ interface TicketData {
 
 interface ContactSearchData {
   queueIds: string[];
+  createdAt: number;
+  updatedAt: number;
+  atendente: number[];
+  connection: number[];
+  tag: number[];
 }
 
 export const index = async (req: Request, res: Response): Promise<Response> => {
@@ -186,11 +191,25 @@ export const remove = async (
   return res.status(200).json({ message: "ticket deleted" });
 };
 
-export const getContactsByQueueId = async (req: Request, res: Response) => {
-  const { queueIds }: ContactSearchData = req.body;
+export const getContactsByFilters = async (req: Request, res: Response) => {
+  const {
+    createdAt,
+    updatedAt,
+    queueIds,
+    atendente,
+    connection,
+    tag
+  }: ContactSearchData = req.body;
 
   try {
-    const contacts = await GetContactsByQueueIdService(queueIds);
+    const contacts = await getContactsByFiltersService({
+      createdAt,
+      updatedAt,
+      queueIds,
+      atendente,
+      connection,
+      tag
+    });
 
     return res.status(200).json({ contacts });
   } catch (error) {
