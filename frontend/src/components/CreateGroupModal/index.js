@@ -77,10 +77,40 @@ const CreateGroupModal = ({
   const fetchContacts = async () => {
     try {
       const { data } = await api.post("/tickets/contacts", {
-        queueIds: adminFilterOptions.queue,
+        createdAt:
+          new Date(adminFilterOptions?.date?.[0]?.$d).getTime() || null,
+        updatedAt:
+          new Date(adminFilterOptions?.date?.[1]?.$d).getTime() || null,
+        queueIds:
+          adminFilterOptions?.queue?.length > 0
+            ? adminFilterOptions?.queue
+            : null,
+        atendente:
+          adminFilterOptions?.atendente?.length > 0
+            ? adminFilterOptions?.atendente
+            : null,
+        connection:
+          adminFilterOptions?.connection?.lenth > 0
+            ? adminFilterOptions?.connection
+            : null,
+        tag:
+          adminFilterOptions?.tag?.length > 0 ? adminFilterOptions?.tag : null,
       });
 
-      console.log("data", data);
+      const tratedContact = data?.contacts?.map((contact) => {
+        return {
+          id: contact.id,
+          name: contact.name,
+          number: contact.number,
+        };
+      });
+
+      setContacts(
+        tratedContact.filter(
+          (contact, index, array) =>
+            index === array.findIndex((t) => t.id === contact.id)
+        )
+      );
     } catch (error) {
       toastError(error);
     }
