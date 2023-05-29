@@ -3,6 +3,7 @@ import { Request, Response } from "express";
 import AppError from "../errors/AppError";
 import createGroupService from "../services/GroupServices/CreateGroupService";
 import addParticipantsToGroupService from "../services/GroupServices/addParticipantsToGroupService";
+import getAllParticipantsService from "../services/GroupServices/GetAllParticipantsService";
 
 interface GroupCreateData {
   groupName: string;
@@ -14,6 +15,11 @@ interface GroupCreateData {
 interface AddParticipantsData {
   groupId: string;
   participants: { id: number; name: string; number: string }[];
+  whatsappId: number;
+}
+
+interface getAllParticipantsData {
+  groupId: string;
   whatsappId: number;
 }
 
@@ -79,6 +85,21 @@ export const addParticipantsToGroup = async (req: Request, res: Response) => {
     await addParticipantsToGroupService({ groupId, participants, whatsappId });
 
     return res.status(200).send();
+  } catch (error) {
+    throw new AppError(error.message);
+  }
+};
+
+export const getAllParticipants = async (req: Request, res: Response) => {
+  const { groupId, whatsappId }: getAllParticipantsData = req.body;
+
+  try {
+    const participants = await getAllParticipantsService({
+      groupId,
+      whatsappId
+    });
+
+    return res.status(200).json({ participants });
   } catch (error) {
     throw new AppError(error.message);
   }
