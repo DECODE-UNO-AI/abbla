@@ -11,11 +11,14 @@ import toastError from "../../errors/toastError";
 import { Can } from "../Can";
 import { AuthContext } from "../../context/Auth/AuthContext";
 import AddNewParticipantsModal from "../AddNewParticipantsModal";
+import RemoveNewParticipantsModal from "../RemoveNewParticipantsModal";
 
 const TicketOptionsMenu = ({ ticket, menuOpen, handleClose, anchorEl }) => {
   const [confirmationOpen, setConfirmationOpen] = useState(false);
   const [transferTicketModalOpen, setTransferTicketModalOpen] = useState(false);
   const [showAddParticipantsModal, setShowAddParticipantsModal] =
+    useState(false);
+  const [showRemoveParticipantsModal, setShowRemoveParticipantsModal] =
     useState(false);
   const isMounted = useRef(true);
   const { user } = useContext(AuthContext);
@@ -81,9 +84,14 @@ const TicketOptionsMenu = ({ ticket, menuOpen, handleClose, anchorEl }) => {
           )}
         />
         {ticket?.isGroup ? (
-          <MenuItem onClick={() => setShowAddParticipantsModal(true)}>
-            Adicionar participante
-          </MenuItem>
+          <>
+            <MenuItem onClick={() => setShowAddParticipantsModal(true)}>
+              Adicionar participante
+            </MenuItem>
+            <MenuItem onClick={() => setShowRemoveParticipantsModal(true)}>
+              Remover participante
+            </MenuItem>
+          </>
         ) : null}
       </Menu>
       <ConfirmationModal
@@ -108,6 +116,13 @@ const TicketOptionsMenu = ({ ticket, menuOpen, handleClose, anchorEl }) => {
           showAddParticipantsModal={showAddParticipantsModal}
           setShowAddParticipantsModal={setShowAddParticipantsModal}
           user={user}
+          ticket={ticket}
+        />
+      ) : null}
+      {showRemoveParticipantsModal ? (
+        <RemoveNewParticipantsModal
+          showRemoveParticipantsModal={showRemoveParticipantsModal}
+          setShowRemoveParticipantsModal={setShowRemoveParticipantsModal}
           ticket={ticket}
         />
       ) : null}
