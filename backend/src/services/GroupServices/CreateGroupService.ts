@@ -1,8 +1,5 @@
-import GetDefaultWhatsApp from "../../helpers/GetDefaultWhatsApp";
 import { getIO } from "../../libs/socket";
 import { getWbot } from "../../libs/wbot";
-import Ticket from "../../models/Ticket";
-import User from "../../models/User";
 import CreateContactService from "../ContactServices/CreateContactService";
 import CreateTicketService from "../TicketServices/CreateTicketService";
 
