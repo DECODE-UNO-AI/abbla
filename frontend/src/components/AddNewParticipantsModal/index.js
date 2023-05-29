@@ -15,45 +15,23 @@ import Autocomplete, {
 } from "@material-ui/lab/Autocomplete";
 import FilterComponent from "../FilterComponent";
 import ButtonWithSpinner from "../ButtonWithSpinner";
-import { DeleteOutline } from "@material-ui/icons";
 import { useEffect, useState } from "react";
 import api from "../../services/api";
 import { i18n } from "../../translate/i18n";
 import toastError from "../../errors/toastError";
+import ListParticipants from "../ListParticipants";
 
 const filter = createFilterOptions({
   trim: true,
 });
 
 const useStyles = makeStyles((theme) => ({
-  contactsListContainer: {
-    width: "100%",
-    display: "flex",
-    flexDirection: "column",
-    alignItems: "center",
-    margin: "10px 0",
-    padding: "5px 24px",
-    maxHeight: "68px",
-    overflowY: "scroll",
-    overflowX: "hidden",
-  },
-  contact: {
-    width: "100%",
-    display: "flex",
-    justifyContent: "space-between",
-    alignItems: "center",
-    borderBottom: "1px solid black",
-    padding: "3px",
-    margin: "3px",
-  },
-  deleteButton: {
-    cursor: "pointer",
-  },
   alertText: {
     width: "100%",
     fontSize: "16px",
     color: "red",
     textAlign: "center",
+    fontWeight: "bold",
   },
 }));
 
@@ -188,7 +166,7 @@ const AddNewParticipantsModal = ({
     }
   };
 
-  const handleDeleteContactFromList = (contactId) => {
+  const handleDeleteContactFromList = ({ contactId }) => {
     const newContacts = participants.filter(
       (contact) => contact.id !== contactId
     );
@@ -269,23 +247,11 @@ const AddNewParticipantsModal = ({
         <p className={classes.alertText}>Contato já está no grupo</p>
       ) : null}
       {participants.length > 0 ? (
-        <div
-          className={classes.contactsListContainer}
-          style={!filterModalOpen ? { display: "flex" } : { display: "none" }}
-        >
-          {participants.map((contact) => {
-            return contact.name ? (
-              <div key={contact.id} className={classes.contact}>
-                <span className={classes.contactName}>{contact.name}</span>
-                <DeleteOutline
-                  className={classes.deleteButton}
-                  onClick={() => handleDeleteContactFromList(contact.id)}
-                  color="secondary"
-                />
-              </div>
-            ) : null;
-          })}
-        </div>
+        <ListParticipants
+          participants={participants}
+          filterModalOpen={filterModalOpen}
+          handleDelete={handleDeleteContactFromList}
+        />
       ) : null}
       <DialogActions>
         {user?.profile === "admin" || user?.profile === "supervisor" ? (
