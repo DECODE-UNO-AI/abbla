@@ -1,5 +1,6 @@
 import { GroupChat } from "whatsapp-web.js";
 import { getWbot } from "../../libs/wbot";
+import Contact from "../../models/Contact";
 
 interface getAllParticipantsData {
   groupId: string;
@@ -14,11 +15,18 @@ const getAllParticipantsService = async ({
 
   const group = (await wbot.getChatById(`${groupId}@g.us`)) as GroupChat;
 
-  const participants = group.participants.map(participant => ({
-    number: participant.id.user
-  }));
+  const participants = group.participants.map(
+    participant => participant.id.user
+  );
 
-  return participants;
+  const contacts = await Contact.findAll({
+    where: {
+      number: participants
+    },
+    attributes: ["id", "name", "number"]
+  });
+
+  return contacts;
 };
 
 export default getAllParticipantsService;
