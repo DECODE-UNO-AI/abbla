@@ -26,4 +26,10 @@ groupsRoutes.post(
   GroupsController.getAllParticipants
 );
 
+groupsRoutes.post(
+  "/groups/removeParticipant",
+  isAuth,
+  GroupsController.removeParticipant
+);
+
 export default groupsRoutes;
