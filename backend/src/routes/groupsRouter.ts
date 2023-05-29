@@ -14,4 +14,10 @@ groupsRoutes.post(
   GroupsController.store
 );
 
+groupsRoutes.post(
+  "/groups/addParticipants",
+  isAuth,
+  GroupsController.addParticipantsToGroup
+);
+
 export default groupsRoutes;
