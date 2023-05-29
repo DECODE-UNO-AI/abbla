@@ -20,4 +20,10 @@ groupsRoutes.post(
   GroupsController.addParticipantsToGroup
 );
 
+groupsRoutes.post(
+  "/groups/participants",
+  isAuth,
+  GroupsController.getAllParticipants
+);
+
 export default groupsRoutes;
