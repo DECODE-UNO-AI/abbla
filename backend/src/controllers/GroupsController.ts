@@ -2,6 +2,7 @@ import * as Yup from "yup";
 import { Request, Response } from "express";
 import AppError from "../errors/AppError";
 import createGroupService from "../services/GroupServices/CreateGroupService";
+import addParticipantsToGroupService from "../services/GroupServices/addParticipantsToGroupService";
 
 interface GroupCreateData {
   groupName: string;
@@ -10,11 +11,16 @@ interface GroupCreateData {
   whatsappId: number;
 }
 
+interface AddParticipantsData {
+  groupId: string;
+  participants: { id: number; name: string; number: string }[];
+  whatsappId: number;
+}
+
 export const store = async (req: Request, res: Response) => {
   const { groupName, contacts, userId, whatsappId }: GroupCreateData = req.body;
-  const { id, profile } = req.user;
+  const { profile } = req.user;
   // const contactsCSV = req.files as Express.Multer.File[];
-  console.log("", whatsappId);
   if (!whatsappId) {
     throw new AppError("WHATSAPPID_IS_REQUIRED", 403);
   }
@@ -52,6 +58,27 @@ export const store = async (req: Request, res: Response) => {
     });
 
     return res.status(201).send();
+  } catch (error) {
+    throw new AppError(error.message);
+  }
+};
+
+export const addParticipantsToGroup = async (req: Request, res: Response) => {
+  const { groupId, participants, whatsappId }: AddParticipantsData = req.body;
+  const { profile } = req.user;
+
+  if (!groupId) {
+    throw new AppError("GROUPID_IS_REQUIRED", 403);
+  }
+
+  if (profile !== "admin") {
+    throw new AppError("ERR_NO_PERMISSION", 403);
+  }
+
+  try {
+    await addParticipantsToGroupService({ groupId, participants, whatsappId });
+
+    return res.status(200).send();
   } catch (error) {
     throw new AppError(error.message);
   }
