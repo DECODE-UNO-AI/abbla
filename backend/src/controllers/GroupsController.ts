@@ -4,6 +4,7 @@ import AppError from "../errors/AppError";
 import createGroupService from "../services/GroupServices/CreateGroupService";
 import addParticipantsToGroupService from "../services/GroupServices/addParticipantsToGroupService";
 import getAllParticipantsService from "../services/GroupServices/GetAllParticipantsService";
+import removeParticipantService from "../services/GroupServices/RemoveParticipant";
 
 interface GroupCreateData {
   groupName: string;
@@ -18,7 +19,13 @@ interface AddParticipantsData {
   whatsappId: number;
 }
 
-interface getAllParticipantsData {
+interface GetAllParticipantsData {
+  groupId: string;
+  whatsappId: number;
+}
+
+interface RemoveParticipant {
+  contactIds: string[];
   groupId: string;
   whatsappId: number;
 }
@@ -91,7 +98,7 @@ export const addParticipantsToGroup = async (req: Request, res: Response) => {
 };
 
 export const getAllParticipants = async (req: Request, res: Response) => {
-  const { groupId, whatsappId }: getAllParticipantsData = req.body;
+  const { groupId, whatsappId }: GetAllParticipantsData = req.body;
 
   try {
     const participants = await getAllParticipantsService({
@@ -100,6 +107,18 @@ export const getAllParticipants = async (req: Request, res: Response) => {
     });
 
     return res.status(200).json({ participants });
+  } catch (error) {
+    throw new AppError(error.message);
+  }
+};
+
+export const removeParticipant = async (req: Request, res: Response) => {
+  const { contactIds, groupId, whatsappId }: RemoveParticipant = req.body;
+
+  try {
+    await removeParticipantService({ contactIds, groupId, whatsappId });
+
+    res.status(200).send();
   } catch (error) {
     throw new AppError(error.message);
   }
