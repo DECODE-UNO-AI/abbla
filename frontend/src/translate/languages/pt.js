@@ -852,6 +852,17 @@ const messages = {
           message: "Esta ação não pode ser revertida.",
         },
       },
+      choseOneOption: "Escolha uma das opções abaixo",
+      groupTextField: {
+        createGroupText: "Criar Grupo",
+        addToGroup: "Adicionar ao Grupo",
+        addParticipant: "Adicionar participante(s)",
+        removeParticipant: "Remover participante(s)",
+        finishe: "Finalizar",
+        alertText: "Participante já está no grupo",
+        editGroup: "Editar grupo",
+        labelInputGroupName: "Digite o nome do groupo",
+      },
       backendErrors: {
         ERR_NUMBER_NOT_FOUND: "Número não encontrado no WhatsApp.",
         ERR_NO_OTHER_WHATSAPP: "Deve haver pelo menos um WhatsApp padrão.",
