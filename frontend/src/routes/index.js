@@ -22,6 +22,7 @@ import Campaigns from "../pages/Campaigns";
 import Campaign from "../pages/Campaign";
 import ContactsLists from "../pages/ContactsLists";
 import Macros from "../pages/Macros";
+import Groups from "../pages/Groups";
 
 import { AuthProvider } from "../context/Auth/AuthContext";
 import { WhatsAppsProvider } from "../context/WhatsApp/WhatsAppsContext";
@@ -68,6 +69,7 @@ const Routes = () => {
               {process.env.REACT_APP_MACRO_FUNCTION === "true" ? (
                 <Route exact path="/macros" component={Macros} isPrivate />
               ) : null}
+              <Route exact path="/groups" component={Groups} isPrivate />
               <Route
                 exact
                 path="/connections"
