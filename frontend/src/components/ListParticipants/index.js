@@ -14,6 +14,15 @@ const useStyles = makeStyles((theme) => ({
     overflowY: "scroll",
     overflowX: "hidden",
   },
+  secondWayContactsListContainer: {
+    width: "100%",
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "center",
+    margin: "10px 0",
+    maxHeight: "68px",
+    overflowX: "hidden",
+  },
   contact: {
     width: "100%",
     display: "flex",
@@ -28,11 +37,20 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const ListParticipants = ({ participants, filterModalOpen, handleDelete }) => {
+const ListParticipants = ({
+  participants,
+  filterModalOpen,
+  handleDelete,
+  RemoveNewParticipantsModal = false,
+}) => {
   const classes = useStyles();
   return (
     <div
-      className={classes.contactsListContainer}
+      className={
+        !RemoveNewParticipantsModal
+          ? classes.contactsListContainer
+          : classes.secondWayContactsListContainer
+      }
       style={!filterModalOpen ? { display: "flex" } : { display: "none" }}
     >
       {participants.map((contact) => {
