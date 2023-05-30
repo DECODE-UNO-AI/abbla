@@ -181,7 +181,7 @@ const CreateGroupModal = ({
         style={!filterModalOpen ? { display: "flex" } : { display: "none" }}
         id="form-dialog-title"
       >
-        Criar Grupo
+        {i18n.t("groupTextField.createGroupText")}
       </DialogTitle>
       <FormControl
         style={!filterModalOpen ? { display: "flex" } : { display: "none" }}
@@ -308,7 +308,7 @@ const CreateGroupModal = ({
           color="primary"
           loading={loading}
         >
-          Adicionar ao Grupo
+          {i18n.t("groupTextField.addToGroup")}
         </ButtonWithSpinner>
         <Button
           style={!filterModalOpen ? { display: "flex" } : { display: "none" }}
@@ -317,7 +317,7 @@ const CreateGroupModal = ({
           disabled={!groupName && (!selectedContact || contacts.length > 0)}
           variant="outlined"
         >
-          Finalizar
+          {i18n.t("groupTextField.finishe")}
         </Button>
       </DialogActions>
     </>

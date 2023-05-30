@@ -88,13 +88,13 @@ const TicketOptionsMenu = ({ ticket, menuOpen, handleClose, anchorEl }) => {
         {ticket?.isGroup ? (
           <>
             <MenuItem onClick={() => setShowAddParticipantsModal(true)}>
-              Adicionar participante
+              {i18n.t("groupTextField.addParticipant")}
             </MenuItem>
             <MenuItem onClick={() => setShowRemoveParticipantsModal(true)}>
-              Remover participante
+              {i18n.t("groupTextField.removeParticipant")}
             </MenuItem>
             <MenuItem onClick={() => setShowEditGroupModal(true)}>
-              Editar grupo
+              {i18n.t("groupTextField.editGroup")}
             </MenuItem>
           </>
         ) : null}

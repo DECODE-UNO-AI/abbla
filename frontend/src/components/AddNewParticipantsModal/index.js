@@ -200,7 +200,9 @@ const AddNewParticipantsModal = ({
       open={showAddParticipantsModal}
       onClose={() => setShowAddParticipantsModal(false)}
     >
-      <DialogTitle id="form-dialog-title">Adicionar Participante</DialogTitle>
+      <DialogTitle id="form-dialog-title">
+        {i18n.t("groupTextField.addParticipant")}
+      </DialogTitle>
       <DialogContent dividers>
         <Autocomplete
           options={options}
@@ -244,7 +246,9 @@ const AddNewParticipantsModal = ({
         />
       </DialogContent>
       {showTextAlert ? (
-        <p className={classes.alertText}>Contato já está no grupo</p>
+        <p className={classes.alertText}>
+          {i18n.t("groupTextField.alertText")}
+        </p>
       ) : null}
       {participants.length > 0 ? (
         <ListParticipants
@@ -285,7 +289,7 @@ const AddNewParticipantsModal = ({
           color="primary"
           loading={loading}
         >
-          Adicionar ao Grupo
+          {i18n.t("groupTextField.addToGroup")}
         </ButtonWithSpinner>
         <Button
           style={!filterModalOpen ? { display: "flex" } : { display: "none" }}
@@ -294,7 +298,7 @@ const AddNewParticipantsModal = ({
           disabled={!hasParticipants || participants.length === 0}
           variant="outlined"
         >
-          Adicionar participante(s)
+          {i18n.t("groupTextField.addParticipant")}
         </Button>
       </DialogActions>
     </Dialog>

@@ -7,6 +7,7 @@ import { Button, makeStyles } from "@material-ui/core";
 import api from "../../services/api";
 import ListParticipants from "../ListParticipants";
 import toastError from "../../errors/toastError";
+import { i18n } from "../../translate/i18n";
 
 const useStyles = makeStyles((theme) => ({
   alertText: {
@@ -86,10 +87,14 @@ const RemoveNewParticipantsModal = ({
       open={showRemoveParticipantsModal}
       onClose={() => setShowRemoveParticipantsModal(false)}
     >
-      <DialogTitle id="form-dialog-title">Adicionar Participante</DialogTitle>
+      <DialogTitle id="form-dialog-title">
+        {i18n.t("groupTextField.removeParticipant")}
+      </DialogTitle>
       <DialogContent dividers>
         {showTextAlert ? (
-          <p className={classes.alertText}>Contato já está no grupo</p>
+          <p className={classes.alertText}>
+            {i18n.t("groupTextField.alertText")}
+          </p>
         ) : null}
         {participants.length > 0 ? (
           <ListParticipants
@@ -106,7 +111,7 @@ const RemoveNewParticipantsModal = ({
           disabled={participantsToBeRemoved.length === 0}
           variant="outlined"
         >
-          Remover participante(s)
+          {i18n.t("groupTextField.removeParticipant")}
         </Button>
       </DialogContent>
     </Dialog>

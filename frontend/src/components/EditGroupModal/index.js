@@ -8,6 +8,7 @@ import {
 import React, { useState } from "react";
 import toastError from "../../errors/toastError";
 import api from "../../services/api";
+import { i18n } from "../../translate/i18n";
 
 const EditGroupModal = ({
   showEditGroupModal,
@@ -40,24 +41,18 @@ const EditGroupModal = ({
       open={showEditGroupModal}
       onClose={() => setShowEditGroupModal(false)}
     >
-      <DialogTitle id="form-dialog-title">Editar grupo</DialogTitle>
-      <DialogContent style={{ overflowY: "hidden" }} dividers>
+      <DialogTitle id="form-dialog-title">
+        {i18n.t("groupTextField.editGroup")}
+      </DialogTitle>
+      <DialogContent style={{ overflowY: "hidden", width: "500px" }} dividers>
         <TextField
-          style={{ width: "100%", marginBottom: 20 }}
-          label="Digite o nome do grupo"
+          style={{ width: "100%" }}
+          label={i18n.t("groupTextField.labelInputGroupName")}
           variant="outlined"
           value={groupName}
           autoFocus
           required
           onChange={(e) => setGroupName(e.target.value)}
-        />
-
-        <TextField
-          style={{ width: "100%", marginBottom: 20 }}
-          label="Digite o link para a nova imagem do grupo"
-          variant="outlined"
-          value={groupImage}
-          onChange={(e) => setGroupImage(e.target.value)}
         />
       </DialogContent>
       <DialogContent
@@ -70,7 +65,7 @@ const EditGroupModal = ({
           variant="contained"
           disabled={groupName.length < 3}
         >
-          Editar grupo
+          {i18n.t("groupTextField.editGroup")}
         </Button>
       </DialogContent>
     </Dialog>

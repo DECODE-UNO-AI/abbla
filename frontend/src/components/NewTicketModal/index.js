@@ -8,7 +8,7 @@ import DialogActions from "@material-ui/core/DialogActions";
 import DialogContent from "@material-ui/core/DialogContent";
 import DialogTitle from "@material-ui/core/DialogTitle";
 
-// import { i18n } from "../../translate/i18n";
+import { i18n } from "../../translate/i18n";
 import api from "../../services/api";
 import ContactModal from "../ContactModal";
 import toastError from "../../errors/toastError";
@@ -101,7 +101,7 @@ const NewTicketModal = ({ modalOpen, onClose }) => {
         {!showCreateTicketForm && !showCreateGroup ? (
           <>
             <DialogTitle id="form-dialog-title">
-              Escolha uma das opções abaixo
+              {i18n.t("choseOneOption")}
             </DialogTitle>
             <DialogContent deviders>
               <DialogActions>
@@ -119,7 +119,7 @@ const NewTicketModal = ({ modalOpen, onClose }) => {
                   disabled={loading}
                   variant="outlined"
                 >
-                  Criar Grupo
+                  {i18n.t("groupTextField.createGroupText")}
                 </Button>
               </DialogActions>
             </DialogContent>
