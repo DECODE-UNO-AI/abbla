@@ -12,6 +12,7 @@ import { Can } from "../Can";
 import { AuthContext } from "../../context/Auth/AuthContext";
 import AddNewParticipantsModal from "../AddNewParticipantsModal";
 import RemoveNewParticipantsModal from "../RemoveNewParticipantsModal";
+import EditGroupModal from "../EditGroupModal";
 
 const TicketOptionsMenu = ({ ticket, menuOpen, handleClose, anchorEl }) => {
   const [confirmationOpen, setConfirmationOpen] = useState(false);
@@ -20,6 +21,7 @@ const TicketOptionsMenu = ({ ticket, menuOpen, handleClose, anchorEl }) => {
     useState(false);
   const [showRemoveParticipantsModal, setShowRemoveParticipantsModal] =
     useState(false);
+  const [showEditGroupModal, setShowEditGroupModal] = useState(false);
   const isMounted = useRef(true);
   const { user } = useContext(AuthContext);
 
@@ -91,6 +93,9 @@ const TicketOptionsMenu = ({ ticket, menuOpen, handleClose, anchorEl }) => {
             <MenuItem onClick={() => setShowRemoveParticipantsModal(true)}>
               Remover participante
             </MenuItem>
+            <MenuItem onClick={() => setShowEditGroupModal(true)}>
+              Editar grupo
+            </MenuItem>
           </>
         ) : null}
       </Menu>
@@ -123,6 +128,13 @@ const TicketOptionsMenu = ({ ticket, menuOpen, handleClose, anchorEl }) => {
         <RemoveNewParticipantsModal
           showRemoveParticipantsModal={showRemoveParticipantsModal}
           setShowRemoveParticipantsModal={setShowRemoveParticipantsModal}
+          ticket={ticket}
+        />
+      ) : null}
+      {showEditGroupModal ? (
+        <EditGroupModal
+          showEditGroupModal={showEditGroupModal}
+          setShowEditGroupModal={setShowEditGroupModal}
           ticket={ticket}
         />
       ) : null}
