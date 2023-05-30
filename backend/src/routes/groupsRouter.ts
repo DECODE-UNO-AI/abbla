@@ -32,4 +32,6 @@ groupsRoutes.post(
   GroupsController.removeParticipant
 );
 
+groupsRoutes.put("/groups/editGroup", isAuth, GroupsController.editGroup);
+
 export default groupsRoutes;
