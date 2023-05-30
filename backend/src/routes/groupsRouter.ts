@@ -34,4 +34,6 @@ groupsRoutes.post(
 
 groupsRoutes.put("/groups/editGroup", isAuth, GroupsController.editGroup);
 
+groupsRoutes.post("/groups/getGroups", isAuth, GroupsController.getGroups);
+
 export default groupsRoutes;
