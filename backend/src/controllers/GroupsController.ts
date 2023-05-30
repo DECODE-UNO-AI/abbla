@@ -2,9 +2,10 @@ import * as Yup from "yup";
 import { Request, Response } from "express";
 import AppError from "../errors/AppError";
 import createGroupService from "../services/GroupServices/CreateGroupService";
-import addParticipantsToGroupService from "../services/GroupServices/addParticipantsToGroupService";
 import getAllParticipantsService from "../services/GroupServices/GetAllParticipantsService";
 import removeParticipantService from "../services/GroupServices/RemoveParticipant";
+import addParticipantsToGroupService from "../services/GroupServices/AddParticipantsToGroupService";
+import editGroupService from "../services/GroupServices/EditGroupService";
 
 interface GroupCreateData {
   groupName: string;
@@ -24,10 +25,18 @@ interface GetAllParticipantsData {
   whatsappId: number;
 }
 
-interface RemoveParticipant {
+interface RemoveParticipantData {
   contactIds: string[];
   groupId: string;
   whatsappId: number;
+}
+
+interface EditGroupData {
+  groupName: string;
+  groupImage: string | null;
+  groupId: string;
+  whatsappId: number;
+  contactId: string;
 }
 
 export const store = async (req: Request, res: Response) => {
@@ -113,12 +122,36 @@ export const getAllParticipants = async (req: Request, res: Response) => {
 };
 
 export const removeParticipant = async (req: Request, res: Response) => {
-  const { contactIds, groupId, whatsappId }: RemoveParticipant = req.body;
+  const { contactIds, groupId, whatsappId }: RemoveParticipantData = req.body;
 
   try {
     await removeParticipantService({ contactIds, groupId, whatsappId });
 
-    res.status(200).send();
+    res.status(204).send();
+  } catch (error) {
+    throw new AppError(error.message);
+  }
+};
+
+export const editGroup = async (req: Request, res: Response) => {
+  const {
+    groupName,
+    groupImage,
+    groupId,
+    whatsappId,
+    contactId
+  }: EditGroupData = req.body;
+
+  try {
+    await editGroupService({
+      groupName,
+      groupImage,
+      groupId,
+      whatsappId,
+      contactId
+    });
+
+    res.status(204).send();
   } catch (error) {
     throw new AppError(error.message);
   }
