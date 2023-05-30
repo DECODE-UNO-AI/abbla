@@ -862,6 +862,10 @@ const messages = {
         alertText: "Participante já está no grupo",
         editGroup: "Editar grupo",
         labelInputGroupName: "Digite o nome do groupo",
+        groups: "Grupos",
+        groupId: "Id do grupo",
+        groupName: "Nome do grupo",
+        action: "action",
       },
       backendErrors: {
         ERR_NUMBER_NOT_FOUND: "Número não encontrado no WhatsApp.",

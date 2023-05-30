@@ -843,6 +843,7 @@ const messages = {
         alertText: "Participant is already in the group",
         editGroup: "Edit group",
         labelInputGroupName: "Enter the group name",
+        groups: "Groups",
       },
       backendErrors: {
         ERR_NUMBER_NOT_FOUND: "WhatsApp number not found.",
