@@ -6,6 +6,7 @@ import getAllParticipantsService from "../services/GroupServices/GetAllParticipa
 import removeParticipantService from "../services/GroupServices/RemoveParticipant";
 import addParticipantsToGroupService from "../services/GroupServices/AddParticipantsToGroupService";
 import editGroupService from "../services/GroupServices/EditGroupService";
+import getGroupsServices from "../services/GroupServices/GetGroupsServices";
 
 interface GroupCreateData {
   groupName: string;
@@ -152,6 +153,16 @@ export const editGroup = async (req: Request, res: Response) => {
     });
 
     res.status(204).send();
+  } catch (error) {
+    throw new AppError(error.message);
+  }
+};
+
+export const getGroups = async (req: Request, res: Response) => {
+  try {
+    const groups = await getGroupsServices();
+
+    res.status(200).json({ groups });
   } catch (error) {
     throw new AppError(error.message);
   }
