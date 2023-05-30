@@ -1,5 +1,4 @@
 import { GroupChat } from "whatsapp-web.js";
-import { getIO } from "../../libs/socket";
 import { getWbot } from "../../libs/wbot";
 
 interface AddParticipantsData {
