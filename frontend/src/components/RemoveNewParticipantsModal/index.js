@@ -95,6 +95,7 @@ const RemoveNewParticipantsModal = ({
           <ListParticipants
             participants={participants}
             handleDelete={handleDeleteContactFromList}
+            RemoveNewParticipantsModal
           />
         ) : null}
       </DialogContent>
