@@ -10,6 +10,7 @@ interface Request {
   name: string;
   number: string;
   email?: string;
+  isGroup?: boolean;
   profilePicUrl?: string;
   extraInfo?: ExtraInfo[];
 }
@@ -18,6 +19,7 @@ const CreateContactService = async ({
   name,
   number,
   email = "",
+  isGroup = false,
   extraInfo = []
 }: Request): Promise<Contact> => {
   const numberExists = await Contact.findOne({
@@ -33,7 +35,8 @@ const CreateContactService = async ({
       name,
       number,
       email,
-      extraInfo
+      extraInfo,
+      isGroup
     },
     {
       include: ["extraInfo"]
