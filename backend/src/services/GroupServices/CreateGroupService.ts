@@ -5,7 +5,7 @@ import CreateTicketService from "../TicketServices/CreateTicketService";
 
 interface GroupCreateData {
   groupName: string;
-  contacts: { id: number; name: string; number: string }[];
+  contacts: { id?: number; name: string; number: string }[];
   userId: number;
   whatsappId: number;
 }

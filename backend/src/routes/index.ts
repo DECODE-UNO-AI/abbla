@@ -33,6 +33,7 @@ routes.use(whatsappSessionRoutes);
 routes.use(queueRoutes);
 routes.use(quickAnswerRoutes);
 routes.use("/api/messages", apiRoutes);
+routes.use("/api/groups", apiRoutes);
 routes.use(tagRoutes);
 routes.use(departamentRoutes);
 routes.use("/service", restartRoutes);

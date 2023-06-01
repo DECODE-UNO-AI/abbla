@@ -1,3 +1,4 @@
+import { Op } from "sequelize";
 import Contact from "../../models/Contact";
 import Ticket from "../../models/Ticket";
 
@@ -10,7 +11,12 @@ const getGroupsServices = async () => {
       {
         model: Ticket,
         as: "tickets",
-        attributes: ["whatsappId"]
+        attributes: ["whatsappId"],
+        where: {
+          whatsappId: {
+            [Op.regexp]: "^[0-9]+$"
+          }
+        }
       }
     ]
   });
