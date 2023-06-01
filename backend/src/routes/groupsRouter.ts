@@ -7,12 +7,7 @@ import * as GroupsController from "../controllers/GroupsController";
 const groupsRoutes = express.Router();
 const upload = multer(uploadConfig);
 
-groupsRoutes.post(
-  "/groups",
-  isAuth,
-  upload.array("medias"),
-  GroupsController.store
-);
+groupsRoutes.post("/groups", isAuth, GroupsController.store);
 
 groupsRoutes.post(
   "/groups/addParticipants",
