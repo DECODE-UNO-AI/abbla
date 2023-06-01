@@ -26,7 +26,7 @@ const SendWhatsAppMessage = async ({
 
   try {
     if (quotedMsg) {
-      await GetWbotMessage(ticket, quotedMsg.id);
+      await GetWbotMessage(ticket, quotedMsg?.id);
       quotedMsgSerializedId = SerializeWbotMsgId(ticket, quotedMsg);
     }
 
@@ -34,12 +34,16 @@ const SendWhatsAppMessage = async ({
 
     if (!isComment) {
       const sentMessage = await wbot.sendMessage(
-        `${ticket.contact.number}@${ticket.isGroup ? "g" : "c"}.us`,
+        `${ticket?.contact?.number}@${ticket?.isGroup ? "g" : "c"}.us`,
         formatBody(body, ticket),
-        {
-          quotedMessageId: quotedMsgSerializedId,
-          linkPreview: false
-        }
+        quotedMsg?.fromMe && ticket?.isGroup
+          ? {
+              linkPreview: false
+            }
+          : {
+              quotedMessageId: quotedMsgSerializedId,
+              linkPreview: false
+            }
       );
 
       await ticket.update({ lastMessage: body });
@@ -48,7 +52,7 @@ const SendWhatsAppMessage = async ({
 
     const messageData = {
       id: `comment-${Date.now()}`,
-      ticketId: ticket.id,
+      ticketId: ticket?.id,
       body,
       fromMe: true,
       read: true,
