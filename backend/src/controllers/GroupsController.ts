@@ -10,7 +10,7 @@ import getGroupsServices from "../services/GroupServices/GetGroupsServices";
 
 interface GroupCreateData {
   groupName: string;
-  contacts: { id: number; name: string; number: string }[];
+  contacts: { id?: number; name: string; number: string }[];
   userId: number;
   whatsappId: number;
 }
@@ -42,19 +42,13 @@ interface EditGroupData {
 
 export const store = async (req: Request, res: Response) => {
   const { groupName, contacts, userId, whatsappId }: GroupCreateData = req.body;
-  const { profile } = req.user;
-  // const contactsCSV = req.files as Express.Multer.File[];
   if (!whatsappId) {
     throw new AppError("WHATSAPPID_IS_REQUIRED", 403);
   }
 
-  if (profile !== "admin") {
-    throw new AppError("ERR_NO_PERMISSION", 403);
-  }
-
   const schemaToContacts = Yup.array().of(
     Yup.object({
-      id: Yup.number().required(),
+      id: Yup.number(),
       name: Yup.string().required(),
       number: Yup.string().required()
     })
@@ -80,7 +74,7 @@ export const store = async (req: Request, res: Response) => {
       whatsappId
     });
 
-    return res.status(201).send();
+    return res.status(201).json("Group created successfully");
   } catch (error) {
     throw new AppError(error.message);
   }
