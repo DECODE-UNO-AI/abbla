@@ -34,7 +34,6 @@ import {
   ExpandMore,
   QueuePlayNext,
   LoopOutlined,
-  Group,
 } from "@material-ui/icons";
 
 import { i18n } from "../translate/i18n";
@@ -142,13 +141,6 @@ const MainListItems = (props) => {
           to="/contacts"
           primary={i18n.t("mainDrawer.listItems.contacts")}
           icon={<ContactPhoneOutlined />}
-        />
-      </div>
-      <div onClick={drawerClose}>
-        <ListItemLink
-          to="/groups"
-          primary={i18n.t("groupTextField.groups")}
-          icon={<Group />}
         />
       </div>
       <div onClick={drawerClose}>

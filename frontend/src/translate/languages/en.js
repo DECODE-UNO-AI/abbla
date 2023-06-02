@@ -833,18 +833,6 @@ const messages = {
           message: "This action cannot be reversed.",
         },
       },
-      choseOneOption: "Choose one of the options below",
-      groupTextField: {
-        createGroupText: "Create Group",
-        addToGroup: "Add to Group",
-        addParticipant: "Add participant(s)",
-        removeParticipant: "Remove participant(s)",
-        finishe: "finalize",
-        alertText: "Participant is already in the group",
-        editGroup: "Edit group",
-        labelInputGroupName: "Enter the group name",
-        groups: "Groups",
-      },
       backendErrors: {
         ERR_NUMBER_NOT_FOUND: "WhatsApp number not found.",
         ERR_NO_OTHER_WHATSAPP: "There must be at least one default WhatsApp.",
