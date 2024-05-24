@@ -401,7 +401,16 @@ const handleMessage = async (
       !ticket.userId &&
       whatsapp.queues.length >= 1
     ) {
-      await verifyQueue(wbot, msg, ticket, contact);
+      const settingMessage = await Settings.findOne({
+        where: { key: "sendQueueChose" }
+      });
+      if (
+        !settingMessage ||
+        !settingMessage.value ||
+        settingMessage?.value === "enabled"
+      ) {
+        await verifyQueue(wbot, msg, ticket, contact);
+      }
     }
 
     if (msg.type === "vcard") {

@@ -292,6 +292,21 @@ const Settings = () => {
 				</Paper>
 
 				<Typography variant="body2" gutterBottom></Typography>
+
+				<Paper className={classes.paper}>
+					<Tooltip title={i18n.t("settings.settings.sendQueueChose.note")}>
+						<FormControlLabel
+							control={
+								<IOSSwitch
+									checked={settings && settings.length > 0 && getSettingValue("sendQueueChose") === "enabled"}
+									onChange={handleChangeBooleanSetting} name="sendQueueChose"
+								/>}
+							label={i18n.t("settings.settings.sendQueueChose.name")}
+						/>
+					</Tooltip>
+				</Paper>
+				<Typography variant="body2" gutterBottom></Typography>
+
 				<Paper className={classes.paper}>
 					<Tooltip title={i18n.t("settings.settings.visualizeMessage.note")}>
 						<FormControlLabel

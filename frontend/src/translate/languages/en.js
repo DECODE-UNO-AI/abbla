@@ -677,6 +677,14 @@ const messages = {
               disabled: "Disabled",
             },
           },
+          sendQueueChose: {
+            name: "Allow queue message",
+            note: "Allow queue message",
+            options: {
+              enabled: "Enabled",
+              disabled: "Disabled",
+            },
+          },
           CheckMsgIsGroup: {
             name: "Ignore Group Messages",
             note: "If you disable it, you will receive messages from groups.",
