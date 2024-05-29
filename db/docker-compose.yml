@@ -1,0 +1,50 @@
+version: '3.1'
+
+services:
+  db:
+    image: mariadb:latest
+    container_name: mariadb
+    restart: always
+    ports:
+      - "3306:3306"
+    environment:
+      MARIADB_USER: ${MARIADB_USER}
+      MARIADB_PASSWORD: ${MARIADB_PASSWORD}
+      MARIADB_ROOT_PASSWORD: ${MARIADB_ROOT_PASSWORD}
+    volumes:
+      - ./mariadb-data/data:/var/lib/mysql/data:rw
+      - ./mariadb-data/logs:/var/lib/mysql/logs:rw
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.mariadb.rule=Host(`mariadb.decode.uno`)"
+      - "traefik.http.services.mariadb.loadbalancer.server.port=3306"
+      - "traefik.http.routers.mariadb.service=mariadb"
+      - "traefik.http.routers.mariadb.entrypoints=websecure"
+      - "traefik.http.routers.mariadb.tls.certresolver=leresolver"
+    networks:
+      - mariadb
+
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin:4.9.7
+    restart: always
+    environment:
+      PMA_ARBITRARY: 1
+      PMA_HOST: db
+      PMA_PORT: 3306
+      PMA_USER: ${MARIADB_USER}
+      PMA_PASSWORD: ${MARIADB_PASSWORD}
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.phpmyadmin.rule=Host(`phpmyadmin.decode.uno`)"
+      - "traefik.http.services.phpmyadmin.loadbalancer.server.port=80"
+      - "traefik.http.routers.phpmyadmin.service=phpmyadmin"
+      - "traefik.http.routers.phpmyadmin.entrypoints=websecure"
+      - "traefik.http.routers.phpmyadmin.tls.certresolver=leresolver"
+    networks:
+      - mariadb
+    depends_on:
+      - db
+
+networks:
+  mariadb:
+    external: true
