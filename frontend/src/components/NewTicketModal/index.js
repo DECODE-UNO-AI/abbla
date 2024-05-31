@@ -33,7 +33,6 @@ import {
 const useStyles = makeStyles((theme) => ({
 	autoComplete: {
 		width: 300,
-		// marginBottom: 20 
 	},
 	maxWidth: {
 		width: "100%",
@@ -124,7 +123,7 @@ const NewTicketModal = ({ modalOpen, onClose }) => {
 	};
 
 	const handleAddNewContactTicket = contact => {
-		handleSaveTicket(contact.id);
+		setSelectedContact(contact)
 	};
 
 	const createAddContactOption = (filterOptions, params) => {
